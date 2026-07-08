@@ -45,8 +45,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/logo"
                 android:includeFontPadding="false"
-                android:layout_marginBottom="-2dp"
+                android:layout_marginBottom="-4dp"
                 android:gravity="bottom"
+                android:letterSpacing="0.02"
                 android:fontFamily="@font/source_sans_regular"
 
                  />
