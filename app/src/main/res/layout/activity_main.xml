@@ -47,6 +47,7 @@
                 android:includeFontPadding="false"
                 android:layout_marginBottom="-2dp"
                 android:gravity="bottom"
+                android:fontFamily="@font/source_sans_regular"
 
                  />
 
@@ -61,7 +62,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/source_sans_bold"
+        />
 
 
 
