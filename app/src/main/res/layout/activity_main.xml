@@ -8,6 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
+    android:background="@color/offWhiteBackground"
     >
 
     <androidx.appcompat.widget.Toolbar
@@ -56,16 +57,93 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <LinearLayout
+        android:id="@+id/greetings"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:paddingHorizontal="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="Goodmorning"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:fontFamily="@font/source_sans_bold"
+        android:fontFamily="@font/source_sans_regular"
+        android:textSize="12sp"
+        android:letterSpacing="0.03"
         />
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:fontFamily="@font/source_sans_bold"
+            android:textSize="12sp"
+            android:letterSpacing="0.03"
+            android:paddingHorizontal="4dp"
+            />
+        <TextView
+            android:text="Everything you will discover here"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:fontFamily="@font/source_sans_regular"
+            android:textSize="12sp"
+            android:letterSpacing="0.03"
+            />
+    </LinearLayout>
+    
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/searchBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/greetings"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="12dp"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:startIconDrawable="@drawable/ic_search"
+        app:endIconDrawable="@drawable/ic_slider"
+        app:endIconMode="custom"
+
+        android:hint="What are you searching for ? "
+        android:textColorHint="@color/light"
+
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="@color/surface"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:typeface="normal"
+            android:inputType="text"
+            android:maxLines="1"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
 
 

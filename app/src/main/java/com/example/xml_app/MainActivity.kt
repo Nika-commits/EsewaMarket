@@ -3,6 +3,7 @@ package com.example.xml_app
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
+
+    private var userName = "Pranish" + ","
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -19,9 +23,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         getSupportActionBar()?.apply {
             setDisplayShowTitleEnabled(false)
-//            setDisplayShowHomeEnabled(true)
-//            setIcon(R.drawable.icon)
         }
+
+        val tvUsername: TextView = findViewById(R.id.tvUsername)
+        tvUsername.text = userName
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
