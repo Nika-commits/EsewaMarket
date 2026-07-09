@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +28,11 @@ class MainActivity : AppCompatActivity() {
 
         val tvUsername: TextView = findViewById(R.id.tvUsername)
         tvUsername.text = userName
+
+        val searchBox = findViewById<TextInputLayout>(R.id.searchBox)
+        searchBox.setEndIconOnClickListener {
+            Toast.makeText(this, "Filters Clicked", Toast.LENGTH_LONG).show()
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
