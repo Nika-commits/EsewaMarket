@@ -11,10 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
-
     private var userName = "Pranish" + ","
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +27,19 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()?.apply {
             setDisplayShowTitleEnabled(false)
         }
+
+        val heros = mutableListOf<Hero>(
+            Hero("Sale", R.drawable.hero1),
+            Hero("Sale 2", R.drawable.hero2),
+            Hero("Sale 3", R.drawable.hero3)
+
+        )
+
+        val adapter = HeroAdapter(heros)
+        val hero: RecyclerView = findViewById(R.id.rvHero)
+        hero.adapter = adapter
+        hero.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
 
         val tvUsername: TextView = findViewById(R.id.tvUsername)
         tvUsername.text = userName
