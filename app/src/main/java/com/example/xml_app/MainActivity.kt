@@ -1,5 +1,6 @@
 package com.example.xml_app
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -49,7 +50,10 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.miAbout -> Toast.makeText(this, "Clicked on About", Toast.LENGTH_SHORT).show()
-            R.id.miNotification -> Toast.makeText(this, "Clicked on Notification", Toast.LENGTH_SHORT).show()
+            R.id.miNotification -> {
+                val intent = Intent(this, NotificationActivity::class.java)
+                startActivity(intent)
+            }
         }
         return true
     }
