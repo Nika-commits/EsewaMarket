@@ -9,5 +9,8 @@
 
     <color name="primaryGreen">#2ABB00</color>
     <color name="textLight">#E3E4EB</color>
+    <color name="categoryBackground">#E1FDD9</color>
+
+    <color name="textDark">#263238</color>
 
 </resources>

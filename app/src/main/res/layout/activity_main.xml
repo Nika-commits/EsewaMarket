@@ -153,17 +153,6 @@
             android:layout_height="wrap_content"/>
 
     </com.google.android.material.textfield.TextInputLayout>
-
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/rvHero"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/searchBox"-->
-<!--        app:layout_constraintRight_toRightOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent"-->
-<!--        android:paddingHorizontal="12dp"-->
-<!--        android:paddingVertical="12dp" />-->
     
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/heroViewPager"

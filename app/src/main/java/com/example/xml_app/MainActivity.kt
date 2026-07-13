@@ -38,11 +38,17 @@ class MainActivity : AppCompatActivity() {
 
         )
 
+        val categories = mutableListOf(
+            Category(1, R.drawable.ic_shop_clothing, "Fashion"),
+            Category(2, R.drawable.ic_shop_computer, "Electronic Device"),
+            Category(3, R.drawable.ic_shop_mobile, "Mobile"),
+            Category(4, R.drawable.ic_shop_grocery, "Grocery"),
+            Category(5, R.drawable.ic_shop_computer, "Fashions")
+        )
+
         val adapter = HeroViewPagerAdapter(heros)
         val heroViewPager = findViewById<ViewPager2>(R.id.heroViewPager)
         heroViewPager.adapter = adapter
-//        hero.adapter = adapter
-//        hero.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         val heroIndicator = findViewById<TabLayout>(R.id.heroIndicator)
         TabLayoutMediator(heroIndicator, heroViewPager){tab, _ ->
@@ -51,6 +57,12 @@ class MainActivity : AppCompatActivity() {
 
         val tvUsername: TextView = findViewById(R.id.tvUsername)
         tvUsername.text = userName
+
+        val categoryAdapter = CategoryRecyclerViewAdapter(categories)
+        val categoryViewAdapter = findViewById<RecyclerView>(R.id.rvCategoryOptions)
+
+        categoryViewAdapter.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        categoryViewAdapter.adapter = categoryAdapter
 
         val searchBox = findViewById<TextInputLayout>(R.id.searchBox)
         searchBox.setEndIconOnClickListener {
