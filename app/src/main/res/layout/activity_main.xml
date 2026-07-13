@@ -75,7 +75,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:fontFamily="@font/source_sans_regular"
-        android:textSize="12sp"
+        android:textSize="10sp"
         android:letterSpacing="0.03"
         android:textColor="@color/lightGrey"
         />
@@ -89,7 +89,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:fontFamily="@font/source_sans_bold"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:letterSpacing="0.03"
             android:paddingHorizontal="4dp"
             android:textColor="@color/lightGrey"
@@ -103,7 +103,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:fontFamily="@font/source_sans_regular"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:letterSpacing="0.03"
             android:textColor="@color/lightGrey"
             />
@@ -198,10 +198,14 @@
         app:tabGravity="center"
         app:tabMode="fixed"/>
 
-
-
-
-
-
+    <include
+        android:id="@+id/rvCategoryOptionsLayout"
+        layout="@layout/home_categories_section"
+        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/heroIndicator"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
