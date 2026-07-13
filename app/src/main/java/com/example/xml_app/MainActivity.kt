@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
@@ -42,6 +44,10 @@ class MainActivity : AppCompatActivity() {
 //        hero.adapter = adapter
 //        hero.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
+        val heroIndicator = findViewById<TabLayout>(R.id.heroIndicator)
+        TabLayoutMediator(heroIndicator, heroViewPager){tab, _ ->
+            tab.setCustomView(R.layout.item_indicator)
+        }.attach()
 
         val tvUsername: TextView = findViewById(R.id.tvUsername)
         tvUsername.text = userName

@@ -6,4 +6,7 @@
     <color name="offWhiteBackground">#F9FBFE</color>
     <color name="surface">#FFFFFF</color>
     <color name="light">#C7C8D9</color>
+
+    <color name="primaryGreen">#2ABB00</color>
+    <color name="textLight">#E3E4EB</color>
 </resources>
