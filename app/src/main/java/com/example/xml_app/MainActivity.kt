@@ -43,7 +43,9 @@ class MainActivity : AppCompatActivity() {
             Category(2, R.drawable.ic_shop_computer, "Electronic Device"),
             Category(3, R.drawable.ic_shop_mobile, "Mobile"),
             Category(4, R.drawable.ic_shop_grocery, "Grocery"),
-            Category(5, R.drawable.ic_shop_computer, "Fashions")
+            Category(5, R.drawable.ic_shop_computer, "Fashions"),
+            Category(6, R.drawable.ic_shop_clothing, "Women Fashion"),
+            Category(7, R.drawable.ic_shop_computer, "Laptops"),
         )
 
         val adapter = HeroViewPagerAdapter(heros)
