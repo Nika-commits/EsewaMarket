@@ -2,6 +2,7 @@ package com.example.xml_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -17,6 +18,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Runnable
+import java.util.logging.Handler
 
 class MainActivity : AppCompatActivity() {
     private var userName = "Pranish" + ","
