@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:elevation="4dp"
-        android:paddingHorizontal="8dp"
+        android:paddingHorizontal="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -61,7 +61,7 @@
         android:id="@+id/greetings"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="16dp"
         android:paddingVertical="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -77,6 +77,7 @@
         android:fontFamily="@font/source_sans_regular"
         android:textSize="12sp"
         android:letterSpacing="0.03"
+        android:textColor="@color/lightGrey"
         />
 
         <TextView
@@ -91,6 +92,7 @@
             android:textSize="12sp"
             android:letterSpacing="0.03"
             android:paddingHorizontal="4dp"
+            android:textColor="@color/lightGrey"
             />
         <TextView
             android:text="Everything you will discover here"
@@ -103,6 +105,7 @@
             android:fontFamily="@font/source_sans_regular"
             android:textSize="12sp"
             android:letterSpacing="0.03"
+            android:textColor="@color/lightGrey"
             />
     </LinearLayout>
     
@@ -122,11 +125,17 @@
         app:boxCornerRadiusTopStart="8dp"
         app:boxCornerRadiusBottomStart="8dp"
         app:startIconDrawable="@drawable/ic_search"
+        app:startIconTint="@color/lightGrey"
+        app:endIconTint="@color/lightGrey"
         app:endIconDrawable="@drawable/ic_slider"
         app:endIconMode="custom"
-
         android:hint="What are you searching for ? "
         android:textColorHint="@color/light"
+        app:hintTextColor="@color/textLight"
+
+        app:cursorColor="@color/lightGrey"
+
+
 
         app:boxBackgroundMode="filled"
         app:boxBackgroundColor="@color/surface"
@@ -139,6 +148,8 @@
             android:typeface="normal"
             android:inputType="text"
             android:maxLines="1"
+            android:textColor="@color/black"
+            android:textColorHint="@color/textLight"
             android:layout_height="wrap_content"/>
 
     </com.google.android.material.textfield.TextInputLayout>

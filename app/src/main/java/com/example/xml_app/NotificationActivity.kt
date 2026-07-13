@@ -21,6 +21,9 @@ class NotificationActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.navigationIcon?.setTint(
+            androidx.core.content.ContextCompat.getColor(this, R.color.black)
+        )
 
 
 
