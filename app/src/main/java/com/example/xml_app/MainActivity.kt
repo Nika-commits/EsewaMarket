@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -72,6 +73,11 @@ class MainActivity : AppCompatActivity() {
         val searchBox = findViewById<TextInputLayout>(R.id.searchBox)
         searchBox.setEndIconOnClickListener {
             Toast.makeText(this, "Filters Clicked", Toast.LENGTH_LONG).show()
+        }
+
+        val categorySeeAllButton = findViewById<ImageButton>(R.id.btnSeeAll)
+        categorySeeAllButton.setOnClickListener {
+            Toast.makeText(this, "All FIlters", Toast.LENGTH_SHORT).show()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
