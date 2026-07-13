@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
@@ -35,10 +36,11 @@ class MainActivity : AppCompatActivity() {
 
         )
 
-        val adapter = HeroAdapter(heros)
-        val hero: RecyclerView = findViewById(R.id.rvHero)
-        hero.adapter = adapter
-        hero.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val adapter = HeroViewPagerAdapter(heros)
+        val heroViewPager = findViewById<ViewPager2>(R.id.heroViewPager)
+        heroViewPager.adapter = adapter
+//        hero.adapter = adapter
+//        hero.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
 
         val tvUsername: TextView = findViewById(R.id.tvUsername)
