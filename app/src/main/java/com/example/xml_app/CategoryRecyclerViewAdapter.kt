@@ -8,7 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class CategoryRecyclerViewAdapter(
-    val categories: List<Category>
+    val categories: List<Category>,
+//    private val onCategoryClick: (Category) -> Unit
 ): RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -34,5 +35,9 @@ class CategoryRecyclerViewAdapter(
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val icon = itemView.findViewById<ImageView>(R.id.ivCategoryIcon)
         val categoryName = itemView.findViewById<TextView>(R.id.tvCategoryName)
+
+        fun bind(category: Category){
+//            categoryName.
+        }
     }
 }

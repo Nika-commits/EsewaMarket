@@ -11,11 +11,13 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.example.xml_app.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.textfield.TextInputLayout
@@ -28,14 +30,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
+
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        val toolbar: Toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         getSupportActionBar()?.apply {
             setDisplayShowTitleEnabled(false)
         }
 
-        val heros = mutableListOf<Hero>(
+        val heroes = mutableListOf<Hero>(
             Hero("Sale", R.drawable.hero1),
             Hero("Sale 2", R.drawable.hero2),
             Hero("Sale 3", R.drawable.hero3)
@@ -52,20 +58,20 @@ class MainActivity : AppCompatActivity() {
             Category(7, R.drawable.ic_shop_computer, "Laptops"),
         )
 
-        val adapter = HeroViewPagerAdapter(heros)
-        val heroViewPager = findViewById<ViewPager2>(R.id.heroViewPager)
+        val adapter = HeroViewPagerAdapter(heroes)
+        val heroViewPager = binding.heroViewPager
         heroViewPager.adapter = adapter
 
-        val heroIndicator = findViewById<TabLayout>(R.id.heroIndicator)
+        val heroIndicator = binding.heroIndicator
         TabLayoutMediator(heroIndicator, heroViewPager){tab, _ ->
             tab.setCustomView(R.layout.item_indicator)
         }.attach()
 
-        val tvUsername: TextView = findViewById(R.id.tvUsername)
+        val tvUsername = binding.tvUsername
         tvUsername.text = userName
 
         val categoryAdapter = CategoryRecyclerViewAdapter(categories)
-        val categoryViewAdapter = findViewById<RecyclerView>(R.id.rvCategoryOptions)
+        val categoryViewAdapter = binding.rvCategoryOptionsLayout.rvCategoryOptions
 
         categoryViewAdapter.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         categoryViewAdapter.adapter = categoryAdapter
@@ -75,12 +81,13 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Filters Clicked", Toast.LENGTH_LONG).show()
         }
 
-        val categorySeeAllButton = findViewById<ImageButton>(R.id.btnSeeAll)
-        categorySeeAllButton.setOnClickListener {
-            Toast.makeText(this, "All FIlters", Toast.LENGTH_SHORT).show()
+        binding.rvCategoryOptionsLayout.categorySection.tvHeaderTitle.text = "Category"
+        binding.rvCategoryOptionsLayout.categorySection.ibHeaderButton.setOnClickListener {
+            Toast.makeText(this, "See all Categories", Toast.LENGTH_SHORT).show()
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
