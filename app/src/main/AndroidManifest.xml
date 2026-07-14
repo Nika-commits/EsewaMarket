@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NotificationActivity"
+            android:name=".Activities.NotificationActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".MainActivity"

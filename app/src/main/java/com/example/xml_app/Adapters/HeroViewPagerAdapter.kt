@@ -1,10 +1,12 @@
-package com.example.xml_app
+package com.example.xml_app.Adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.xml_app.Models.Hero
+import com.example.xml_app.R
 
 class HeroViewPagerAdapter(
     val heroImages : MutableList<Hero>
@@ -13,7 +15,7 @@ class HeroViewPagerAdapter(
         parent: ViewGroup,
         viewType: Int
     ): ViewPagerViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.hero_view_pager, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_hero, parent, false)
         return ViewPagerViewHolder(view)
     }
 

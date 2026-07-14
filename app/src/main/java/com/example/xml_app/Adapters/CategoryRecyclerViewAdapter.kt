@@ -1,4 +1,4 @@
-package com.example.xml_app
+package com.example.xml_app.Adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.xml_app.Models.Category
+import com.example.xml_app.R
 
 class CategoryRecyclerViewAdapter(
     val categories: List<Category>,
@@ -15,7 +17,7 @@ class CategoryRecyclerViewAdapter(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.category_box, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category_box, parent, false)
         return ViewHolder(view)
     }
 

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:id="@+id/cvProductCard"
+    android:layout_height="268dp"
+    android:layout_width="168dp"
+    app:cardCornerRadius="16dp"
+    app:strokeWidth="0dp"
+
+
+    android:backgroundTint="@color/surface"
+    
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/ivProductImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:contentDescription="Product Image"
+        />
+        
+        <TextView
+            android:id="@+id/tvProductName"
+            app:layout_constraintTop_toBottomOf="@id/ivProductImage"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvProductStatus"
+            app:layout_constraintTop_toBottomOf="@id/tvProductName"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tvProductStatus"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvCurrency"
+                android:text="Rs. "
+                android:textColor="@color/primaryGreen"
+                android:textSize="10sp"
+                android:fontFamily="@font/source_sans_regular"
+                android:letterSpacing="0.02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:textColor="@color/primaryGreen"
+                android:textSize="10sp"
+                android:fontFamily="@font/source_sans_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/ibFavourites"
+            android:src="@drawable/ic_fav"
+            android:background="@color/surface"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_margin="12dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+
+        <ImageButton
+            android:id="@+id/ibAddToCart"
+            android:background="@drawable/bg_add_to_cart"
+            android:src="@drawable/ic_plus"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="36dp"
+            android:layout_height="42dp"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

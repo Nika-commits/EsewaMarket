@@ -1,13 +1,13 @@
-package com.example.xml_app
+package com.example.xml_app.Activities
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.xml_app.R
 
 class NotificationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +22,7 @@ class NotificationActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.navigationIcon?.setTint(
-            androidx.core.content.ContextCompat.getColor(this, R.color.black)
+            ContextCompat.getColor(this, R.color.black)
         )
 
 

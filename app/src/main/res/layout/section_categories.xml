@@ -6,7 +6,7 @@
 
 <include
     android:id="@+id/categorySection"
-    layout="@layout/reusable_title_and_button"/>
+    layout="@layout/layout_title_and_button"/>
 
 <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/rvCategoryOptions"

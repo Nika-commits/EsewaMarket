@@ -2,27 +2,22 @@ package com.example.xml_app
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
+import com.example.xml_app.Activities.NotificationActivity
+import com.example.xml_app.Adapters.CategoryRecyclerViewAdapter
+import com.example.xml_app.Adapters.HeroViewPagerAdapter
+import com.example.xml_app.Models.Category
+import com.example.xml_app.Models.Hero
 import com.example.xml_app.databinding.ActivityMainBinding
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.Runnable
-import java.util.logging.Handler
 
 class MainActivity : AppCompatActivity() {
     private var userName = "Pranish" + ","
@@ -76,9 +71,18 @@ class MainActivity : AppCompatActivity() {
         categoryViewAdapter.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         categoryViewAdapter.adapter = categoryAdapter
 
-        val searchBox = findViewById<TextInputLayout>(R.id.searchBox)
-        searchBox.setEndIconOnClickListener {
+        binding.searchBox.setEndIconOnClickListener {
             Toast.makeText(this, "Filters Clicked", Toast.LENGTH_LONG).show()
+        }
+
+        binding.etSearch.setOnFocusChangeListener { _, hasFocus ->
+            if(hasFocus){
+                binding.searchBox.boxStrokeWidth = 2
+                binding.searchBox.boxStrokeColor = getColor(R.color.primaryGreen)
+                Toast.makeText(this, "Has Focus", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Has No Focus", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.rvCategoryOptionsLayout.categorySection.tvHeaderTitle.text = "Category"
@@ -109,4 +113,13 @@ class MainActivity : AppCompatActivity() {
         }
         return true
     }
+
+//    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+//        currentFocus?.let { view ->
+//            if(view is EditText){
+//                val
+//            }
+//        }
+//        return super.dispatchTouchEvent(ev)
+//    }
 }
