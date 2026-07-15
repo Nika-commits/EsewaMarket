@@ -193,12 +193,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         />
 
-    <include
-        android:id="@+id/featuredProductsSection"
-        layout="@layout/section_featured_products"
-        app:layout_constraintTop_toBottomOf="@id/rvCategoryOptionsLayout"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+<!--    <include-->
+<!--        android:id="@+id/featuredProductsSection"-->
+<!--        layout="@layout/section_featured_products"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/rvCategoryOptionsLayout"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

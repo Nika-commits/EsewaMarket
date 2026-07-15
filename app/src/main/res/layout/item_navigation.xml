@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:id="@+id/rootLayout"
+    android:orientation="horizontal"
     android:layout_weight="1"
     android:layout_width="0dp"
+    android:gravity="center"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp"
     android:layout_height="match_parent"
     android:layout_gravity="center">
     
@@ -13,7 +17,8 @@
 
     <TextView
         android:id="@+id/tvNavText"
-        android:textSize="14sp"
+        android:textSize="8sp"
+        android:layout_marginStart="8dp"
         android:textColor="@color/primaryGreen"
         android:visibility="gone"
         android:layout_width="wrap_content"

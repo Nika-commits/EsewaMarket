@@ -21,11 +21,12 @@
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="64dp" >
 
         <include
             android:id="@+id/tabHome"
