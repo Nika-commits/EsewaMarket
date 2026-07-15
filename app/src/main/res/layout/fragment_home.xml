@@ -8,8 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.MainActivity"
-    android:background="@color/offWhiteBackground"
-    >
+    android:background="@color/offWhiteBackground">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

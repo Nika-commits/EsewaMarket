@@ -74,11 +74,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.top_bar, menu)
-        return true
-    }
-
     private fun replaceFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.fragmentContainer, fragment)
