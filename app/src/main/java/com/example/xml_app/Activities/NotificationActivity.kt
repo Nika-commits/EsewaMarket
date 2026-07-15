@@ -8,11 +8,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.xml_app.R
+import com.example.xml_app.databinding.ActivityNotificationBinding
+import com.example.xml_app.databinding.ItemIndicatorBinding
 
 class NotificationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_notification)
 
 
