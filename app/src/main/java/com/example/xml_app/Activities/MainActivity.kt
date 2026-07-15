@@ -1,30 +1,20 @@
 package com.example.xml_app.Activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.xml_app.Adapters.CategoryRecyclerViewAdapter
-import com.example.xml_app.Adapters.HeroViewPagerAdapter
 import com.example.xml_app.Fragments.Cart
 import com.example.xml_app.Fragments.Favourite
 import com.example.xml_app.Fragments.Home
 import com.example.xml_app.Fragments.More
-import com.example.xml_app.Models.Category
-import com.example.xml_app.Models.Hero
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ActivityMainBinding
 import com.example.xml_app.databinding.ItemNavigationBinding
-import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
     private var userName = "Pranish" + ","
@@ -42,17 +32,17 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.tabHome.ivNavIcon.setImageResource(R.drawable.icon)
+        binding.tabHome.ivNavIcon.setImageResource(R.drawable.ic_market)
         binding.tabHome.tvNavText.text = "Home"
 
         binding.tabCart.ivNavIcon.setImageResource(R.drawable.ic_cart)
         binding.tabCart.tvNavText.text = "Cart"
 
         binding.tabFavourites.ivNavIcon.setImageResource(R.drawable.ic_fav)
-        binding.tabHome.tvNavText.text = "Favourites"
+        binding.tabFavourites.tvNavText.text = "Favourites"
 
         binding.tabMore.ivNavIcon.setImageResource(R.drawable.ic_more)
-        binding.tabHome.tvNavText.text = "More"
+        binding.tabMore.tvNavText.text = "More"
 
         binding.tabHome.root.setOnClickListener {
             replaceFragment(homeFragment)
@@ -115,7 +105,6 @@ class MainActivity : AppCompatActivity() {
         selected.tvNavText.visibility = View.VISIBLE
         selected.ivNavIcon.setColorFilter(getColor(R.color.primaryGreen))
         selected.tvNavText.setTextColor(getColor(R.color.primaryGreen))
-        selected.rootLayout.setBackgroundColor(getColor(R.color.secondaryGreen))
-    }
+        selected.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)    }
 
 }
