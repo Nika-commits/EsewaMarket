@@ -30,6 +30,20 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        binding.tabHome.ivNavIcon.setImageResource(R.drawable.icon)
+        binding.tabHome.tvNavText.text = "Home"
+
+        binding.tabCart.ivNavIcon.setImageResource(R.drawable.ic_cart)
+        binding.tabCart.tvNavText.text = "Cart"
+
+        binding.tabFavourites.ivNavIcon.setImageResource(R.drawable.ic_fav)
+        binding.tabHome.tvNavText.text = "Favourites"
+
+        binding.tabMore.ivNavIcon.setImageResource(R.drawable.ic_more)
+        binding.tabHome.tvNavText.text = "More"
+
+
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
