@@ -2,7 +2,6 @@ package com.example.xml_app.Fragments
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -13,21 +12,24 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.Activities.NotificationActivity
 import com.example.xml_app.Adapters.CategoryRecyclerViewAdapter
+import com.example.xml_app.Adapters.FeaturedProductsAdapter
 import com.example.xml_app.Adapters.HeroViewPagerAdapter
 import com.example.xml_app.Models.Category
 import com.example.xml_app.Models.Hero
+import com.example.xml_app.Models.Product
 import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 class Home : Fragment() {
 
-    private var _binding : FragmentHomeBinding? = null
+    private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private val userName = "Pranish" + ","
@@ -51,38 +53,42 @@ class Home : Fragment() {
 
         setUpToolbarAndMenu()
         setupHeroPage()
-        setupCategories()
         setupSearchBox()
+        setupCategories()
+        setupFeaturedProducts()
     }
 
-    private fun setUpToolbarAndMenu(){
+    private fun setUpToolbarAndMenu() {
         val activity = requireActivity() as AppCompatActivity
         activity.setSupportActionBar(binding.toolbar)
         activity.supportActionBar?.setDisplayShowTitleEnabled(false)
 
         val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object: MenuProvider {
+        menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.top_bar, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId){
+                return when (menuItem.itemId) {
                     R.id.miAbout -> {
-                        Toast.makeText(requireContext(), "Clicked on About", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Clicked on About", Toast.LENGTH_SHORT)
+                            .show()
                         true
                     }
+
                     R.id.miNotification -> {
                         startActivity(Intent(requireContext(), NotificationActivity::class.java))
                         true
                     }
+
                     else -> false
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun setupHeroPage(){
+    private fun setupHeroPage() {
         val heroes = mutableListOf(
             Hero("Sale", R.drawable.hero1),
             Hero("Sale 2", R.drawable.hero2),
@@ -90,14 +96,14 @@ class Home : Fragment() {
         )
 
         binding.heroViewPager.adapter = HeroViewPagerAdapter(heroes)
-        TabLayoutMediator(binding.heroIndicator, binding.heroViewPager){tab, _ ->
+        TabLayoutMediator(binding.heroIndicator, binding.heroViewPager) { tab, _ ->
             tab.setCustomView(R.layout.item_indicator)
         }.attach()
 
         binding.tvUsername.text = userName
     }
 
-    private fun setupCategories(){
+    private fun setupCategories() {
         val categories = mutableListOf(
             Category(1, R.drawable.ic_shop_clothing, "Fashion"),
             Category(2, R.drawable.ic_shop_computer, "Electronic Device"),
@@ -109,7 +115,8 @@ class Home : Fragment() {
         )
 
         val categoryRv = binding.rvCategoryOptionsLayout.rvCategoryOptions
-        categoryRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        categoryRv.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         categoryRv.adapter = CategoryRecyclerViewAdapter(categories)
 
         binding.rvCategoryOptionsLayout.categorySection.tvHeaderTitle.text = "Categories"
@@ -118,7 +125,25 @@ class Home : Fragment() {
         }
     }
 
-    private fun setupSearchBox(){
+
+    private fun setupFeaturedProducts() {
+        val products = mutableListOf(
+            Product(1, "50 T-Shirt", R.drawable.tshirt, 200, "In Stock", "89Shop"),
+            Product(2, "Nike Air Monarch", R.drawable.nike_shoes, 8200, "In Stock", "Nike")
+        )
+
+        val productRv = binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts
+        productRv.layoutManager = GridLayoutManager(requireContext(), 2)
+        productRv.adapter = FeaturedProductsAdapter(products)
+
+        binding.rvFeaturedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
+            "Featured Products"
+        binding.rvFeaturedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Featured Products Clicked", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupSearchBox() {
         binding.searchBox.setEndIconOnClickListener {
             Toast.makeText(requireContext(), "Filters Clicked", Toast.LENGTH_SHORT).show()
         }
