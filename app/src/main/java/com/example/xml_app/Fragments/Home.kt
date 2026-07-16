@@ -2,6 +2,7 @@ package com.example.xml_app.Fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -14,25 +15,31 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.Activities.NotificationActivity
 import com.example.xml_app.Adapters.CategoryRecyclerViewAdapter
 import com.example.xml_app.Adapters.FeaturedProductsAdapter
 import com.example.xml_app.Adapters.HeroViewPagerAdapter
+import com.example.xml_app.Api.RetrofitInstance
 import com.example.xml_app.Models.Category
 import com.example.xml_app.Models.Hero
-import com.example.xml_app.Models.Product
 import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import okio.IOException
+import retrofit2.HttpException
+
+
+const val TAG = "HOME"
 
 class Home : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-
     private val userName = "Pranish" + ","
+    private lateinit var productAdapter: FeaturedProductsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,14 +134,33 @@ class Home : Fragment() {
 
 
     private fun setupFeaturedProducts() {
-        val products = mutableListOf(
-            Product(1, "50 T-Shirt", R.drawable.tshirt, 200, "In Stock", "89Shop"),
-            Product(2, "Nike Air Monarch", R.drawable.nike_shoes, 8200, "In Stock", "Nike")
-        )
+        //        val products = mutableListOf(
+//            Product(1, "50 T-Shirt", R.drawable.tshirt, 200, "In Stock", "89Shop"),
+//            Product(2, "Nike Air Monarch", R.drawable.nike_shoes, 8200, "In Stock", "Nike")
+//        )
+//        val productRv = binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts
+//        productRv.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        val productRv = binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts
-        productRv.layoutManager = GridLayoutManager(requireContext(), 2)
-        productRv.adapter = FeaturedProductsAdapter(products)
+        setupRecyclerView()
+
+        lifecycleScope.launchWhenCreated {
+            val response = try {
+                RetrofitInstance.api.getFeaturedProducts()
+            } catch (e: IOException) {
+                Log.e(TAG, e.message ?: "Internet issue")
+                return@launchWhenCreated
+            } catch (e: HttpException) {
+                Log.e(TAG, e.message ?: "Http Error")
+                return@launchWhenCreated
+            }
+
+            if (response.isSuccessful && response.body() != null) {
+                productAdapter.products = response.body()!!
+            } else {
+                Log.e(TAG, "Http Error")
+            }
+        }
+
 
         binding.rvFeaturedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
             "Featured Products"
@@ -142,6 +168,14 @@ class Home : Fragment() {
             Toast.makeText(requireContext(), "Featured Products Clicked", Toast.LENGTH_SHORT).show()
         }
     }
+
+    fun setupRecyclerView() =
+        binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts.apply {
+            productAdapter = FeaturedProductsAdapter()
+            adapter = productAdapter
+            layoutManager = GridLayoutManager(requireContext(), 2)
+
+        }
 
     private fun setupSearchBox() {
         binding.searchBox.setEndIconOnClickListener {

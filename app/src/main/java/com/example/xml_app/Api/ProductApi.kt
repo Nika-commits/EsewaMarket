@@ -8,10 +8,10 @@ import retrofit2.http.POST
 
 interface ProductApi {
 
-    @GET("/product")
+    @GET("api/product")
     suspend fun getFeaturedProducts(): Response<List<Product>>
 
-    @POST("/product")
+    @POST("api/product")
     fun postProduct(@Body product: Product)
 
 }

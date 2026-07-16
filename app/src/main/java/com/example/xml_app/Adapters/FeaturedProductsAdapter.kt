@@ -1,22 +1,37 @@
 package com.example.xml_app.Adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.Models.Product
-import com.example.xml_app.R
-import com.example.xml_app.databinding.ItemIndicatorBinding
 import com.example.xml_app.databinding.ItemProductBinding
 
 //import com.example.xml_app.databinding.ItemProductCardBinding
 
 class FeaturedProductsAdapter(
-    val featuredProducts: List<Product>
+//    val featuredProducts: List<Product>
 ) : RecyclerView.Adapter<FeaturedProductsAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
 
+    private val diffCallback = object : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val differ = AsyncListDiffer(this, diffCallback)
+    var products: List<Product>
+        get() = differ.currentList
+        set(value) {
+            differ.submitList(value)
+        }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -32,17 +47,17 @@ class FeaturedProductsAdapter(
         holder: ViewHolder,
         position: Int
     ) {
-        val product = featuredProducts[position]
         holder.apply {
+            val product = products[position]
             binding.tvProductName.text = product.name
-            binding.ivProductImage.setImageResource(product.imageUrl)
+//            binding.ivProductImage.setImageResource(product.imageUrl)
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status
         }
     }
 
     override fun getItemCount(): Int {
-        return featuredProducts.size
+        return products.size
     }
 
 }
