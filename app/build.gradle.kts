@@ -37,6 +37,9 @@ android {
 }
 
 dependencies {
+//    implementation("com.squareup.retrofit2:retrofit:3.1.0-SNAPSHOT")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
@@ -45,4 +48,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
 }
