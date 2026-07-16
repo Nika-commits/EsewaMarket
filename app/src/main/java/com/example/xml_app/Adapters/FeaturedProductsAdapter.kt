@@ -5,7 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.xml_app.Models.Product
+import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemProductBinding
 
 //import com.example.xml_app.databinding.ItemProductCardBinding
@@ -53,6 +55,11 @@ class FeaturedProductsAdapter(
 //            binding.ivProductImage.setImageResource(product.imageUrl)
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status
+            Glide.with(itemView)
+                .load(product.imageUrl)
+                .placeholder(R.drawable.tshirt)
+                .error(R.drawable.resource_default)
+                .into(binding.ivProductImage)
         }
     }
 
