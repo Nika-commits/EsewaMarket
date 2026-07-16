@@ -1,9 +1,7 @@
 package com.example.xml_app.Activities
 
 import android.os.Bundle
-import android.view.Menu
 import android.view.View
-import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -74,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment){
+    private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.fragmentContainer, fragment)
             commit()
@@ -92,19 +90,16 @@ class MainActivity : AppCompatActivity() {
         )
 
         tabs.forEach {
-            val params = it.rootLayout.layoutParams as LinearLayout.LayoutParams
             it.tvNavText.visibility = View.GONE
             it.ivNavIcon.setColorFilter(getColor(R.color.textDark))
             it.tvNavText.setTextColor(getColor(R.color.textDark))
             it.rootLayout.setBackgroundColor(getColor(android.R.color.transparent))
         }
 
-        val params = selected.rootLayout.layoutParams as LinearLayout.LayoutParams
-        params.weight = 1.6f
-        selected.rootLayout.layoutParams = params
         selected.tvNavText.visibility = View.VISIBLE
         selected.ivNavIcon.setColorFilter(getColor(R.color.primaryGreen))
         selected.tvNavText.setTextColor(getColor(R.color.primaryGreen))
-        selected.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)    }
+        selected.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
+    }
 
 }
