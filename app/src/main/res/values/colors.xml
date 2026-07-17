@@ -12,6 +12,7 @@
     <color name="textLight">#E3E4EB</color>
     <color name="categoryBackground">#E1FDD9</color>
 
+    <color name="textDarkSecondary">#8E90A6</color>
     <color name="textDark">#263238</color>
 
 </resources>
