@@ -20,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.Activities.NotificationActivity
+import com.example.xml_app.Activities.ProductDetailActivity
 import com.example.xml_app.Adapters.CategoryRecyclerViewAdapter
 import com.example.xml_app.Adapters.FeaturedProductsAdapter
 import com.example.xml_app.Adapters.HeroViewPagerAdapter
@@ -164,7 +165,10 @@ class Home : Fragment() {
     fun setupRecyclerView() =
         binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts.apply {
             productAdapter = FeaturedProductsAdapter { p ->
-                Toast.makeText(requireContext(), p.name, Toast.LENGTH_SHORT).show()
+                Intent(requireContext(), ProductDetailActivity::class.java).also {
+                    it.putExtra("id", p.id)
+                    startActivity(it)
+                }
             }
             adapter = productAdapter
             layoutManager = GridLayoutManager(requireContext(), 2)
