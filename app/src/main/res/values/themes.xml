@@ -1,8 +1,8 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.XMLApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        Customize your light theme here.
+        <item name="android:colorPrimary">@color/offWhiteBackground</item>
     </style>
 
     <style name="Theme.XMLApp" parent="Base.Theme.XMLApp" />

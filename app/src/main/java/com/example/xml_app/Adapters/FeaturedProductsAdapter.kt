@@ -13,7 +13,7 @@ import com.example.xml_app.databinding.ItemProductBinding
 //import com.example.xml_app.databinding.ItemProductCardBinding
 
 class FeaturedProductsAdapter(
-//    val featuredProducts: List<Product>
+    val onProductClick: (Product) -> Unit
 ) : RecyclerView.Adapter<FeaturedProductsAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
@@ -55,12 +55,19 @@ class FeaturedProductsAdapter(
 //            binding.ivProductImage.setImageResource(product.imageUrl)
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status
+
+            binding.root.setOnClickListener {
+                onProductClick(product)
+            }
+
             Glide.with(itemView)
                 .load(product.imageUrl)
                 .placeholder(R.drawable.tshirt)
                 .error(R.drawable.resource_default)
                 .into(binding.ivProductImage)
         }
+
+
     }
 
     override fun getItemCount(): Int {

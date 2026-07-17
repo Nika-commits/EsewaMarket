@@ -2,7 +2,6 @@ package com.example.xml_app.Fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -16,23 +15,21 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.Activities.NotificationActivity
 import com.example.xml_app.Adapters.CategoryRecyclerViewAdapter
 import com.example.xml_app.Adapters.FeaturedProductsAdapter
 import com.example.xml_app.Adapters.HeroViewPagerAdapter
-import com.example.xml_app.Api.RetrofitInstance
 import com.example.xml_app.Models.Category
 import com.example.xml_app.Models.Hero
 import com.example.xml_app.R
 import com.example.xml_app.Utils.SpacingItemDecoration
+import com.example.xml_app.ViewModel.HomeViewModel
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
-import okio.IOException
-import retrofit2.HttpException
 
 
 const val TAG = "HOME"
@@ -41,6 +38,7 @@ class Home : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: HomeViewModel by viewModels()
     private val userName = "Pranish" + ","
     private lateinit var productAdapter: FeaturedProductsAdapter
 
@@ -60,7 +58,7 @@ class Home : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        applyEdgeToEdgeInsets()
+        applyEdgeToEdgeInsets()
         setUpToolbarAndMenu()
         setupHeroPage()
         setupSearchBox()
@@ -70,14 +68,9 @@ class Home : Fragment() {
 
 
     private fun applyEdgeToEdgeInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(
-                view.paddingLeft,
-                view.paddingTop,
-                view.paddingRight,
-                view.paddingBottom
-            )
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
     }
@@ -155,24 +148,11 @@ class Home : Fragment() {
     private fun setupFeaturedProducts() {
         setupRecyclerView()
 
-        lifecycleScope.launchWhenCreated {
-            val response = try {
-                RetrofitInstance.api.getFeaturedProducts()
-            } catch (e: IOException) {
-                Log.e(TAG, e.message ?: "Internet issue")
-                return@launchWhenCreated
-            } catch (e: HttpException) {
-                Log.e(TAG, e.message ?: "Http Error")
-                return@launchWhenCreated
-            }
-
-            if (response.isSuccessful && response.body() != null) {
-                productAdapter.products = response.body()!!
-            } else {
-                Log.e(TAG, "Http Error")
-            }
+        viewModel.featuredProducts.observe(viewLifecycleOwner) { products ->
+            productAdapter.products = products
         }
 
+        viewModel.getFeaturedProduct()
 
         binding.rvFeaturedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
             "Featured Products"
@@ -183,7 +163,9 @@ class Home : Fragment() {
 
     fun setupRecyclerView() =
         binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts.apply {
-            productAdapter = FeaturedProductsAdapter()
+            productAdapter = FeaturedProductsAdapter { p ->
+                Toast.makeText(requireContext(), p.name, Toast.LENGTH_SHORT).show()
+            }
             adapter = productAdapter
             layoutManager = GridLayoutManager(requireContext(), 2)
             val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)

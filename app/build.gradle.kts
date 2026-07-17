@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
     //    implementation("com.squareup.retrofit2:retrofit:3.1.0-SNAPSHOT")
