@@ -5,6 +5,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ProductApi {
 
@@ -12,6 +13,9 @@ interface ProductApi {
     suspend fun getFeaturedProducts(): Response<List<Product>>
 
     @POST("api/product")
-    fun postProduct(@Body product: Product)
+    suspend fun postProduct(@Body product: Product)
+
+    @GET("/api/product/{id}")
+    suspend fun getProduct(@Path("id") id: Int): Response<Product>
 
 }

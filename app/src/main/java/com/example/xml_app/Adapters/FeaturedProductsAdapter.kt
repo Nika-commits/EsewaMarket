@@ -61,7 +61,7 @@ class FeaturedProductsAdapter(
             }
 
             Glide.with(itemView)
-                .load(product.imageUrl)
+                .load(product.imageUrls[0])
                 .placeholder(R.drawable.tshirt)
                 .error(R.drawable.resource_default)
                 .into(binding.ivProductImage)

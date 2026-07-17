@@ -4,4 +4,6 @@ import com.example.xml_app.Api.RetrofitInstance
 
 class ProductRepository {
     suspend fun getFeaturedProducts() = RetrofitInstance.api.getFeaturedProducts()
+
+    suspend fun getProduct(id: Int) = RetrofitInstance.api.getProduct(id)
 }
