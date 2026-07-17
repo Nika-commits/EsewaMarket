@@ -11,13 +11,14 @@ import com.example.xml_app.R
 
 class CategoryRecyclerViewAdapter(
     val categories: List<Category>,
-//    private val onCategoryClick: (Category) -> Unit
-): RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>() {
+    val onClick: (Category) -> Unit
+) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category_box, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_category_box, parent, false)
         return ViewHolder(view)
     }
 
@@ -28,18 +29,18 @@ class CategoryRecyclerViewAdapter(
         val category = categories[position]
         holder.categoryName.text = category.categoryName
         holder.icon.setImageResource(category.categroyIcon)
+        holder.itemView.setOnClickListener {
+            onClick(category)
+        }
     }
 
     override fun getItemCount(): Int {
         return categories.size
     }
 
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val icon = itemView.findViewById<ImageView>(R.id.ivCategoryIcon)
         val categoryName = itemView.findViewById<TextView>(R.id.tvCategoryName)
 
-        fun bind(category: Category){
-//            categoryName.
-        }
     }
 }

@@ -141,7 +141,9 @@ class Home : Fragment() {
         val categoryRv = binding.rvCategoryOptionsLayout.rvCategoryOptions
         categoryRv.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        categoryRv.adapter = CategoryRecyclerViewAdapter(categories)
+        categoryRv.adapter = CategoryRecyclerViewAdapter(categories) { category ->
+            Toast.makeText(requireContext(), category.categoryName, Toast.LENGTH_SHORT).show()
+        }
 
         binding.rvCategoryOptionsLayout.categorySection.tvHeaderTitle.text = "Categories"
         binding.rvCategoryOptionsLayout.categorySection.ibHeaderButton.setOnClickListener {
