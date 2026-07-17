@@ -4,7 +4,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,7 +11,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.XMLApp">
+        android:theme="@style/Theme.XMLApp"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true"
@@ -26,8 +26,12 @@
         <activity
             android:name=".Activities.NotificationActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:parentActivityName=".Activities.MainActivity" />
+            android:parentActivityName=".Activities.MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Activities.ProductDetailActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

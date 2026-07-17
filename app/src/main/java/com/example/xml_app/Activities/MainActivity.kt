@@ -98,15 +98,43 @@ class MainActivity : AppCompatActivity() {
 
         tabs.forEach {
             it.tvNavText.visibility = View.GONE
+//            it.tvNavText.animate()
+//                .alpha(0f)
+//                .setDuration(150)
+//                .withEndAction {
+//                    it.tvNavText.visibility = View.GONE
+//                }
+//                .start()
             it.ivNavIcon.setColorFilter(getColor(R.color.textDark))
             it.tvNavText.setTextColor(getColor(R.color.textDark))
             it.rootLayout.setBackgroundColor(getColor(android.R.color.transparent))
+
+            it.ivNavIcon.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(200)
+                .start()
         }
 
+//        selected.tvNavText.apply {
+//            alpha = 0f
+//            visibility = View.VISIBLE
+//
+//            animate()
+//                .alpha(1f)
+//                .setDuration(200)
+//                .start()
+//        }
         selected.tvNavText.visibility = View.VISIBLE
         selected.ivNavIcon.setColorFilter(getColor(R.color.primaryGreen))
         selected.tvNavText.setTextColor(getColor(R.color.primaryGreen))
         selected.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
+
+        selected.ivNavIcon.animate()
+            .scaleX(1.15f)
+            .scaleY(1.15f)
+            .setDuration(200)
+            .start()
     }
 
 }
