@@ -8,8 +8,8 @@ data class Product(
     val price: Int,
     val status: String,
     val brand: String,
-    val colors: Colors,
-    val sizes: List<String>
+    val colors: List<Color>,
+    val sizes: List<String>?
 )
 
-data class Colors(val name: String, val hexCode: String)
+data class Color(val name: String, val hexCode: String)
