@@ -28,6 +28,7 @@ import com.example.xml_app.Api.RetrofitInstance
 import com.example.xml_app.Models.Category
 import com.example.xml_app.Models.Hero
 import com.example.xml_app.R
+import com.example.xml_app.Utils.SpacingItemDecoration
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import okio.IOException
@@ -150,13 +151,6 @@ class Home : Fragment() {
 
 
     private fun setupFeaturedProducts() {
-        //        val products = mutableListOf(
-//            Product(1, "50 T-Shirt", R.drawable.tshirt, 200, "In Stock", "89Shop"),
-//            Product(2, "Nike Air Monarch", R.drawable.nike_shoes, 8200, "In Stock", "Nike")
-//        )
-//        val productRv = binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts
-//        productRv.layoutManager = GridLayoutManager(requireContext(), 2)
-
         setupRecyclerView()
 
         lifecycleScope.launchWhenCreated {
@@ -190,7 +184,10 @@ class Home : Fragment() {
             productAdapter = FeaturedProductsAdapter()
             adapter = productAdapter
             layoutManager = GridLayoutManager(requireContext(), 2)
-
+            val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
+            addItemDecoration(
+                SpacingItemDecoration(spacing)
+            )
         }
 
     private fun setupSearchBox() {
