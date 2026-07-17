@@ -27,9 +27,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
 
         binding.tabHome.ivNavIcon.setImageResource(R.drawable.ic_market)
         binding.tabHome.tvNavText.text = "Home"
@@ -43,6 +45,10 @@ class MainActivity : AppCompatActivity() {
         binding.tabMore.ivNavIcon.setImageResource(R.drawable.ic_more)
         binding.tabMore.tvNavText.text = "More"
 
+        if (savedInstanceState == null) {
+            replaceFragment(homeFragment)
+            setSelectedTab(binding.tabHome)
+        }
         binding.tabHome.root.setOnClickListener {
             replaceFragment(homeFragment)
             setSelectedTab(binding.tabHome)
