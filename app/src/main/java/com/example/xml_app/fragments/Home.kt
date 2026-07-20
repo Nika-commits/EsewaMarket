@@ -1,5 +1,6 @@
 package com.example.xml_app.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -31,11 +33,32 @@ import com.example.xml_app.models.Hero
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
+import java.io.Serializable
 
 
 const val TAG = "HOME"
 
+
+data class ProductDetailActivityArgs(
+    val id: Int
+) : Serializable
+
 class Home : Fragment() {
+    companion object {
+        const val ARGS_RESPONSE = "ARGS_RESPONSE"
+
+        fun startActivity(
+            context: Context,
+            resultLauncher: ActivityResultLauncher<Intent>,
+            args: ProductDetailActivityArgs
+        ) {
+            resultLauncher.launch(
+                Intent(context, ProductDetailActivity::class.java).apply {
+                    putExtra(ARGS_RESPONSE, args)
+                }
+            )
+        }
+    }
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -47,6 +70,7 @@ class Home : Fragment() {
         super.onCreate(savedInstanceState)
 
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -168,6 +192,7 @@ class Home : Fragment() {
                 Intent(requireContext(), ProductDetailActivity::class.java).also {
                     it.putExtra("id", p.id)
                     startActivity(it)
+//                startActivity(requireContext(), product)
                 }
             }
             adapter = productAdapter
