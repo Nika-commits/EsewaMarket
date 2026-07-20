@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView android:id="@+id/cvProductCard"
     android:layout_height="278dp"
-    android:layout_width="168dp"
+    android:layout_width="match_parent"
     app:cardCornerRadius="16dp"
     app:strokeWidth="0dp"
     android:backgroundTint="@color/surface"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="12dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="14dp"
             app:layout_constraintTop_toBottomOf="@id/flImageContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">

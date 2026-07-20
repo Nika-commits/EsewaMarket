@@ -14,8 +14,15 @@ class SpacingItemDecoration(
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        outRect.left = spacing
-        outRect.right = spacing
+        val position = parent.getChildAdapterPosition(view)
+
+        if (position % 2 == 0) {
+            outRect.left = spacing
+            outRect.right = spacing / 2
+        } else {
+            outRect.left = spacing / 2
+            outRect.right = spacing
+        }
         outRect.bottom = spacing
         outRect.top = spacing
     }

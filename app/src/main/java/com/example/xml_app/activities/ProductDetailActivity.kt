@@ -37,6 +37,11 @@ class ProductDetailActivity : AppCompatActivity() {
             binding.tvProductName.text = product.name
             binding.tvProductPrice.text = "Rs. " + product.price.toFloat().toString()
             binding.tvProductStatus.text = product.status
+
+            binding.addToCartContainer.tvAddToCartProductName.text =
+                product.name + " - " + product.brand
+            binding.addToCartContainer.tvAddToCartPrice.text = product.price.toFloat().toString()
+
         }
         viewModel.getProduct(productId)
 
