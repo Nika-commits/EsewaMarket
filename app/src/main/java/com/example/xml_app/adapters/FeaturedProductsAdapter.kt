@@ -1,4 +1,4 @@
-package com.example.xml_app.Adapters
+package com.example.xml_app.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.xml_app.Models.Product
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemProductBinding
+import com.example.xml_app.models.Product
 
 //import com.example.xml_app.databinding.ItemProductCardBinding
 

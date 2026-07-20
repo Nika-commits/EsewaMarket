@@ -1,4 +1,4 @@
-package com.example.xml_app.Utils
+package com.example.xml_app.utils
 
 import android.graphics.Rect
 import android.view.View

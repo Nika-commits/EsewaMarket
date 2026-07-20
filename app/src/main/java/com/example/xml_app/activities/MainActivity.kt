@@ -1,4 +1,4 @@
-package com.example.xml_app.Activities
+package com.example.xml_app.activities
 
 import android.os.Bundle
 import android.view.View
@@ -7,13 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.example.xml_app.Fragments.Cart
-import com.example.xml_app.Fragments.Favourite
-import com.example.xml_app.Fragments.Home
-import com.example.xml_app.Fragments.More
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ActivityMainBinding
 import com.example.xml_app.databinding.ItemNavigationBinding
+import com.example.xml_app.fragments.Cart
+import com.example.xml_app.fragments.Favourite
+import com.example.xml_app.fragments.Home
+import com.example.xml_app.fragments.More
 
 class MainActivity : AppCompatActivity() {
     private var userName = "Pranish" + ","
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, 0, 0, systemBars.bottom)
+            v.setPadding(0, 0, 0, 0)
             insets
         }
     }

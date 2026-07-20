@@ -1,4 +1,4 @@
-package com.example.xml_app.Activities
+package com.example.xml_app.activities
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -6,9 +6,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.xml_app.Adapters.ProductCarouselAdapter
-import com.example.xml_app.ViewModel.ProductDetailsViewModel
+import com.example.xml_app.adapters.ProductCarouselAdapter
 import com.example.xml_app.databinding.ActivityProductDetailBinding
+import com.example.xml_app.viewModel.ProductDetailsViewModel
 
 class ProductDetailActivity : AppCompatActivity() {
 

@@ -11,7 +11,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".Activities.MainActivity"
+        tools:context=".activities.MainActivity"
         android:background="@color/offWhiteBackground">
 
         <androidx.appcompat.widget.Toolbar

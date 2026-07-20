@@ -1,4 +1,4 @@
-package com.example.xml_app.Models
+package com.example.xml_app.models
 
 data class Product(
     val id: Int,

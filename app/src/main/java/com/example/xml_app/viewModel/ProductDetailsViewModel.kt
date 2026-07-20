@@ -1,11 +1,11 @@
-package com.example.xml_app.ViewModel
+package com.example.xml_app.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.xml_app.Models.Product
-import com.example.xml_app.Repository.ProductRepository
+import com.example.xml_app.models.Product
+import com.example.xml_app.repository.ProductRepository
 import kotlinx.coroutines.launch
 
 class ProductDetailsViewModel : ViewModel() {

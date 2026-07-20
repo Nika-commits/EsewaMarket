@@ -1,4 +1,4 @@
-package com.example.xml_app.Activities
+package com.example.xml_app.activities
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -9,7 +9,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ActivityNotificationBinding
-import com.example.xml_app.databinding.ItemIndicatorBinding
 
 class NotificationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

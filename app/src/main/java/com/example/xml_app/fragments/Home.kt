@@ -1,4 +1,4 @@
-package com.example.xml_app.Fragments
+package com.example.xml_app.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -19,17 +19,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.xml_app.Activities.NotificationActivity
-import com.example.xml_app.Activities.ProductDetailActivity
-import com.example.xml_app.Adapters.CategoryRecyclerViewAdapter
-import com.example.xml_app.Adapters.FeaturedProductsAdapter
-import com.example.xml_app.Adapters.HeroViewPagerAdapter
-import com.example.xml_app.Models.Category
-import com.example.xml_app.Models.Hero
 import com.example.xml_app.R
-import com.example.xml_app.Utils.SpacingItemDecoration
-import com.example.xml_app.ViewModel.HomeViewModel
+import com.example.xml_app.activities.NotificationActivity
+import com.example.xml_app.activities.ProductDetailActivity
+import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
+import com.example.xml_app.adapters.FeaturedProductsAdapter
+import com.example.xml_app.adapters.HeroViewPagerAdapter
 import com.example.xml_app.databinding.FragmentHomeBinding
+import com.example.xml_app.models.Category
+import com.example.xml_app.models.Hero
+import com.example.xml_app.utils.SpacingItemDecoration
+import com.example.xml_app.viewModel.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 
 

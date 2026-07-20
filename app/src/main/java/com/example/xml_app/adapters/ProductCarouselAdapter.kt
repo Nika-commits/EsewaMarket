@@ -1,4 +1,4 @@
-package com.example.xml_app.Adapters
+package com.example.xml_app.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

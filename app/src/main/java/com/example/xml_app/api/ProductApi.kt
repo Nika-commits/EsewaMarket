@@ -1,6 +1,6 @@
-package com.example.xml_app.Api
+package com.example.xml_app.api
 
-import com.example.xml_app.Models.Product
+import com.example.xml_app.models.Product
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

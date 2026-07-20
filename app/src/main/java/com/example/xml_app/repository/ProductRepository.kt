@@ -1,6 +1,6 @@
-package com.example.xml_app.Repository
+package com.example.xml_app.repository
 
-import com.example.xml_app.Api.RetrofitInstance
+import com.example.xml_app.api.RetrofitInstance
 
 class ProductRepository {
     suspend fun getFeaturedProducts() = RetrofitInstance.api.getFeaturedProducts()
