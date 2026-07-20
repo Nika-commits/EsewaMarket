@@ -8,6 +8,7 @@
     android:background="@color/offWhiteBackground"
     tools:context=".activities.ProductDetailActivity">
 
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/productDetailScrollView"
         android:layout_width="0dp"
@@ -88,6 +89,32 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:elevation="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/outline_arrow_back_24" />
+
+    <ImageButton
+        android:id="@+id/btnCart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+
+        android:elevation="8dp"
+        android:background="@drawable/bg_offwhite_rounded"
+        android:padding="8dp"
+        android:src="@drawable/ic_cart" />
 
     <include
         android:id="@+id/addToCartContainer"
