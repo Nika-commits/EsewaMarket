@@ -72,14 +72,17 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent" />
 
+
                 <TextView
                     android:id="@+id/tvProductStatus"
                     android:fontFamily="@font/source_sans_regular"
                     android:textSize="10sp"
+                    android:textColor="@color/textDark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintRight_toLeftOf="@id/tvDiscountedPrice"
+                    app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 

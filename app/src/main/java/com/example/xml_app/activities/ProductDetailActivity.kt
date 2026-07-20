@@ -36,7 +36,7 @@ class ProductDetailActivity : AppCompatActivity() {
             carouselAdapter.imageUrls = product.imageUrls
             binding.tvProductName.text = product.name
             binding.tvProductPrice.text = "Rs. " + product.price.toFloat().toString()
-            binding.tvProductStatus.text = "Availability" + product.status
+            binding.tvProductStatus.text = product.status
         }
         viewModel.getProduct(productId)
 
