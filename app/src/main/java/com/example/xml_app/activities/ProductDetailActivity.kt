@@ -31,10 +31,13 @@ class ProductDetailActivity : AppCompatActivity() {
         carouselAdapter = ProductCarouselAdapter {}
         binding.vpProductViewPager.adapter = carouselAdapter
         val productId = intent.getIntExtra("id", 0)
+
         viewModel.product.observe(this) { product ->
             carouselAdapter.imageUrls = product.imageUrls
+            binding.tvProductName.text = product.name
+            binding.tvProductPrice.text = "Rs. " + product.price.toFloat().toString()
+            binding.tvProductStatus.text = "Availability" + product.status
         }
-
         viewModel.getProduct(productId)
 
     }

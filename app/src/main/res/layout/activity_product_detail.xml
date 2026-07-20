@@ -20,6 +20,7 @@
         <LinearLayout
             android:id="@+id/productDetailContainer"
             android:layout_width="match_parent"
+            android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -38,31 +39,43 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ProductTitleAndPrice"
                 android:layout_width="match_parent"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="16dp"
                 android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/tvProductName"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/source_sans_semibold"
+
+                    android:textColor="@color/textDark"
+
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 <TextView
                     android:id="@+id/tvProductPrice"
+                    android:textSize="24sp"
+                    android:textColor="@color/textDark"
+                    android:fontFamily="@font/source_sans_regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/tvProductName"
-                    app:layout_constraintRight_toRightOf="parent" />
+                    app:layout_constraintLeft_toLeftOf="parent" />
 
                 <TextView
                     android:id="@+id/tvDiscountedPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent" />
+                    app:layout_constraintLeft_toLeftOf="parent" />
 
                 <TextView
                     android:id="@+id/tvProductStatus"
+                    android:fontFamily="@font/source_sans_regular"
+                    android:textSize="10sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintRight_toLeftOf="@id/tvDiscountedPrice"
