@@ -37,10 +37,17 @@ android {
 }
 
 dependencies {
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
+
+    implementation("androidx.datastore:datastore:1.2.1")
+
+    implementation("androidx.datastore:datastore-core:1.2.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("androidx.datastore:datastore-preferences-core:1.2.1")
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
-    //    implementation("com.squareup.retrofit2:retrofit:3.1.0-SNAPSHOT")
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.androidx.activity.ktx)

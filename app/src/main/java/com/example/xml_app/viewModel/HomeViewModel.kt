@@ -9,17 +9,18 @@ import com.example.xml_app.repository.ProductRepository
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
-
     private val repository = ProductRepository()
     private val _featuredProducts = MutableLiveData<List<Product>>()
-
     val featuredProducts: LiveData<List<Product>> = _featuredProducts
 
     fun getFeaturedProduct() {
         viewModelScope.launch {
-            val response = repository.getFeaturedProducts()
-            if (response.isSuccessful) {
-                _featuredProducts.value = response.body()
+            try {
+                val response = repository.getFeaturedProducts()
+                if (response.isSuccessful) {
+                    _featuredProducts.value = response.body()
+                }
+            } catch (e: Exception) {
             }
         }
     }

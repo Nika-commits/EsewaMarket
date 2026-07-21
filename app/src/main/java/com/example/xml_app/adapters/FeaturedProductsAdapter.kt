@@ -1,7 +1,9 @@
 package com.example.xml_app.adapters
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -9,11 +11,13 @@ import com.bumptech.glide.Glide
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemProductBinding
 import com.example.xml_app.models.Product
+import com.example.xml_app.models.ProductState
 
 //import com.example.xml_app.databinding.ItemProductCardBinding
 
 class FeaturedProductsAdapter(
-    val onProductClick: (Product) -> Unit
+    val onProductClick: (Product) -> Unit,
+    val onFavouriteClick: (Product) -> Unit
 ) : RecyclerView.Adapter<FeaturedProductsAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
@@ -35,6 +39,8 @@ class FeaturedProductsAdapter(
             differ.submitList(value)
         }
 
+    var productStates: Map<Int, ProductState> = emptyMap()
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -51,13 +57,27 @@ class FeaturedProductsAdapter(
     ) {
         holder.apply {
             val product = products[position]
+            val state = productStates[product.id] ?: ProductState()
+
+            if (state.isFavourite) {
+                binding.ibFavourites.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.primaryGreen
+                        )
+                    )
+            }
             binding.tvProductName.text = product.name
-//            binding.ivProductImage.setImageResource(product.imageUrl)
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status
 
             binding.root.setOnClickListener {
                 onProductClick(product)
+            }
+
+            binding.ibFavourites.setOnClickListener {
+                onFavouriteClick(product)
             }
 
             Glide.with(itemView)
