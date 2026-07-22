@@ -220,10 +220,6 @@ class Home : Fragment() {
                         it.putExtra("id", p.id)
                         startActivity(it)
                     }
-
-//                    Intent(requireContext(), ProductDetailActivity::class.java).also {
-//                        it.putExtra("id", p.id)
-//                        startActivity(it)
                 },
                 onFavouriteClick = { p ->
                     viewLifecycleOwner.lifecycleScope.launch {
@@ -273,19 +269,19 @@ class Home : Fragment() {
         return requireContext().productDataStore.data.first().products
     }
 
-    private suspend fun getProductState(productId: Int): ProductState {
-        val productStates = requireContext().productDataStore.data.first()
-        return productStates.products[productId] ?: ProductState()
-    }
-
-    private suspend fun updateProductState(productId: Int, state: ProductState) {
-        requireContext().productDataStore.updateData { current ->
-            val updatedProducts = current.products.toMutableMap()
-            updatedProducts[productId] = state
-
-            current.copy(products = updatedProducts)
-        }
-    }
+//    private suspend fun getProductState(productId: Int): ProductState {
+//        val productStates = requireContext().productDataStore.data.first()
+//        return productStates.products[productId] ?: ProductState()
+//    }
+//
+//    private suspend fun updateProductState(productId: Int, state: ProductState) {
+//        requireContext().productDataStore.updateData { current ->
+//            val updatedProducts = current.products.toMutableMap()
+//            updatedProducts[productId] = state
+//
+//            current.copy(products = updatedProducts)
+//        }
+//    }
 
 
 }
