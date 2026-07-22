@@ -3,6 +3,7 @@ package com.example.xml_app.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
@@ -36,7 +38,9 @@ import com.example.xml_app.models.ProductState
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.Serializable
 
@@ -65,6 +69,11 @@ class Home : Fragment() {
         }
     }
 
+    fun productStateFlow(): Flow<Map<Int, ProductState>> =
+        requireContext().productDataStore.data.map { products ->
+            products.products
+        }
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
@@ -74,7 +83,6 @@ class Home : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -94,6 +102,10 @@ class Home : Fragment() {
         setupSearchBox()
         setupCategories()
         setupFeaturedProducts()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            Log.d("Home", "Saved States = ${getAllProductState()}")
+        }
     }
 
 
@@ -184,15 +196,20 @@ class Home : Fragment() {
 
         viewModel.getFeaturedProduct()
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                productStateFlow().collect { states ->
+                    productAdapter.productStates = states
+                    productAdapter.notifyDataSetChanged()
+                }
+            }
+        }
         binding.rvFeaturedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
             "Featured Products"
         binding.rvFeaturedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
             Toast.makeText(requireContext(), "Featured Products Clicked", Toast.LENGTH_SHORT).show()
         }
 
-    }
-
-    private fun setupFavouritesButton() {
     }
 
     fun setupRecyclerView() =
@@ -210,17 +227,24 @@ class Home : Fragment() {
                 },
                 onFavouriteClick = { p ->
                     viewLifecycleOwner.lifecycleScope.launch {
-                        val currentState = getProductState(productId = p.id)
-                        val updatedState = currentState.copy(
-                            isFavourite = !currentState.isFavourite
-                        )
-
-                        updateProductState(
-                            p.id,
-                            updatedState
-                        )
-                        productAdapter.productStates = getAllProductState()
-                        productAdapter.notifyDataSetChanged()
+                        requireContext().productDataStore.updateData { current ->
+                            val updatedProducts = current.products.toMutableMap()
+                            val currentState = updatedProducts[p.id] ?: ProductState()
+                            updatedProducts[p.id] =
+                                currentState.copy(isFavourite = !currentState.isFavourite)
+                            current.copy(products = updatedProducts)
+                        }
+//                        val currentState = getProductState(productId = p.id)
+//                        val updatedState = currentState.copy(
+//                            isFavourite = !currentState.isFavourite
+//                        )
+//
+//                        updateProductState(
+//                            p.id,
+//                            updatedState
+//                        )
+//                        productAdapter.productStates = getAllProductState()
+//                        productAdapter.notifyDataSetChanged()
                     }
                 }
             )

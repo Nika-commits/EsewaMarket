@@ -1,6 +1,7 @@
 package com.example.xml_app.adapters
 
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -58,8 +59,10 @@ class FeaturedProductsAdapter(
         holder.apply {
             val product = products[position]
             val state = productStates[product.id] ?: ProductState()
+            Log.d("Adapter", "Product ${product.id} -> $state")
 
             if (state.isFavourite) {
+                binding.ibFavourites.setImageResource(R.drawable.ic_filled_favourite)
                 binding.ibFavourites.imageTintList =
                     ColorStateList.valueOf(
                         ContextCompat.getColor(
@@ -67,7 +70,16 @@ class FeaturedProductsAdapter(
                             R.color.primaryGreen
                         )
                     )
+            } else {
+                binding.ibFavourites.setImageResource(R.drawable.ic_fav)
+                binding.ibFavourites.imageTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        binding.root.context,
+                        R.color.lightGrey
+                    )
+                )
             }
+
             binding.tvProductName.text = product.name
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status

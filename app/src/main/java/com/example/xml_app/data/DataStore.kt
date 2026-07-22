@@ -10,3 +10,4 @@ val Context.productDataStore: DataStore<ProductStates> by dataStore(
     fileName = "product_state.json",
     serializer = ProductSerializer
 )
+
