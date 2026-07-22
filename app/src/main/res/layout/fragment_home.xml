@@ -133,7 +133,10 @@
             app:cursorColor="@color/lightGrey"
             app:boxBackgroundMode="filled"
             app:boxBackgroundColor="@color/surface"
-            app:boxStrokeWidth="0dp">
+            app:boxStrokeWidth="0dp"
+            android:pointerIcon="text"
+            app:boxStrokeWidthFocused="0dp"
+            app:boxStrokeColor="@color/primaryGreen">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etSearch"

@@ -281,6 +281,7 @@ class Home : Fragment() {
         return requireContext().productDataStore.data.first().products
     }
 
+
 //    private suspend fun getProductState(productId: Int): ProductState {
 //        val productStates = requireContext().productDataStore.data.first()
 //        return productStates.products[productId] ?: ProductState()
@@ -294,6 +295,7 @@ class Home : Fragment() {
 //            current.copy(products = updatedProducts)
 //        }
 //    }
+
 
 
 }
