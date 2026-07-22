@@ -151,6 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:src="@drawable/ic_minus"
                 android:background="@drawable/bg_cart_minus_background" />
 
             <TextView
@@ -161,13 +162,14 @@
                 android:background="@color/primaryGreen"
                 android:fontFamily="@font/source_sans_semibold"
                 android:textColor="@color/surface"
-                android:layout_gravity="center" />
+                android:textAlignment="center" />
 
             <ImageButton
                 android:id="@+id/ibCartIncrement"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:src="@drawable/ic_plus"
                 android:background="@drawable/bg_cart_plus_background" />
         </LinearLayout>
 
