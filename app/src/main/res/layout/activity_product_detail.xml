@@ -25,17 +25,35 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
             <FrameLayout
+                android:id="@+id/imageContainer"
                 android:layout_width="match_parent"
-                android:layout_height="480dp">
+                android:layout_height="480dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/vpProductViewPager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
+                <ImageButton
+                    android:id="@+id/ibFavourite"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_favourite_button"
+                    android:src="@drawable/ic_fav"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="18dp"
+                    android:layout_gravity="bottom|end"
+                    android:elevation="12dp"
+                    android:translationY="34dp" />
             </FrameLayout>
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ProductTitleAndPrice"
@@ -43,6 +61,7 @@
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="16dp"
                 android:layout_height="wrap_content">
+
 
                 <TextView
                     android:id="@+id/tvProductName"
@@ -89,6 +108,7 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
 
     <ImageButton
         android:id="@+id/btnBack"

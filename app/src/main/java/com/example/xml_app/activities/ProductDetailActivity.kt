@@ -1,14 +1,25 @@
 package com.example.xml_app.activities
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.xml_app.R
 import com.example.xml_app.adapters.ProductCarouselAdapter
+import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.ActivityProductDetailBinding
+import com.example.xml_app.models.ProductState
 import com.example.xml_app.viewModel.ProductDetailsViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class ProductDetailActivity : AppCompatActivity() {
 
@@ -17,6 +28,11 @@ class ProductDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProductDetailBinding
 
     private lateinit var carouselAdapter: ProductCarouselAdapter
+
+    private fun productStateFlow(): Flow<Map<Int, ProductState>> =
+        this.productDataStore.data.map { products ->
+            products.products
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +48,33 @@ class ProductDetailActivity : AppCompatActivity() {
         carouselAdapter = ProductCarouselAdapter {}
         binding.vpProductViewPager.adapter = carouselAdapter
         val productId = intent.getIntExtra("id", 0)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                productStateFlow().collect { states ->
+                    val state = states[productId] ?: ProductState()
 
+                    if (state.isFavourite) {
+                        binding.ibFavourite.setImageResource(R.drawable.ic_filled_favourite)
+                        binding.ibFavourite.imageTintList =
+                            ColorStateList.valueOf(
+                                ContextCompat.getColor(
+                                    this@ProductDetailActivity,
+                                    R.color.surface
+                                )
+                            )
+                    } else {
+                        binding.ibFavourite.setImageResource(R.drawable.ic_fav)
+                        binding.ibFavourite.imageTintList =
+                            ColorStateList.valueOf(
+                                ContextCompat.getColor(
+                                    this@ProductDetailActivity,
+                                    R.color.surface
+                                )
+                            )
+                    }
+                }
+            }
+        }
         viewModel.product.observe(this) { product ->
             carouselAdapter.imageUrls = product.imageUrls
             binding.tvProductName.text = product.name
@@ -48,6 +90,19 @@ class ProductDetailActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        binding.ibFavourite.setOnClickListener {
+            lifecycleScope.launch {
+                applicationContext.productDataStore.updateData { current ->
+                    val updatedProducts = current.products.toMutableMap()
+                    val currentState = updatedProducts[productId] ?: ProductState()
+
+                    updatedProducts[productId] =
+                        currentState.copy(isFavourite = !currentState.isFavourite)
+                    current.copy(products = updatedProducts)
+                }
+            }
         }
     }
 }
