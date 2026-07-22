@@ -3,6 +3,7 @@ package com.example.xml_app.adapters
 import android.content.res.ColorStateList
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -18,7 +19,9 @@ import com.example.xml_app.models.ProductState
 
 class FeaturedProductsAdapter(
     val onProductClick: (Product) -> Unit,
-    val onFavouriteClick: (Product) -> Unit
+    val onFavouriteClick: (Product) -> Unit,
+    val onCartIncrement: (Product) -> Unit,
+    val onCartDecrement: (Product) -> Unit
 ) : RecyclerView.Adapter<FeaturedProductsAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
@@ -60,7 +63,6 @@ class FeaturedProductsAdapter(
             val product = products[position]
             val state = productStates[product.id] ?: ProductState()
             Log.d("Adapter", "Product ${product.id} -> $state")
-
             if (state.isFavourite) {
                 binding.ibFavourites.setImageResource(R.drawable.ic_filled_favourite)
                 binding.ibFavourites.imageTintList =
@@ -80,6 +82,15 @@ class FeaturedProductsAdapter(
                 )
             }
 
+            if (state.cartCount > 0) {
+                binding.ibAddToCart.visibility = View.GONE
+                binding.llCartCountStepper.visibility = View.VISIBLE
+                binding.tvCartCount.text = state.cartCount.toString()
+            } else {
+                binding.llCartCountStepper.visibility = View.GONE
+                binding.ibAddToCart.visibility = View.VISIBLE
+            }
+
             binding.tvProductName.text = product.name
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status
@@ -90,6 +101,18 @@ class FeaturedProductsAdapter(
 
             binding.ibFavourites.setOnClickListener {
                 onFavouriteClick(product)
+            }
+
+            binding.ibAddToCart.setOnClickListener {
+                onCartIncrement(product)
+            }
+
+            binding.ibCartDecrement.setOnClickListener {
+                onCartDecrement(product)
+            }
+
+            binding.ibCartIncrement.setOnClickListener {
+                onCartIncrement(product)
             }
 
             Glide.with(itemView)

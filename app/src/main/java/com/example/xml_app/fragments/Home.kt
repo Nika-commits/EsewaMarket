@@ -230,18 +230,30 @@ class Home : Fragment() {
                                 currentState.copy(isFavourite = !currentState.isFavourite)
                             current.copy(products = updatedProducts)
                         }
-//                        val currentState = getProductState(productId = p.id)
-//                        val updatedState = currentState.copy(
-//                            isFavourite = !currentState.isFavourite
-//                        )
-//
-//                        updateProductState(
-//                            p.id,
-//                            updatedState
-//                        )
-//                        productAdapter.productStates = getAllProductState()
-//                        productAdapter.notifyDataSetChanged()
                     }
+                },
+                onCartIncrement = { p ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        requireContext().productDataStore.updateData { current ->
+                            val updatedProducts = current.products.toMutableMap()
+                            val currentState = updatedProducts[p.id] ?: ProductState()
+                            updatedProducts[p.id] =
+                                currentState.copy(cartCount = currentState.cartCount + 1)
+                            current.copy(products = updatedProducts)
+                        }
+                    }
+                },
+                onCartDecrement = { p ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        requireContext().productDataStore.updateData { current ->
+                            val updatedProducts = current.products.toMutableMap()
+                            val currentState = updatedProducts[p.id] ?: ProductState()
+                            updatedProducts[p.id] =
+                                currentState.copy(cartCount = currentState.cartCount - 1)
+                            current.copy(products = updatedProducts)
+                        }
+                    }
+
                 }
             )
             adapter = productAdapter
