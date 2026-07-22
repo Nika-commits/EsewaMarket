@@ -2,6 +2,7 @@ package com.example.xml_app.activities
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -101,6 +102,64 @@ class ProductDetailActivity : AppCompatActivity() {
                     updatedProducts[productId] =
                         currentState.copy(isFavourite = !currentState.isFavourite)
                     current.copy(products = updatedProducts)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                productStateFlow().collect { state ->
+                    val currentState = state[productId] ?: ProductState()
+
+                    if (currentState.cartCount > 0) {
+                        binding.addToCartContainer.btnAddToCart.visibility = View.GONE
+                        binding.addToCartContainer.llCartCountStepper.visibility = View.VISIBLE
+                        binding.addToCartContainer.tvCartCount.text =
+                            currentState.cartCount.toString()
+                    } else {
+                        binding.addToCartContainer.llCartCountStepper.visibility = View.GONE
+                        binding.addToCartContainer.btnAddToCart.visibility = View.VISIBLE
+                    }
+
+                }
+            }
+        }
+
+        binding.addToCartContainer.btnAddToCart.setOnClickListener {
+            lifecycleScope.launch {
+                applicationContext.productDataStore.updateData { current ->
+                    val updatedProducts = current.products.toMutableMap()
+                    val currentState = updatedProducts[productId] ?: ProductState()
+
+                    updatedProducts[productId] =
+                        currentState.copy(cartCount = currentState.cartCount + 1)
+                    current.copy(products = updatedProducts)
+                }
+            }
+        }
+
+        binding.addToCartContainer.ibCartIncrement.setOnClickListener {
+            lifecycleScope.launch {
+                applicationContext.productDataStore.updateData { current ->
+                    val updatedProducts = current.products.toMutableMap()
+                    val currentState = updatedProducts[productId] ?: ProductState()
+
+                    updatedProducts[productId] =
+                        currentState.copy(cartCount = currentState.cartCount + 1)
+                    current.copy(updatedProducts)
+                }
+            }
+        }
+
+        binding.addToCartContainer.ibCartDecrement.setOnClickListener {
+            lifecycleScope.launch {
+                applicationContext.productDataStore.updateData { current ->
+                    val updatedProducts = current.products.toMutableMap()
+                    val currentState = updatedProducts[productId] ?: ProductState()
+
+                    updatedProducts[productId] =
+                        currentState.copy(cartCount = currentState.cartCount - 1)
+                    current.copy(updatedProducts)
                 }
             }
         }
