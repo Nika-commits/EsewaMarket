@@ -2,7 +2,10 @@ package com.example.xml_app.activities
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +22,8 @@ import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.ActivityProductDetailBinding
 import com.example.xml_app.models.ProductState
 import com.example.xml_app.viewModel.ProductDetailsViewModel
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -49,6 +54,10 @@ class ProductDetailActivity : AppCompatActivity() {
         }
         carouselAdapter = ProductCarouselAdapter {}
         binding.vpProductViewPager.adapter = carouselAdapter
+        TabLayoutMediator(binding.imageIndicator, binding.vpProductViewPager) { tab, _ ->
+            tab.setCustomView(R.layout.item_indicator)
+        }.attach()
+
         val productId = intent.getIntExtra("id", 0)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -88,6 +97,34 @@ class ProductDetailActivity : AppCompatActivity() {
             binding.addToCartContainer.tvAddToCartProductName.text =
                 product.name + " - " + product.brand
             binding.addToCartContainer.tvAddToCartPrice.text = product.price.toFloat().toString()
+
+            binding.sizeToggleGroup.removeAllViews()
+
+            Log.d("API", product.sizes.toString())
+            product.sizes?.forEach { size ->
+                val button =
+                    MaterialButton(
+                        ContextThemeWrapper(this, R.style.SizeSelectorButton),
+                        null,
+                        0
+                    ).apply {
+                        text = size
+                        id = View.generateViewId()
+                        textSize = 14.0f
+                        isCheckable = true
+                    }
+                binding.sizeToggleGroup.addView(button)
+            }
+        }
+
+        binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+
+            val button = group.findViewById<MaterialButton>(checkedId)
+
+            val selectedSize = button.text.toString()
+
+            Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
 
         }
         viewModel.getProduct(productId)

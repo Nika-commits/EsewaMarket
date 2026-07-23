@@ -5,9 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.xml_app.databinding.ActivityProductDetailBinding
+import com.example.xml_app.databinding.LayoutSizeSelectorBinding
 
-class SizeSelectorAdapter() : RecyclerView.Adapter<SizeSelectorAdapter.ViewHolder>() {
+class SizeSelectorAdapter(
+    val onSizeChange: (String) -> Unit
+) : RecyclerView.Adapter<SizeSelectorAdapter.ViewHolder>() {
 
     private val diffCallback = object : DiffUtil.ItemCallback<String>() {
         override fun areItemsTheSame(
@@ -39,7 +41,7 @@ class SizeSelectorAdapter() : RecyclerView.Adapter<SizeSelectorAdapter.ViewHolde
         viewType: Int
     ): ViewHolder {
         val binding =
-            ActivityProductDetailBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            LayoutSizeSelectorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -47,13 +49,20 @@ class SizeSelectorAdapter() : RecyclerView.Adapter<SizeSelectorAdapter.ViewHolde
         holder: ViewHolder,
         position: Int
     ) {
-        TODO("Not yet implemented")
+        holder.apply {
+            val size = sizes[position]
+            binding.btnSize.text = size
+
+            binding.btnSize.setOnClickListener {
+                onSizeChange(size)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
         return sizes.size
     }
 
-    class ViewHolder(val binding: ActivityProductDetailBinding) :
+    class ViewHolder(val binding: LayoutSizeSelectorBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

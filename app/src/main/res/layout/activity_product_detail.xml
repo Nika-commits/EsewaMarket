@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:paddingBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,6 +44,23 @@
                     android:id="@+id/vpProductViewPager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/imageIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:elevation="0dp"
+                    android:layout_gravity="bottom|center"
+                    app:tabIndicator="@null"
+                    app:tabIndicatorHeight="0dp"
+                    app:tabRippleColor="@null"
+                    app:tabMinWidth="0dp"
+                    app:tabPaddingStart="4dp"
+                    app:tabPaddingEnd="4dp"
+                    app:tabGravity="center"
+                    app:tabMode="fixed" />
 
             </FrameLayout>
 
@@ -143,9 +161,9 @@
                 android:id="@+id/tvProductDescription"
                 android:textColor="@color/lightGrey"
                 android:textSize="14sp"
+                android:paddingHorizontal="16dp"
                 android:fontFamily="@font/source_sans_regular"
                 android:layout_width="match_parent"
-                android:paddingHorizontal="16dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/description"
                 app:layout_constraintRight_toRightOf="parent"
@@ -157,7 +175,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="16dp"
+                android:paddingVertical="16dp"
                 android:background="@color/textLighter"
                 app:layout_constraintTop_toBottomOf="@id/tvProductDescription"
                 app:layout_constraintStart_toStartOf="parent"
@@ -165,12 +183,23 @@
 
 
             <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/sizeToggleGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:singleSelection="true"
+                android:spacing="8dp"
+                android:paddingVertical="16dp"
+                app:flow_horizontalAlign="center"
+                app:innerCornerSize="8dp"
+                android:paddingHorizontal="16dp"
                 app:layout_constraintTop_toBottomOf="@id/divider2"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent">
 
+                <!--                <androidx.recyclerview.widget.RecyclerView-->
+                <!--                    android:id="@+id/rvProductSize"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"/>-->
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

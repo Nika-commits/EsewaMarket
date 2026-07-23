@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="ToolbarTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">normal</item>
     </style>
+
+
+    <style name="SizeSelectorButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">8dp</item>
+        <item name="strokeColor">@color/light</item>
+        <item name="backgroundTint">@color/surface</item>
+        <item name="background">@color/surface</item>
+        <item name="backgroundColor">@color/light</item>
+        <item name="android:textColor">@color/lightGrey</item>
+    </style>
 </resources>
+
+
