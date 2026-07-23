@@ -69,7 +69,7 @@
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:background="@color/primaryGreen"
+                android:background="@color/primaryGreenDark"
                 android:textColor="@color/surface"
                 android:textAlignment="center" />
 
@@ -87,7 +87,7 @@
             android:id="@+id/btnAddToCart"
             android:text="ADD TO CART"
             android:backgroundTint="@color/primaryGreen"
-            app:cornerRadius="16dp"
+            app:cornerRadius="8dp"
             android:textColor="@color/surface"
             android:textFontWeight="600"
             android:textSize="14sp"
