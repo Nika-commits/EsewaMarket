@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView android:id="@+id/cvProductCard"
     android:layout_height="278dp"
-    android:layout_width="match_parent"
+    android:layout_width="178dp"
     app:cardCornerRadius="16dp"
     app:strokeWidth="0dp"
     android:backgroundTint="@color/surface"

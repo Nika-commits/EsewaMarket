@@ -6,11 +6,12 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ProductApi {
 
     @GET("api/product")
-    suspend fun getFeaturedProducts(): Response<List<Product>>
+    suspend fun getProducts(@Query("category") category: String?): Response<List<Product>>
 
     @POST("api/product")
     suspend fun postProduct(@Body product: Product)

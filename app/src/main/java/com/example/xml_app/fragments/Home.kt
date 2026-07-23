@@ -24,17 +24,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.activities.NotificationActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
-import com.example.xml_app.adapters.FeaturedProductsAdapter
 import com.example.xml_app.adapters.HeroViewPagerAdapter
+import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
 import com.example.xml_app.models.ProductState
+import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
@@ -78,7 +80,9 @@ class Home : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
     private val userName = "Pranish" + ","
-    private lateinit var productAdapter: FeaturedProductsAdapter
+    private lateinit var featuredProductsAdapter: ProductsAdapter
+
+    private lateinit var hotDealsAdapter: ProductsAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +106,7 @@ class Home : Fragment() {
         setupSearchBox()
         setupCategories()
         setupFeaturedProducts()
+        setupHotDealsProducts()
 
         viewLifecycleOwner.lifecycleScope.launch {
             Log.d("Home", "Saved States = ${getAllProductState()}")
@@ -188,10 +193,21 @@ class Home : Fragment() {
 
 
     private fun setupFeaturedProducts() {
-        setupRecyclerView()
+        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
+        featuredProductsAdapter =
+            setupRecyclerView(
+                binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts,
+                LinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                ),
+                HorizontalItemDecoration(spacing)
+            )
+
 
         viewModel.featuredProducts.observe(viewLifecycleOwner) { products ->
-            productAdapter.products = products
+            featuredProductsAdapter.products = products
         }
 
         viewModel.getFeaturedProduct()
@@ -199,8 +215,8 @@ class Home : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 productStateFlow().collect { states ->
-                    productAdapter.productStates = states
-                    productAdapter.notifyDataSetChanged()
+                    featuredProductsAdapter.productStates = states
+                    featuredProductsAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -212,57 +228,95 @@ class Home : Fragment() {
 
     }
 
-    fun setupRecyclerView() =
-        binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts.apply {
-            productAdapter = FeaturedProductsAdapter(
-                onProductClick = { p ->
-                    Intent(requireContext(), ProductDetailActivity::class.java).also {
-                        it.putExtra("id", p.id)
-                        startActivity(it)
-                    }
-                },
-                onFavouriteClick = { p ->
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        requireContext().productDataStore.updateData { current ->
-                            val updatedProducts = current.products.toMutableMap()
-                            val currentState = updatedProducts[p.id] ?: ProductState()
-                            updatedProducts[p.id] =
-                                currentState.copy(isFavourite = !currentState.isFavourite)
-                            current.copy(products = updatedProducts)
-                        }
-                    }
-                },
-                onCartIncrement = { p ->
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        requireContext().productDataStore.updateData { current ->
-                            val updatedProducts = current.products.toMutableMap()
-                            val currentState = updatedProducts[p.id] ?: ProductState()
-                            updatedProducts[p.id] =
-                                currentState.copy(cartCount = currentState.cartCount + 1)
-                            current.copy(products = updatedProducts)
-                        }
-                    }
-                },
-                onCartDecrement = { p ->
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        requireContext().productDataStore.updateData { current ->
-                            val updatedProducts = current.products.toMutableMap()
-                            val currentState = updatedProducts[p.id] ?: ProductState()
-                            updatedProducts[p.id] =
-                                currentState.copy(cartCount = currentState.cartCount - 1)
-                            current.copy(products = updatedProducts)
-                        }
-                    }
+    private fun setupHotDealsProducts() {
+        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
+        hotDealsAdapter = setupRecyclerView(
+            binding.rvHotDealsLayout.rvFeaturedProducts,
+            GridLayoutManager(requireContext(), 2),
+            SpacingItemDecoration(spacing)
+        )
 
-                }
-            )
-            adapter = productAdapter
-            layoutManager = GridLayoutManager(requireContext(), 2)
-            val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
-            addItemDecoration(
-                SpacingItemDecoration(spacing)
-            )
+        viewModel.hotDealsProducts.observe(viewLifecycleOwner) { products ->
+            hotDealsAdapter.products = products
         }
+
+        viewModel.getHotDealsProducts()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                productStateFlow().collect { states ->
+                    hotDealsAdapter.productStates = states
+                    hotDealsAdapter.notifyDataSetChanged()
+                }
+            }
+        }
+
+        binding.rvHotDealsLayout.featuredProducts.tvHeaderTitle.text = "Hot Deals of the Day"
+        binding.rvHotDealsLayout.featuredProducts.ibHeaderButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Hot Deals Clicked", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun setupRecyclerView(
+        recyclerView: RecyclerView,
+        layoutManager: RecyclerView.LayoutManager,
+        itemDecoration: RecyclerView.ItemDecoration? = null
+    ): ProductsAdapter {
+
+        val adapter = ProductsAdapter(
+            onProductClick = { p ->
+                Intent(requireContext(), ProductDetailActivity::class.java).also {
+                    it.putExtra("id", p.id)
+                    startActivity(it)
+                }
+            },
+            onFavouriteClick = { p ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    requireContext().productDataStore.updateData { current ->
+                        val updatedProducts = current.products.toMutableMap()
+                        val currentState = updatedProducts[p.id] ?: ProductState()
+                        updatedProducts[p.id] =
+                            currentState.copy(isFavourite = !currentState.isFavourite)
+                        current.copy(products = updatedProducts)
+                    }
+                }
+            },
+            onCartIncrement = { p ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    requireContext().productDataStore.updateData { current ->
+                        val updatedProducts = current.products.toMutableMap()
+                        val currentState = updatedProducts[p.id] ?: ProductState()
+                        updatedProducts[p.id] =
+                            currentState.copy(cartCount = currentState.cartCount + 1)
+                        current.copy(products = updatedProducts)
+                    }
+                }
+            },
+            onCartDecrement = { p ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    requireContext().productDataStore.updateData { current ->
+                        val updatedProducts = current.products.toMutableMap()
+                        val currentState = updatedProducts[p.id] ?: ProductState()
+                        updatedProducts[p.id] =
+                            currentState.copy(cartCount = currentState.cartCount - 1)
+                        current.copy(products = updatedProducts)
+                    }
+                }
+
+            }
+        )
+
+        recyclerView.apply {
+            this.adapter = adapter
+            this.layoutManager = layoutManager
+            itemDecoration?.let {
+                addItemDecoration(it)
+            }
+        }
+
+        return adapter
+    }
 
 
     private fun setupSearchBox() {

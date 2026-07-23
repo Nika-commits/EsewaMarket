@@ -17,12 +17,12 @@ import com.example.xml_app.models.ProductState
 
 //import com.example.xml_app.databinding.ItemProductCardBinding
 
-class FeaturedProductsAdapter(
+class ProductsAdapter(
     val onProductClick: (Product) -> Unit,
     val onFavouriteClick: (Product) -> Unit,
     val onCartIncrement: (Product) -> Unit,
     val onCartDecrement: (Product) -> Unit
-) : RecyclerView.Adapter<FeaturedProductsAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -95,7 +95,7 @@ class FeaturedProductsAdapter(
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status
             binding.tvProductBrand.text = product.brand
-            
+
             binding.root.setOnClickListener {
                 onProductClick(product)
             }
