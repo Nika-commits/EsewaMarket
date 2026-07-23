@@ -190,7 +190,7 @@
                 android:spacing="8dp"
                 android:paddingVertical="16dp"
                 app:flow_horizontalAlign="center"
-                app:innerCornerSize="8dp"
+                app:innerCornerSize="4dp"
                 android:paddingHorizontal="16dp"
                 app:layout_constraintTop_toBottomOf="@id/divider2"
                 app:layout_constraintLeft_toLeftOf="parent"

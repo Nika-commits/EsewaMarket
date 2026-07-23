@@ -6,14 +6,12 @@
         <item name="android:textStyle">normal</item>
     </style>
 
-
     <style name="SizeSelectorButton" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="cornerRadius">8dp</item>
-        <item name="strokeColor">@color/light</item>
+
         <item name="backgroundTint">@color/surface</item>
-        <item name="background">@color/surface</item>
-        <item name="backgroundColor">@color/light</item>
+        <item name="strokeColor">@color/light</item>
         <item name="android:textColor">@color/lightGrey</item>
+        <item name="cornerRadius">8dp</item>
     </style>
 </resources>
 

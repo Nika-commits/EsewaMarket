@@ -106,12 +106,14 @@ class ProductDetailActivity : AppCompatActivity() {
                     MaterialButton(
                         ContextThemeWrapper(this, R.style.SizeSelectorButton),
                         null,
-                        0
+                        com.google.android.material.R.attr.materialButtonOutlinedStyle
                     ).apply {
                         text = size
                         id = View.generateViewId()
                         textSize = 14.0f
                         isCheckable = true
+                        cornerRadius = 8
+                        setTextColor(ContextCompat.getColorStateList(context, R.color.lightGrey))
                     }
                 binding.sizeToggleGroup.addView(button)
             }
@@ -124,7 +126,17 @@ class ProductDetailActivity : AppCompatActivity() {
 
             val selectedSize = button.text.toString()
 
-            Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
+            if (isChecked) {
+                button.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryGreen))
+                button.setTextColor(ContextCompat.getColor(this, R.color.surface))
+                Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
+            } else {
+                button.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(this, R.color.surface)
+                )
+                button.setTextColor(ContextCompat.getColor(this, R.color.lightGrey))
+            }
 
         }
         viewModel.getProduct(productId)
