@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.xml_app.R
@@ -112,6 +113,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                favouriteCount.collect { count ->
+                    if (count > 0) {
+                        binding.tabFavourites.viewBadge.visibility = View.VISIBLE
+                        binding.tabFavourites.viewBadge.text = count.toString()
+                    } else {
+                        binding.tabFavourites.viewBadge.visibility = View.GONE
+                    }
+                }
+            }
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
