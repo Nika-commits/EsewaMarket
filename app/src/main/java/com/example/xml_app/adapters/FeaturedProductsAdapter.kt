@@ -94,7 +94,8 @@ class FeaturedProductsAdapter(
             binding.tvProductName.text = product.name
             binding.tvPrice.text = product.price.toString()
             binding.tvProductStatus.text = product.status
-
+            binding.tvProductBrand.text = product.brand
+            
             binding.root.setOnClickListener {
                 onProductClick(product)
             }

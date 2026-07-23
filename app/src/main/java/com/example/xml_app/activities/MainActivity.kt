@@ -3,6 +3,7 @@ package com.example.xml_app.activities
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -12,13 +13,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.xml_app.R
+import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.ActivityMainBinding
 import com.example.xml_app.databinding.ItemNavigationBinding
 import com.example.xml_app.fragments.Cart
 import com.example.xml_app.fragments.Favourite
 import com.example.xml_app.fragments.Home
 import com.example.xml_app.fragments.More
+import com.example.xml_app.models.ProductState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private var userName = "Pranish" + ","
@@ -28,7 +36,23 @@ class MainActivity : AppCompatActivity() {
     private val favouriteFragment = Favourite()
     private val moreFragment = More()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val productsStateFlow: Flow<Map<Int, ProductState>> =
+            this.productDataStore.data.map { products ->
+                products.products
+            }
+
+        val cartCount: Flow<Int> = productsStateFlow.map { p ->
+            p.values.sumOf { it.cartCount }
+        }
+
+        val favouriteCount: Flow<Int> = productsStateFlow.map { p ->
+            p.values.count { it.isFavourite }
+        }
+
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -36,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
 
         binding.tabHome.ivNavIcon.setImageResource(R.drawable.ic_market)
         binding.tabHome.tvNavText.text = "Home"
@@ -54,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             replaceFragment(homeFragment)
             setSelectedTab(binding.tabHome)
         }
+
         binding.tabHome.root.setOnClickListener {
             replaceFragment(homeFragment)
             setSelectedTab(binding.tabHome)
@@ -74,10 +98,23 @@ class MainActivity : AppCompatActivity() {
             setSelectedTab(binding.tabMore)
         }
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                cartCount.collect { count ->
+                    if (count > 0) {
+                        binding.tabCart.viewBadge.visibility = View.VISIBLE
+                        binding.tabCart.viewBadge.text = count.toString()
+                        Log.d("Home", count.toString())
+                    } else {
+                        binding.tabCart.viewBadge.visibility = View.GONE
+                    }
+                }
+            }
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, 0, 0, 0)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
     }
@@ -92,7 +129,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setSelectedTab(selected: ItemNavigationBinding) {
-
         val tabs = listOf(
             binding.tabHome,
             binding.tabCart,
@@ -134,12 +170,29 @@ class MainActivity : AppCompatActivity() {
         selected.tvNavText.setTextColor(getColor(R.color.primaryGreen))
         selected.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
 
+//        selected.rootLayout.apply {
+//            scaleX = 0.6f
+//            scaleY = 0.6f
+//            alpha = 0f
+//            setBackgroundResource(R.drawable.bg_selected_tab)
+//
+//            animate()
+//                .scaleX(1f)
+//                .scaleY(1f)
+//                .alpha(1f)
+//                .setDuration(200)
+//                .start()
+//        }
         selected.ivNavIcon.animate()
-            .scaleX(1.15f)
-            .scaleY(1.15f)
             .setDuration(200)
             .start()
+
+        selected.tvNavText.animate()
+            .setDuration(200)
+            .start()
+
     }
+
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (ev?.action == MotionEvent.ACTION_DOWN) {
