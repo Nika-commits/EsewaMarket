@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -81,6 +82,8 @@ class ProductDetailActivity : AppCompatActivity() {
             binding.tvProductName.text = product.name
             binding.tvProductPrice.text = "Rs. " + product.price.toFloat().toString()
             binding.tvProductStatus.text = product.status
+            binding.tvProductDescription.text =
+                HtmlCompat.fromHtml(product.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
             binding.addToCartContainer.tvAddToCartProductName.text =
                 product.name + " - " + product.brand
