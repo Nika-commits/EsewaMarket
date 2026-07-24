@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.xml_app.databinding.LayoutSizeSelectorBinding
+import com.example.xml_app.databinding.ItemColorSelectorBinding
 
-class SizeSelectorAdapter(
+class ColorSelectorAdapter(
     val onSizeChange: (String) -> Unit
-) : RecyclerView.Adapter<SizeSelectorAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ColorSelectorAdapter.ViewHolder>() {
 
     private val diffCallback = object : DiffUtil.ItemCallback<String>() {
         override fun areItemsTheSame(
@@ -41,7 +41,7 @@ class SizeSelectorAdapter(
         viewType: Int
     ): ViewHolder {
         val binding =
-            LayoutSizeSelectorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemColorSelectorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -51,9 +51,9 @@ class SizeSelectorAdapter(
     ) {
         holder.apply {
             val size = sizes[position]
-            binding.btnSize.text = size
+            binding.btnColorSelector.text = size
 
-            binding.btnSize.setOnClickListener {
+            binding.btnColorSelector.setOnClickListener {
                 onSizeChange(size)
             }
         }
@@ -63,6 +63,6 @@ class SizeSelectorAdapter(
         return sizes.size
     }
 
-    class ViewHolder(val binding: LayoutSizeSelectorBinding) :
+    class ViewHolder(val binding: ItemColorSelectorBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

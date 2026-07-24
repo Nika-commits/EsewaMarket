@@ -1,8 +1,8 @@
 package com.example.xml_app.activities
 
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Toast
@@ -99,8 +99,6 @@ class ProductDetailActivity : AppCompatActivity() {
             binding.addToCartContainer.tvAddToCartPrice.text = product.price.toFloat().toString()
 
             binding.sizeToggleGroup.removeAllViews()
-
-            Log.d("API", product.sizes.toString())
             product.sizes?.forEach { size ->
                 val button =
                     MaterialButton(
@@ -118,26 +116,42 @@ class ProductDetailActivity : AppCompatActivity() {
                     }
                 binding.sizeToggleGroup.addView(button)
             }
-        }
 
-        binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
 //            if (!isChecked) return@addOnButtonCheckedListener
 
-            val button = group.findViewById<MaterialButton>(checkedId)
+                val button = group.findViewById<MaterialButton>(checkedId)
 
-            val selectedSize = button.text.toString()
+                val selectedSize = button.text.toString()
 
-            if (isChecked) {
-                button.backgroundTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryGreen))
-                button.setTextColor(ContextCompat.getColor(this, R.color.surface))
-                Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
-            } else {
-                button.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(this, R.color.surface)
-                )
-                button.setTextColor(ContextCompat.getColor(this, R.color.lightGrey))
-                button.cornerRadius = 12
+                if (isChecked) {
+                    button.backgroundTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryGreen))
+                    button.setTextColor(ContextCompat.getColor(this, R.color.surface))
+                    Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
+                } else {
+                    button.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(this, R.color.surface)
+                    )
+                    button.setTextColor(ContextCompat.getColor(this, R.color.lightGrey))
+                    button.cornerRadius = 12
+                }
+
+            }
+
+            binding.colorToggleGroup.removeAllViews()
+            product.colors.map { color ->
+                val button = MaterialButton(
+                    this,
+                ).apply {
+                    id = View.generateViewId()
+                    isCheckable = true
+
+                    cornerRadius = 100
+
+                    backgroundTintList = ColorStateList.valueOf(Color.parseColor(color.hexCode))
+                }
+                binding.colorToggleGroup.addView(button)
             }
 
         }
