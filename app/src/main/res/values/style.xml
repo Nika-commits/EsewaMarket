@@ -7,11 +7,11 @@
     </style>
 
     <style name="SizeSelectorButton" parent="Widget.Material3.Button.OutlinedButton">
-
         <item name="backgroundTint">@color/surface</item>
         <item name="strokeColor">@color/light</item>
         <item name="android:textColor">@color/lightGrey</item>
-        <item name="cornerRadius">8dp</item>
+        <item name="innerCornerSize">12dp</item>
+        <item name="cornerRadius">12dp</item>
     </style>
 </resources>
 

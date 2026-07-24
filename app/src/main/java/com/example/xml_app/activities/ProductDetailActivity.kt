@@ -112,15 +112,16 @@ class ProductDetailActivity : AppCompatActivity() {
                         id = View.generateViewId()
                         textSize = 14.0f
                         isCheckable = true
-                        cornerRadius = 8
+                        cornerRadius = 20
                         setTextColor(ContextCompat.getColorStateList(context, R.color.lightGrey))
+                        strokeColor = ContextCompat.getColorStateList(context, R.color.light)
                     }
                 binding.sizeToggleGroup.addView(button)
             }
         }
 
         binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
+//            if (!isChecked) return@addOnButtonCheckedListener
 
             val button = group.findViewById<MaterialButton>(checkedId)
 
@@ -136,6 +137,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     ContextCompat.getColor(this, R.color.surface)
                 )
                 button.setTextColor(ContextCompat.getColor(this, R.color.lightGrey))
+                button.cornerRadius = 12
             }
 
         }
