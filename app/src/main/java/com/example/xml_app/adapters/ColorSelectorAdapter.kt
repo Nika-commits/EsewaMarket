@@ -6,22 +6,23 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.databinding.ItemColorSelectorBinding
+import com.example.xml_app.models.Color
 
 class ColorSelectorAdapter(
-    val onSizeChange: (String) -> Unit
+    val onColorChange: (String) -> Unit
 ) : RecyclerView.Adapter<ColorSelectorAdapter.ViewHolder>() {
 
-    private val diffCallback = object : DiffUtil.ItemCallback<String>() {
+    private val diffCallback = object : DiffUtil.ItemCallback<Color>() {
         override fun areItemsTheSame(
-            oldItem: String,
-            newItem: String
+            oldItem: Color,
+            newItem: Color
         ): Boolean {
-            return oldItem == newItem
+            return oldItem.name == newItem.name
         }
 
         override fun areContentsTheSame(
-            oldItem: String,
-            newItem: String
+            oldItem: Color,
+            newItem: Color
         ): Boolean {
             return oldItem == newItem
         }
@@ -30,7 +31,7 @@ class ColorSelectorAdapter(
 
     private val differ = AsyncListDiffer(this, diffCallback)
 
-    var sizes: List<String>
+    var colors: List<Color>
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
@@ -50,17 +51,17 @@ class ColorSelectorAdapter(
         position: Int
     ) {
         holder.apply {
-            val size = sizes[position]
-            binding.btnColorSelector.text = size
+            val size = colors[position]
+//            binding.btnColorSelector.text = size
 
             binding.btnColorSelector.setOnClickListener {
-                onSizeChange(size)
+                onColorChange(size.name)
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return sizes.size
+        return colors.size
     }
 
     class ViewHolder(val binding: ItemColorSelectorBinding) :

@@ -1,7 +1,6 @@
 package com.example.xml_app.activities
 
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.View
@@ -17,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.xml_app.R
+import com.example.xml_app.adapters.ColorSelectorAdapter
 import com.example.xml_app.adapters.ProductCarouselAdapter
 import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.ActivityProductDetailBinding
@@ -36,6 +36,8 @@ class ProductDetailActivity : AppCompatActivity() {
 
     private lateinit var carouselAdapter: ProductCarouselAdapter
 
+    private lateinit var colorAdapter: ColorSelectorAdapter
+
     private fun productStateFlow(): Flow<Map<Int, ProductState>> =
         this.productDataStore.data.map { products ->
             products.products
@@ -52,11 +54,23 @@ class ProductDetailActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        carouselAdapter = ProductCarouselAdapter {}
+        carouselAdapter = ProductCarouselAdapter(
+            onImageClick = {
+                Toast.makeText(this, "Image Clicked", Toast.LENGTH_SHORT).show()
+            }
+        )
+
         binding.vpProductViewPager.adapter = carouselAdapter
         TabLayoutMediator(binding.imageIndicator, binding.vpProductViewPager) { tab, _ ->
             tab.setCustomView(R.layout.item_indicator)
         }.attach()
+
+        colorAdapter = ColorSelectorAdapter(
+            onSizeChange = {
+            }
+        )
+
+        binding.rvColorSelector.adapter = colorAdapter
 
         val productId = intent.getIntExtra("id", 0)
         lifecycleScope.launch {
@@ -117,42 +131,43 @@ class ProductDetailActivity : AppCompatActivity() {
                 binding.sizeToggleGroup.addView(button)
             }
 
-            binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
-//            if (!isChecked) return@addOnButtonCheckedListener
+//            binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+//                val button = group.findViewById<MaterialButton>(checkedId)
+//
+//                val selectedSize = button.text.toString()
+//
+//                if (isChecked) {
+//                    button.backgroundTintList =
+//                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryGreen))
+//                    button.setTextColor(ContextCompat.getColor(this, R.color.surface))
+//                    Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
+//                } else {
+//                    button.backgroundTintList = ColorStateList.valueOf(
+//                        ContextCompat.getColor(this, R.color.surface)
+//                    )
+//                    button.setTextColor(ContextCompat.getColor(this, R.color.lightGrey))
+//                    button.cornerRadius = 12
+//                }
+//
+//            }
 
-                val button = group.findViewById<MaterialButton>(checkedId)
+//            binding.colorToggleGroup.removeAllViews()
+//            product.colors.map { color ->
+//                val button = MaterialButton(
+//                    this,
+//                ).apply {
+//                    id = View.generateViewId()
+//                    isCheckable = true
+//
+//                    cornerRadius = 100
+//
+//                    backgroundTintList = ColorStateList.valueOf(Color.parseColor(color.hexCode))
+//                }
+//                binding.colorToggleGroup.addView(button)
+//            }
 
-                val selectedSize = button.text.toString()
 
-                if (isChecked) {
-                    button.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryGreen))
-                    button.setTextColor(ContextCompat.getColor(this, R.color.surface))
-                    Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
-                } else {
-                    button.backgroundTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(this, R.color.surface)
-                    )
-                    button.setTextColor(ContextCompat.getColor(this, R.color.lightGrey))
-                    button.cornerRadius = 12
-                }
-
-            }
-
-            binding.colorToggleGroup.removeAllViews()
-            product.colors.map { color ->
-                val button = MaterialButton(
-                    this,
-                ).apply {
-                    id = View.generateViewId()
-                    isCheckable = true
-
-                    cornerRadius = 100
-
-                    backgroundTintList = ColorStateList.valueOf(Color.parseColor(color.hexCode))
-                }
-                binding.colorToggleGroup.addView(button)
-            }
+            colorAdapter.sizes = product.colors.size
 
         }
         viewModel.getProduct(productId)
