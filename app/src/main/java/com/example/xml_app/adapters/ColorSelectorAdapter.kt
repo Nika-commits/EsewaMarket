@@ -1,5 +1,6 @@
 package com.example.xml_app.adapters
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -51,11 +52,13 @@ class ColorSelectorAdapter(
         position: Int
     ) {
         holder.apply {
-            val size = colors[position]
-//            binding.btnColorSelector.text = size
+            val color = colors[position]
+            binding.btnColorSelector.backgroundTintList =
+                ColorStateList.valueOf(android.graphics.Color.parseColor(color.hexCode))
+            binding.btnColorSelector.text = color.name
 
             binding.btnColorSelector.setOnClickListener {
-                onColorChange(size.name)
+                onColorChange(color.name)
             }
         }
     }

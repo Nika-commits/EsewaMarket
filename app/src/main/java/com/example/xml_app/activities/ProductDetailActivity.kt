@@ -15,12 +15,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
 import com.example.xml_app.adapters.ColorSelectorAdapter
 import com.example.xml_app.adapters.ProductCarouselAdapter
 import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.ActivityProductDetailBinding
 import com.example.xml_app.models.ProductState
+import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.viewModel.ProductDetailsViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayoutMediator
@@ -66,11 +68,17 @@ class ProductDetailActivity : AppCompatActivity() {
         }.attach()
 
         colorAdapter = ColorSelectorAdapter(
-            onSizeChange = {
+            onColorChange = {
             }
         )
 
+        binding.rvColorSelector.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.rvColorSelector.adapter = colorAdapter
+        binding.rvColorSelector.addItemDecoration(
+            HorizontalItemDecoration(12)
+        )
+
 
         val productId = intent.getIntExtra("id", 0)
         lifecycleScope.launch {
@@ -167,7 +175,7 @@ class ProductDetailActivity : AppCompatActivity() {
 //            }
 
 
-            colorAdapter.sizes = product.colors.size
+            colorAdapter.colors = product.colors
 
         }
         viewModel.getProduct(productId)
