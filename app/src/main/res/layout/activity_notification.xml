@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -8,39 +7,9 @@
     tools:context=".activities.NotificationActivity"
     android:background="@color/offWhiteBackground">
 
-
-    <com.google.android.material.appbar.MaterialToolbar
+    <include
         android:id="@+id/notificationToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/offWhiteBackground"
+        layout="@layout/item_toolbar" />
 
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-
-        app:title="Notifications"
-        app:titleCentered="true"
-
-        app:titleTextColor="@color/lightGrey" />
-    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--            android:id="@+id/titleBarLayout"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent">-->
-
-
-    <!--&lt;!&ndash;            <TextView&ndash;&gt;-->
-    <!--&lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;                android:layout_height="match_parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;                app:layout_constraintBottom_toBottomOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;                app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;                app:layout_constraintLeft_toLeftOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;                app:layout_constraintRight_toRightOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;                android:text="Notifications"&ndash;&gt;-->
-    <!--&lt;!&ndash;                android:fontFamily="@font/source_sans_bold"&ndash;&gt;-->
-    <!--&lt;!&ndash;                android:textColor="@color/lightGrey"&ndash;&gt;-->
-    <!--&lt;!&ndash;                />&ndash;&gt;-->
-
-    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,6 @@ package com.example.xml_app.activities
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,11 +15,11 @@ class NotificationActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         val binding = ActivityNotificationBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_notification)
+        setContentView(binding.root)
 
+        val toolbar = binding.notificationToolbar.toolbar
+        toolbar.title = "Notifications"
 
-        val toolbar: Toolbar = findViewById(R.id.notificationToolbar)
-//        val goBackButton: ImageButton = findViewById(R.id.goBackButton)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
