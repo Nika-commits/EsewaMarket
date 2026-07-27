@@ -47,9 +47,6 @@ import kotlinx.coroutines.launch
 import java.io.Serializable
 
 
-const val TAG = "HOME"
-
-
 data class ProductDetailActivityArgs(
     val id: Int
 ) : Serializable
@@ -81,7 +78,6 @@ class Home : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private val userName = "Pranish" + ","
     private lateinit var featuredProductsAdapter: ProductsAdapter
-
     private lateinit var hotDealsAdapter: ProductsAdapter
 
 
@@ -114,7 +110,7 @@ class Home : Fragment() {
     }
 
 
-    private fun applyEdgeToEdgeInsets() {
+    public fun applyEdgeToEdgeInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
