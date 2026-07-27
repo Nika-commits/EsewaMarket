@@ -69,9 +69,18 @@ class ProductDetailActivity : AppCompatActivity() {
         }.attach()
 
         colorAdapter = ColorSelectorAdapter(
-            onColorChange = {
+            onColorChange = { color ->
+                viewModel.selectColor(color)
             }
         )
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedColor.collect { color ->
+                    colorAdapter.selectedColor = color
+                }
+            }
+        }
+
 
         binding.rvColorSelector.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -137,7 +146,6 @@ class ProductDetailActivity : AppCompatActivity() {
                 } else {
                     button.applyDefaultStyle()
                 }
-
             }
 
             colorAdapter.colors = product.colors

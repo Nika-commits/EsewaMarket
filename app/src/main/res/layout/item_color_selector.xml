@@ -7,6 +7,7 @@
     android:insetRight="0dp"
     android:insetBottom="0dp"
     app:iconGravity="textStart"
+    app:iconTint="@color/surface"
     app:iconPadding="0dp"
     android:insetTop="0dp"
     xmlns:android="http://schemas.android.com/apk/res/android"

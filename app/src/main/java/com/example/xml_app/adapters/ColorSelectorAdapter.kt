@@ -83,7 +83,6 @@ class ColorSelectorAdapter(
 
             binding.btnColorSelector.backgroundTintList =
                 ColorStateList.valueOf(color.hexCode.toColorInt())
-//            binding.btnColorSelector.text = color.name
 
             binding.btnColorSelector.setOnClickListener {
                 onColorChange(color.name)
