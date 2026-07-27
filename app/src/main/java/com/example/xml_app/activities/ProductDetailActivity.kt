@@ -2,7 +2,6 @@ package com.example.xml_app.activities
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -22,9 +21,9 @@ import com.example.xml_app.adapters.ProductCarouselAdapter
 import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.ActivityProductDetailBinding
 import com.example.xml_app.models.ProductState
+import com.example.xml_app.ui.SizeSelectorButton
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.viewModel.ProductDetailsViewModel
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -122,58 +121,22 @@ class ProductDetailActivity : AppCompatActivity() {
 
             binding.sizeToggleGroup.removeAllViews()
             product.sizes?.forEach { size ->
-                val button =
-                    MaterialButton(
-                        ContextThemeWrapper(this, R.style.SizeSelectorButton),
-                        null,
-                        com.google.android.material.R.attr.materialButtonOutlinedStyle
-                    ).apply {
-                        text = size
-                        id = View.generateViewId()
-                        textSize = 14.0f
-                        isCheckable = true
-                        cornerRadius = 20
-                        setTextColor(ContextCompat.getColorStateList(context, R.color.lightGrey))
-                        strokeColor = ContextCompat.getColorStateList(context, R.color.light)
-                    }
+                val button = SizeSelectorButton(context = this, size = size).apply {
+                    id = View.generateViewId()
+                }
                 binding.sizeToggleGroup.addView(button)
             }
 
-//            binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
-//                val button = group.findViewById<MaterialButton>(checkedId)
-//
-//                val selectedSize = button.text.toString()
-//
-//                if (isChecked) {
-//                    button.backgroundTintList =
-//                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryGreen))
-//                    button.setTextColor(ContextCompat.getColor(this, R.color.surface))
-//                    Toast.makeText(this, "$selectedSize clicked", Toast.LENGTH_SHORT).show()
-//                } else {
-//                    button.backgroundTintList = ColorStateList.valueOf(
-//                        ContextCompat.getColor(this, R.color.surface)
-//                    )
-//                    button.setTextColor(ContextCompat.getColor(this, R.color.lightGrey))
-//                    button.cornerRadius = 12
-//                }
-//
-//            }
+            binding.sizeToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                val button = group.findViewById<SizeSelectorButton>(checkedId)
 
-//            binding.colorToggleGroup.removeAllViews()
-//            product.colors.map { color ->
-//                val button = MaterialButton(
-//                    this,
-//                ).apply {
-//                    id = View.generateViewId()
-//                    isCheckable = true
-//
-//                    cornerRadius = 100
-//
-//                    backgroundTintList = ColorStateList.valueOf(Color.parseColor(color.hexCode))
-//                }
-//                binding.colorToggleGroup.addView(button)
-//            }
+                if (isChecked) {
+                    button.applySelectedStyle()
+                } else {
+                    button.applyDefaultStyle()
+                }
 
+            }
 
             colorAdapter.colors = product.colors
 
