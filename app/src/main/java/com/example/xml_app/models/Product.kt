@@ -22,7 +22,7 @@ data class Product(
 //    val cartCont: Int?
 )
 
-class Color(val name: String, val hexCode: String)
+data class Color(val name: String, val hexCode: String)
 
 
 @Serializable

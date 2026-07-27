@@ -39,6 +39,8 @@ class ProductDetailActivity : AppCompatActivity() {
 
     private lateinit var colorAdapter: ColorSelectorAdapter
 
+    private var _color: String? = null
+    private var _size: String? = null
     private fun productStateFlow(): Flow<Map<Int, ProductState>> =
         this.productDataStore.data.map { products ->
             products.products
@@ -75,7 +77,7 @@ class ProductDetailActivity : AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.rvColorSelector.adapter = colorAdapter
         binding.rvColorSelector.addItemDecoration(
-            HorizontalItemDecoration(12)
+            HorizontalItemDecoration(24)
         )
 
 

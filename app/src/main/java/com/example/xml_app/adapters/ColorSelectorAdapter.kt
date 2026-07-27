@@ -3,9 +3,12 @@ package com.example.xml_app.adapters
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemColorSelectorBinding
 import com.example.xml_app.models.Color
 
@@ -25,7 +28,7 @@ class ColorSelectorAdapter(
             oldItem: Color,
             newItem: Color
         ): Boolean {
-            return oldItem == newItem
+            return newItem == oldItem
         }
 
     }
@@ -36,6 +39,22 @@ class ColorSelectorAdapter(
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
+        }
+
+    var selectedColor: String? = null
+        set(value) {
+            val old = field
+            field = value
+
+            old?.let {
+                val index = colors.indexOfFirst { it.name == old }
+                if (index != -1) notifyItemChanged(index)
+            }
+
+            value?.let {
+                val index = colors.indexOfFirst { it.name == value }
+                if (index != -1) notifyItemChanged(index)
+            }
         }
 
     override fun onCreateViewHolder(
@@ -53,9 +72,18 @@ class ColorSelectorAdapter(
     ) {
         holder.apply {
             val color = colors[position]
+            val isSelected = color.name == selectedColor
+            val btn = binding.btnColorSelector
+
+            if (isSelected) {
+                btn.icon = ContextCompat.getDrawable(btn.context, R.drawable.ic_tick_check)
+            } else {
+                btn.icon = null
+            }
+
             binding.btnColorSelector.backgroundTintList =
-                ColorStateList.valueOf(android.graphics.Color.parseColor(color.hexCode))
-            binding.btnColorSelector.text = color.name
+                ColorStateList.valueOf(color.hexCode.toColorInt())
+//            binding.btnColorSelector.text = color.name
 
             binding.btnColorSelector.setOnClickListener {
                 onColorChange(color.name)
