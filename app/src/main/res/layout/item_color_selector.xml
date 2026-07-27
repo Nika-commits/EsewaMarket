@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.button.MaterialButton android:id="@+id/btnColorSelector"
     app:cornerRadius="10dp"
-    android:layout_width="42dp"
-    android:layout_height="42dp"
+    android:layout_width="36dp"
+    android:layout_height="36dp"
+    android:insetLeft="0dp"
+    android:insetRight="0dp"
+    android:insetBottom="0dp"
+    android:insetTop="0dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" />
