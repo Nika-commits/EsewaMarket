@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 class ProductDetailsViewModel : ViewModel() {
     private val repository = ProductRepository()
     private val _product = MutableLiveData<Product>()
-
     val product: LiveData<Product> = _product
 
     private val _selectedColor = MutableStateFlow<String?>(null)
