@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
 
-        app:titleTextAppearance="@style/ToolbarTitle"
+        app:titleTextAppearance="@style/ToolbarTitleStyle"
         app:titleCentered="true"
         app:titleTextColor="@color/lightGrey"
         xmlns:android="http://schemas.android.com/apk/res/android"
