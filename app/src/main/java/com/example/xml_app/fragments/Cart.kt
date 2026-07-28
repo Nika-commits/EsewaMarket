@@ -1,5 +1,6 @@
 package com.example.xml_app.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
+import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.FragmentCartBinding
@@ -101,9 +103,16 @@ class Cart : Fragment() {
 
     private fun setupRecyclerView() {
         cartAdapter = CartAdapter(
-            onProductClick = {},
+            onProductClick = { id ->
+                Intent(requireContext(), ProductDetailActivity::class.java).also {
+                    it.putExtra("id", id)
+                    startActivity(it)
+                }
+            },
 
-            onCartIncrement = {},
+            onCartIncrement = {
+
+            },
 
             onCartDecrement = {}
         )

@@ -58,8 +58,6 @@ class CartAdapter(
         val currentProduct = products[position]
         val state = productStates[currentProduct?.id] ?: ProductState()
 
-
-
         holder.apply {
             Glide.with(holder.itemView.context)
                 .load(currentProduct?.imageUrls[0])
@@ -69,6 +67,11 @@ class CartAdapter(
             binding.tvProductPrice.text = currentProduct?.price.toString()
             binding.tvProductName.text = currentProduct?.name
             binding.tvProductBrand.text = currentProduct?.brand
+
+            binding.tvCartCount.text = state.cartCount.toString()
+            binding.root.setOnClickListener {
+                onProductClick(currentProduct?.id)
+            }
 
             binding.btnDecrementCart.setOnClickListener {
                 onCartDecrement(currentProduct?.id)

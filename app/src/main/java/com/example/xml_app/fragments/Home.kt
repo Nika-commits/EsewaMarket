@@ -3,7 +3,6 @@ package com.example.xml_app.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -103,14 +102,10 @@ class Home : Fragment() {
         setupCategories()
         setupFeaturedProducts()
         setupHotDealsProducts()
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            Log.d("Home", "Saved States = ${getAllProductState()}")
-        }
     }
 
 
-    public fun applyEdgeToEdgeInsets() {
+    private fun applyEdgeToEdgeInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
