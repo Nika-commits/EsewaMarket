@@ -11,7 +11,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
+import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.models.ProductState
@@ -26,6 +28,8 @@ class Cart : Fragment() {
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CartViewModel by viewModels()
+
+    private lateinit var cartAdapter: CartAdapter
 
     fun productStateFlow(): Flow<Map<Int, ProductState>> =
         requireContext().productDataStore.data.map { products ->
@@ -51,6 +55,9 @@ class Cart : Fragment() {
 
         applyEdgeToEdgeInsets()
         setupToolbar()
+        setupCart()
+        setupRecyclerView()
+        observerCartData()
     }
 
     fun applyEdgeToEdgeInsets() {
@@ -84,9 +91,26 @@ class Cart : Fragment() {
     fun setupCart() {
         viewLifecycleOwner.lifecycleScope.launch {
             productStateFlow().collect { products ->
-                val cartIds = products.keys.toList()
+                val cartIds = products.filter { (_, productState) ->
+                    productState.cartCount > 0
+                }.keys.toList()
                 viewModel.getProductsInCart(cartIds)
             }
+        }
+    }
+
+    private fun setupRecyclerView() {
+        cartAdapter = CartAdapter()
+
+        binding.rvCartProducts.apply {
+            adapter = cartAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun observerCartData() {
+        viewModel.productsInCart.observe(viewLifecycleOwner) { products ->
+            cartAdapter.products = products
         }
     }
 

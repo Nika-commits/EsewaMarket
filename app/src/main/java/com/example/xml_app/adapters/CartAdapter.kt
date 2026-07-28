@@ -39,7 +39,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
     private val differ = AsyncListDiffer(this, differCallback)
 
-    var products: List<Product>
+    var products: List<Product?>
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
@@ -53,12 +53,12 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
         holder.apply {
             Glide.with(holder.itemView.context)
-                .load(currentProduct.imageUrls[0])
+                .load(currentProduct?.imageUrls[0])
                 .placeholder(R.drawable.ic_more)
                 .into(holder.binding.ivProductImage)
 
-            binding.tvProductPrice.text = currentProduct.price.toString()
-            binding.tvProductName.text = currentProduct.name
+            binding.tvProductPrice.text = currentProduct?.price.toString()
+            binding.tvProductName.text = currentProduct?.name
         }
     }
 
