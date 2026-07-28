@@ -59,6 +59,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
             binding.tvProductPrice.text = currentProduct?.price.toString()
             binding.tvProductName.text = currentProduct?.name
+            binding.tvProductBrand.text = currentProduct?.brand
         }
     }
 

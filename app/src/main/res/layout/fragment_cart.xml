@@ -23,6 +23,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:padding="16dp"
         android:fontFamily="@font/source_sans_regular"
+        android:text="Items (0)"
         android:textSize="14sp"
         android:textColor="@color/lightGrey"
         android:letterSpacing="0.015" />
@@ -35,6 +36,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingHorizontal="16dp" />
-    
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
