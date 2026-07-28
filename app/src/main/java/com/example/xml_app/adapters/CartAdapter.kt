@@ -69,6 +69,7 @@ class CartAdapter(
             binding.tvProductBrand.text = currentProduct?.brand
 
             binding.tvCartCount.text = state.cartCount.toString()
+
             binding.root.setOnClickListener {
                 onProductClick(currentProduct?.id)
             }

@@ -11,7 +11,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.ProductDetailActivity
@@ -110,16 +112,44 @@ class Cart : Fragment() {
                 }
             },
 
-            onCartIncrement = {
+            onCartIncrement = { id ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    requireContext().productDataStore.updateData { current ->
+                        val updatedProducts = current.products.toMutableMap()
+                        val currentState = updatedProducts[id] ?: ProductState()
 
+                        updatedProducts[id!!] =
+                            currentState.copy(cartCount = currentState.cartCount + 1)
+                        current.copy(products = updatedProducts)
+                    }
+                }
             },
 
-            onCartDecrement = {}
+            onCartDecrement = { id ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    requireContext().productDataStore.updateData { current ->
+                        val updatedProducts = current.products.toMutableMap()
+                        val currentState = updatedProducts[id] ?: ProductState()
+                        updatedProducts[id!!] =
+                            currentState.copy(cartCount = currentState.cartCount - 1)
+                        current.copy(products = updatedProducts)
+                    }
+                }
+            }
         )
 
         binding.rvCartProducts.apply {
             adapter = cartAdapter
             layoutManager = LinearLayoutManager(requireContext())
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                productStateFlow().collect { states ->
+                    cartAdapter.productStates = states
+                    cartAdapter.notifyDataSetChanged()
+                }
+            }
         }
     }
 
