@@ -9,8 +9,13 @@ import com.bumptech.glide.Glide
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemCartProductBinding
 import com.example.xml_app.models.Product
+import com.example.xml_app.models.ProductState
 
-class CartAdapter : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+class CartAdapter(
+    val onProductClick: (Int?) -> Unit,
+    val onCartIncrement: (Int?) -> Unit,
+    val onCartDecrement: (Int?) -> Unit
+) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -38,18 +43,22 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     }
 
     private val differ = AsyncListDiffer(this, differCallback)
-
     var products: List<Product?>
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
         }
 
+    var productStates: Map<Int, ProductState> = emptyMap()
+
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int
     ) {
         val currentProduct = products[position]
+        val state = productStates[currentProduct?.id] ?: ProductState()
+
+
 
         holder.apply {
             Glide.with(holder.itemView.context)
@@ -60,6 +69,14 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             binding.tvProductPrice.text = currentProduct?.price.toString()
             binding.tvProductName.text = currentProduct?.name
             binding.tvProductBrand.text = currentProduct?.brand
+
+            binding.btnDecrementCart.setOnClickListener {
+                onCartDecrement(currentProduct?.id)
+            }
+
+            binding.btnIncrementCart.setOnClickListener {
+                onCartIncrement(currentProduct?.id)
+            }
         }
     }
 

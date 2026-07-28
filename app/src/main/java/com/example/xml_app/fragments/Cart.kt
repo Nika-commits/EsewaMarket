@@ -100,7 +100,13 @@ class Cart : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        cartAdapter = CartAdapter()
+        cartAdapter = CartAdapter(
+            onProductClick = {},
+
+            onCartIncrement = {},
+
+            onCartDecrement = {}
+        )
 
         binding.rvCartProducts.apply {
             adapter = cartAdapter
