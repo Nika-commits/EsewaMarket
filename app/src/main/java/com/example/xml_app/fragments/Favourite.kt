@@ -4,13 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
 
 class Favourite : Fragment() {
 
-    var _binding: FragmentFavouriteBinding? = null
-    val binding = _binding!!
+    private var _binding: FragmentFavouriteBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,9 +24,46 @@ class Favourite : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentFavouriteBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        applyEdgeToEdgeInsets()
+        setupToolbar()
+    }
+
+    fun applyEdgeToEdgeInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+
+    fun setupToolbar() {
+        val toolbar = binding.favouriteToolbar.toolbar
+        toolbar.title = "Favourites"
+
+        (requireContext() as AppCompatActivity).apply {
+            setSupportActionBar(toolbar)
+
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+            }
+        }
+
+        toolbar.navigationIcon?.setTint(
+            ContextCompat.getColor(requireContext(), R.color.lightGrey)
+        )
+
+        toolbar.setNavigationOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
     }
 
 }
