@@ -9,14 +9,29 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.xml_app.R
+import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.FragmentCartBinding
+import com.example.xml_app.models.ProductState
+import com.example.xml_app.viewModel.CartViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 
 class Cart : Fragment() {
 
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: CartViewModel by viewModels()
+
+    fun productStateFlow(): Flow<Map<Int, ProductState>> =
+        requireContext().productDataStore.data.map { products ->
+            products.products
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +78,15 @@ class Cart : Fragment() {
 
         toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    fun setupCart() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            productStateFlow().collect { products ->
+                val cartIds = products.keys.toList()
+                viewModel.getProductsInCart(cartIds)
+            }
         }
     }
 

@@ -40,8 +40,7 @@ class CartViewModel : ViewModel() {
                         }
                         response.body()
                     }
-                }
-                    .awaitAll()
+                }.awaitAll()
 
                 _productsInCart.value = products
             } catch (e: Exception) {
