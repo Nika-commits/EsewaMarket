@@ -68,7 +68,8 @@
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Password" />
+                android:hint="Password"
+                android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
         >
