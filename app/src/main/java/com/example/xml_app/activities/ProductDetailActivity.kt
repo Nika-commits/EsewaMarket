@@ -39,8 +39,6 @@ class ProductDetailActivity : AppCompatActivity() {
 
     private lateinit var colorAdapter: ColorSelectorAdapter
 
-    private var _color: String? = null
-    private var _size: String? = null
     private fun productStateFlow(): Flow<Map<Int, ProductState>> =
         this.productDataStore.data.map { products ->
             products.products
