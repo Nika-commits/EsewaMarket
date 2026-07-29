@@ -1,6 +1,7 @@
 plugins {
     kotlin("plugin.serialization") version "2.4.10"
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services") version "4.5.0" apply false
 }
 
 android {
@@ -43,10 +44,16 @@ dependencies {
     implementation("androidx.datastore:datastore:1.2.1")
 
     implementation("androidx.datastore:datastore-core:1.2.1")
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     implementation("androidx.datastore:datastore-preferences-core:1.2.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+    implementation("com.google.firebase:firebase-analytics")
+
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
