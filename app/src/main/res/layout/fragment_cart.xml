@@ -28,6 +28,17 @@
         android:textColor="@color/lightGrey"
         android:letterSpacing="0.015" />
 
+    <include
+        android:id="@+id/emptyCart"
+        layout="@layout/item_empty_cart"
+        app:layout_constraintTop_toBottomOf="@+id/tvItemCount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="16dp"
+        android:layout_height="344dp"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCartProducts"
         android:layout_width="match_parent"

@@ -101,6 +101,21 @@ class Cart : Fragment() {
                 viewModel.getProductsInCart(cartIds)
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            productStateFlow().collect { products ->
+                val cartCount = products.filter { (_, productState) ->
+                    productState.cartCount > 0
+                }.keys.toList()
+                if (cartCount.size == 0) {
+                    binding.emptyCart.root.visibility = View.VISIBLE
+                    binding.rvCartProducts.visibility = View.GONE
+                } else {
+                    binding.emptyCart.root.visibility = View.GONE
+                    binding.rvCartProducts.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
