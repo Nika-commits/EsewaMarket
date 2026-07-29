@@ -30,14 +30,14 @@ class CartAdapter(
             oldItem: Product,
             newItem: Product
         ): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(
             oldItem: Product,
             newItem: Product
         ): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem == newItem
         }
 
     }
@@ -50,6 +50,7 @@ class CartAdapter(
         }
 
     var productStates: Map<Int, ProductState> = emptyMap()
+
 
     override fun onBindViewHolder(
         holder: ViewHolder,

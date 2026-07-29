@@ -207,7 +207,7 @@ class Home : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 productStateFlow().collect { states ->
                     featuredProductsAdapter.productStates = states
-                    featuredProductsAdapter.notifyDataSetChanged()
+//                    featuredProductsAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -238,7 +238,7 @@ class Home : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 productStateFlow().collect { states ->
                     hotDealsAdapter.productStates = states
-                    hotDealsAdapter.notifyDataSetChanged()
+//                    hotDealsAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -301,6 +301,8 @@ class Home : Fragment() {
         recyclerView.apply {
             this.adapter = adapter
             this.layoutManager = layoutManager
+            itemAnimator = null
+            
             itemDecoration?.let {
                 addItemDecoration(it)
             }

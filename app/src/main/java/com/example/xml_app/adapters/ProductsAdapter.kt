@@ -1,6 +1,7 @@
 package com.example.xml_app.adapters
 
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +14,6 @@ import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemProductBinding
 import com.example.xml_app.models.Product
 import com.example.xml_app.models.ProductState
-
-//import com.example.xml_app.databinding.ItemProductCardBinding
 
 class ProductsAdapter(
     val onProductClick: (Product) -> Unit,
@@ -43,6 +42,19 @@ class ProductsAdapter(
         }
 
     var productStates: Map<Int, ProductState> = emptyMap()
+        set(newStates) {
+            val oldStates = field
+            field = newStates
+
+            products.forEachIndexed { index, product ->
+                val oldState = oldStates[product.id] ?: ProductState()
+                val newState = newStates[product.id] ?: ProductState()
+
+                if (oldState != newState) {
+                    notifyItemChanged(index)
+                }
+            }
+        }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -54,13 +66,17 @@ class ProductsAdapter(
         return ViewHolder(binding)
     }
 
+    private var bindCount = 0
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int
     ) {
+        bindCount++
         holder.apply {
             val product = products[position]
             val state = productStates[product.id] ?: ProductState()
+
+            Log.d("Product Adapter", "Bind count = $bindCount, position = $position")
             if (state.isFavourite) {
                 binding.ibFavourites.setImageResource(R.drawable.ic_filled_favourite)
                 binding.ibFavourites.imageTintList =
