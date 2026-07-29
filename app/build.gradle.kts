@@ -51,7 +51,11 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences-core:1.2.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
+
+
+    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
     implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+    implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-analytics")
 
     implementation(libs.androidx.fragment.ktx)

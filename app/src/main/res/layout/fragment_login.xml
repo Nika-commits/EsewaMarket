@@ -3,16 +3,148 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/login"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/offWhiteBackground">
 
     <TextView
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LoginFragment"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Welcome back! Log in to your Esewa Account"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:fontFamily="@font/source_sans_semibold"
+        android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/formContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxStrokeColor="@color/textDark200"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            android:layout_marginVertical="8dp"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Email" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxStrokeColor="@color/textDark200"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="2dp"
+            android:layout_marginVertical="8dp"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Password" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:text="LOG IN"
+            android:backgroundTint="@color/primaryGreen"
+            android:layout_height="wrap_content"
+            android:insetBottom="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetLeft="0dp"
+            android:layout_marginVertical="16dp"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/formContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="16dp"
+        android:gravity="center_vertical"
+
+
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@color/textDark200" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:text="OR" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@color/textDark200" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnGoogle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/separator"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:insetTop="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:backgroundTint="@color/surface"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/textDark200"
+        app:icon="@drawable/ic_google"
+        app:iconGravity="textStart"
+        android:text="Continue With Google"
+        android:textColor="@color/lightGrey"
+        android:layout_marginVertical="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
