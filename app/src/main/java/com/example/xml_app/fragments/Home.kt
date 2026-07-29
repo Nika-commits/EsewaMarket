@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -118,6 +119,13 @@ class Home : Fragment() {
         activity.setSupportActionBar(binding.toolbar)
         activity.supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        binding.toolbar.overflowIcon?.setTint(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.textDark
+            )
+        )
+
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -127,9 +135,9 @@ class Home : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.miAbout -> {
-                        Toast.makeText(requireContext(), "Clicked on About", Toast.LENGTH_SHORT)
-                            .show()
-                        true
+                        throw RuntimeException("Test Exception")
+//                        Toast.makeText(requireContext(), "Clicked on About", Toast.LENGTH_SHORT)
+//                            .show()
                     }
 
                     R.id.miNotification -> {
@@ -302,7 +310,7 @@ class Home : Fragment() {
             this.adapter = adapter
             this.layoutManager = layoutManager
             itemAnimator = null
-            
+
             itemDecoration?.let {
                 addItemDecoration(it)
             }

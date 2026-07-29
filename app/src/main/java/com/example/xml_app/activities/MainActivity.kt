@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         binding.tabMore.root.setOnClickListener {
             replaceFragment(moreFragment)
             setSelectedTab(binding.tabMore)
+//            throw RuntimeException("Test")
         }
 
         lifecycleScope.launch {
