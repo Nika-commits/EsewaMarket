@@ -34,6 +34,7 @@ class More : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupToolbar()
         applyEdgeToEdgeInsets()
+        setupSettingsOption()
     }
 
     private fun applyEdgeToEdgeInsets() {
@@ -65,6 +66,37 @@ class More : Fragment() {
     }
 
     fun setupSettingsOption() {
+        val isAuth = false
+
+        if (isAuth) {
+            setupAuthSettingsRow()
+            binding.authLayout.root.visibility = View.VISIBLE
+        } else {
+            binding.authButtonsLayout.root.visibility = View.VISIBLE
+        }
+    }
+
+    fun setupAuthSettingsRow() {
+        val myProducts = binding.authLayout.myProducts
+        myProducts.ivIcon.setImageResource(R.drawable.ic_myproducts)
+        myProducts.tvName.text = "My Products"
+
+        val shippingAddress = binding.authLayout.shippingAddress
+        shippingAddress.ivIcon.setImageResource(R.drawable.ic_shippping_address)
+        shippingAddress.tvName.text = "Shipping Address"
+
+        val myOrder = binding.authLayout.myOrder
+        myOrder.ivIcon.setImageResource(R.drawable.ic_myorder)
+        myOrder.tvName.text = "My Order"
+
+        val myReturn = binding.authLayout.myReturn
+        myReturn.ivIcon.setImageResource(R.drawable.ic_myreturn)
+        myReturn.tvName.text = "My Return"
+
+        val myCancellation = binding.authLayout.myCancellation
+        myCancellation.ivIcon.setImageResource(R.drawable.ic_mycancellation)
+        myCancellation.tvName.text = "My Cancellation"
+
 
     }
 }

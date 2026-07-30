@@ -104,7 +104,7 @@
         app:layout_constraintTop_toBottomOf="@id/my_products" />
 
     <TextView
-        android:id="@+id/tv_my_orders"
+        android:id="@+id/tvMyOrder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -119,23 +119,31 @@
         app:layout_constraintTop_toBottomOf="@id/shipping_address" />
 
     <include
-        android:id="@+id/current_orders"
+        android:id="@+id/myOrder"
         layout="@layout/item_setting_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_my_orders" />
+        app:layout_constraintTop_toBottomOf="@id/tvMyOrder" />
 
     <include
-        android:id="@+id/order_history"
+        android:id="@+id/myReturn"
         layout="@layout/item_setting_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_orders" />
+        app:layout_constraintTop_toBottomOf="@id/myOrder" />
 
+    <include
+        android:id="@+id/myCancellation"
+        layout="@layout/item_setting_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/myReturn" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
@@ -144,7 +152,16 @@
         android:layout_marginHorizontal="16dp"
         android:backgroundTint="@color/primaryGreen"
         android:text="LOGOUT"
-        app:layout_constraintTop_toBottomOf="@id/order_history"
+        android:fontFamily="@font/source_sans_semibold"
+        android:textColor="@color/surface"
+
+        android:layout_marginVertical="24dp"
+        android:insetBottom="0dp"
+        android:insetTop="0dp"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+
+        app:layout_constraintTop_toBottomOf="@id/myCancellation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

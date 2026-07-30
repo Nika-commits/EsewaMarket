@@ -26,7 +26,7 @@ class AuthActivity : AppCompatActivity() {
         }
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(binding.fvAuthContainer.id, LoginFragment.newInstance())
+                .replace(binding.fvAuthContainer.id, LoginFragment())
                 .commitNow()
         }
     }

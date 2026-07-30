@@ -20,6 +20,8 @@
         android:id="@+id/authLayout"
         layout="@layout/item_more_profile"
         android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/moreToolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -28,6 +30,8 @@
         android:id="@+id/authButtonsLayout"
         layout="@layout/item_more_auth_options"
         android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/moreToolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
