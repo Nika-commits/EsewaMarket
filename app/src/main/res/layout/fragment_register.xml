@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/source_sans_semibold"
         android:textSize="24sp"
+        android:textColor="@color/lightGrey"
         android:textAlignment="center"
         android:text="Create Account"
         android:paddingTop="120dp"
@@ -36,13 +37,18 @@
             app:boxCornerRadiusTopStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
-            app:startIconDrawable="@drawable/ic_user">
+            app:startIconDrawable="@drawable/ic_user"
+            app:boxStrokeColor="@color/primaryGreen"
+            app:hintTextColor="@color/primaryGreen"
+            app:cursorColor="@color/primaryGreen"
+            app:startIconTint="@color/lightGrey">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Username" />
+                android:hint="Username"
+                android:textColor="@color/lightGrey" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -53,12 +59,17 @@
             app:boxCornerRadiusTopStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
-            app:startIconDrawable="@drawable/ic_mail_24">
+            app:startIconDrawable="@drawable/ic_mail_24"
+            app:boxStrokeColor="@color/primaryGreen"
+            app:hintTextColor="@color/primaryGreen"
+            app:cursorColor="@color/primaryGreen"
+            app:startIconTint="@color/lightGrey">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/Email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/lightGrey"
                 android:hint="Email" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -70,12 +81,17 @@
             app:boxCornerRadiusTopStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
-            app:startIconDrawable="@drawable/ic_password">
+            app:startIconDrawable="@drawable/ic_user"
+            app:boxStrokeColor="@color/primaryGreen"
+            app:hintTextColor="@color/primaryGreen"
+            app:cursorColor="@color/primaryGreen"
+            app:startIconTint="@color/lightGrey">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/lightGrey"
                 android:hint="Password" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -91,6 +107,8 @@
 
             android:layout_marginVertical="24dp"
             android:text="SIGN UP"
+            android:textColor="@color/surface"
+
             android:backgroundTint="@color/primaryGreen"
             android:fontFamily="@font/source_sans_semibold"
             android:textSize="20sp"
@@ -125,7 +143,8 @@
             android:layout_gravity="center"
             android:textAlignment="center"
             android:gravity="center"
-            android:text="OR" />
+            android:text="OR"
+            android:textColor="@color/textDark200" />
 
         <View
             android:layout_width="0dp"
