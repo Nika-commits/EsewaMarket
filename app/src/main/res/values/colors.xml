@@ -20,4 +20,7 @@
     <color name="esewaLight">#F8F8FA</color>
     <color name="textDark">#263238</color>
 
+
+    <color name="error">#D3494E</color>
+
 </resources>

@@ -17,6 +17,30 @@
         <item name="fontFamily">@font/source_sans_regular</item>
         <item name="textFillColor">@color/textDark</item>
     </style>
+
+
+    <style name="App.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
+
+        <item name="boxStrokeColor">@color/primaryGreen</item>
+        <item name="hintTextColor">@color/primaryGreen</item>
+        <item name="cursorColor">@color/primaryGreen</item>
+
+        <item name="startIconTint">@color/lightGrey</item>
+        <item name="errorTextColor">@color/error</item>
+        <item name="errorIconTint">@color/error</item>
+        <item name="errorTextAppearance">@style/App.TextInputError</item>
+    </style>
+
+    <style name="App.TextInputError" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/error</item>
+        <item name="android:textSize">12sp</item>
+        <item name="fontFamily">@font/source_sans_regular</item>
+    </style>
+
 </resources>
 
 
