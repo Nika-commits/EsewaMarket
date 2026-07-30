@@ -63,4 +63,8 @@ class More : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
     }
+
+    fun setupSettingsOption() {
+
+    }
 }

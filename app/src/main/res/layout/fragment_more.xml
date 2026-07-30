@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.More"
@@ -13,6 +12,23 @@
         android:id="@+id/moreToolbar"
         layout="@layout/item_toolbar"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <include
+        android:id="@+id/authLayout"
+        layout="@layout/item_more_profile"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/moreToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <include
+        android:id="@+id/authButtonsLayout"
+        layout="@layout/item_more_auth_options"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/moreToolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
