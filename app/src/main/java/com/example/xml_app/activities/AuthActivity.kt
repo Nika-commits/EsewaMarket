@@ -7,10 +7,16 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.xml_app.databinding.ActivityAuthBinding
 import com.example.xml_app.fragments.LoginFragment
+import com.example.xml_app.fragments.Register
 
 class AuthActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityAuthBinding
+
+    companion object {
+        const val DESTINATION = "destination"
+        const val LOGIN = "login"
+        const val REGISTER = "register"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,10 +30,24 @@ class AuthActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(binding.fvAuthContainer.id, LoginFragment())
-                .commitNow()
+            openInitialFragment()
         }
     }
+
+    private fun openInitialFragment() {
+        val destination = intent.getStringExtra(DESTINATION)
+
+        val fragment = when (destination) {
+            REGISTER -> Register()
+            LOGIN -> LoginFragment()
+            else -> LoginFragment()
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(binding.fvAuthContainer.id, fragment)
+            .commit()
+    }
+
 }

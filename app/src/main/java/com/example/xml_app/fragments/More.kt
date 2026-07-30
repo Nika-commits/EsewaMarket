@@ -1,5 +1,6 @@
 package com.example.xml_app.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.xml_app.R
+import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
 
 private const val ARG_PARAM1 = "param1"
@@ -72,6 +74,7 @@ class More : Fragment() {
             setupAuthSettingsRow()
             binding.authLayout.root.visibility = View.VISIBLE
         } else {
+            setupAuthButtons()
             binding.authButtonsLayout.root.visibility = View.VISIBLE
         }
     }
@@ -98,5 +101,22 @@ class More : Fragment() {
         myCancellation.tvName.text = "My Cancellation"
 
 
+    }
+
+    fun setupAuthButtons() {
+        binding.authButtonsLayout.btnLogin.setOnClickListener {
+            openAuthActivity(AuthActivity.LOGIN)
+        }
+
+        binding.authButtonsLayout.btnSignup.setOnClickListener {
+            openAuthActivity(AuthActivity.REGISTER)
+        }
+    }
+
+    private fun openAuthActivity(destination: String) {
+        val intent = Intent(requireContext(), AuthActivity::class.java).apply {
+            putExtra(AuthActivity.DESTINATION, destination)
+        }
+        startActivity(intent)
     }
 }
