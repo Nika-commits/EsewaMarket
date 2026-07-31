@@ -31,7 +31,9 @@ class LoginViewModel(
         if (!emailResult.successful || !passwordResult.successful) return
 
         viewModelScope.launch {
+            _formState.value = _formState.value.copy(isLoading = true)
             _result.value = AuthRepository.login(email, password)
+            _formState.value = _formState.value.copy(isLoading = false)
         }
     }
 }

@@ -62,19 +62,36 @@
                 android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
-        >
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLogin"
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:text="LOG IN"
-            android:backgroundTint="@color/primaryGreen"
-            android:layout_height="wrap_content"
-            android:insetBottom="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetLeft="0dp"
-            android:layout_marginVertical="16dp" />
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:text="LOG IN"
+                android:textColor="@color/surface"
+                android:fontFamily="@font/source_sans_semibold"
+                android:letterSpacing="0.1"
+                android:backgroundTint="@color/primaryGreen"
+                android:layout_height="wrap_content"
+                android:insetBottom="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetLeft="0dp"
+                android:layout_marginVertical="16dp" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@id/loading"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                app:indicatorColor="@color/surface"
+                app:trackThickness="3dp"
+                android:visibility="gone" />
+        </FrameLayout>
     </LinearLayout>
 
 

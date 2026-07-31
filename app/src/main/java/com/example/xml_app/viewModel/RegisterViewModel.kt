@@ -40,7 +40,9 @@ class RegisterViewModel(
         if (!usernameResult.successful || !emailResult.successful || !passwordResult.successful) return
 
         viewModelScope.launch {
+            _formState.value = _formState.value.copy(isLoading = true)
             _result.value = AuthRepository.register(email, password)
+            _formState.value = _formState.value.copy(isLoading = false)
         }
 
     }

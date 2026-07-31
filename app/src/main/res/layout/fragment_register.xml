@@ -79,24 +79,37 @@
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSignup"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetRight="0dp"
+            android:layout_height="wrap_content">
 
-            android:layout_marginVertical="24dp"
-            android:text="SIGN UP"
-            android:textColor="@color/surface"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSignup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetRight="0dp"
 
-            android:backgroundTint="@color/primaryGreen"
-            android:fontFamily="@font/source_sans_semibold"
-            android:textSize="20sp"
-            android:letterSpacing="0.11" />
+                android:layout_marginVertical="24dp"
+                android:text="SIGN UP"
+                android:textColor="@color/surface"
+
+                android:backgroundTint="@color/primaryGreen"
+                android:fontFamily="@font/source_sans_semibold"
+                android:textSize="20sp"
+                android:letterSpacing="0.11" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/loading"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:indicatorColor="@color/surface"
+                app:trackThickness="3dp" />
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout
