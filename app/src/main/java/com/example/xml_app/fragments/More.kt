@@ -74,7 +74,6 @@ class More : Fragment() {
 
     fun setupSettingsOption() {
         auth = Firebase.auth
-
         val currentUser = auth.currentUser
 
         if (currentUser != null) {
