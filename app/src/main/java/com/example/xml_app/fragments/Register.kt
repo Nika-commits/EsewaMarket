@@ -2,7 +2,6 @@ package com.example.xml_app.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,19 +78,24 @@ class Register : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.result.collect { result ->
-                    Log.d("Register", "$result")
-                    if (result == true) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Created User Successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Intent(requireContext(), MainActivity::class.java).also {
-                            startActivity(it)
+                    when (result) {
+                        true -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "Created User Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Intent(requireContext(), MainActivity::class.java).also {
+                                startActivity(it)
+                            }
                         }
-                    } else {
-                        Toast.makeText(requireContext(), "Failed to Signup", Toast.LENGTH_SHORT)
-                            .show()
+
+                        false -> {
+                            Toast.makeText(requireContext(), "Failed to Signup", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        null -> {}
                     }
                 }
             }

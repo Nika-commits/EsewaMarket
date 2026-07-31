@@ -43,6 +43,38 @@
         <item name="fontFamily">@font/source_sans_regular</item>
     </style>
 
+
+    <style name="App.PrimaryButton" parent="Widget.Material3.Button">
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+
+        <item name="backgroundTint">@color/primaryGreen</item>
+        <item name="android:textColor">@color/surface</item>
+        <item name="android:fontFamily">@font/source_sans_semibold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:letterSpacing">0.11</item>
+    </style>
+
+    <style name="App.SecondaryButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+
+        <item name="backgroundTint">@color/surface</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="strokeColor">@color/textDark200</item>
+
+        <item name="android:fontFamily">@font/source_sans_semibold</item>
+        <item name="android:textColor">@color/textDark200</item>
+        <item name="android:textSize">18sp</item>
+
+        <item name="iconSize">24dp</item>
+        <item name="iconTint">@null</item>
+    </style>
+
 </resources>
 
 

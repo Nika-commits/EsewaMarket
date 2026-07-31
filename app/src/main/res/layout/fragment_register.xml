@@ -85,21 +85,10 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSignup"
+                style="@style/App.PrimaryButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetRight="0dp"
-
-                android:layout_marginVertical="24dp"
-                android:text="SIGN UP"
-                android:textColor="@color/surface"
-
-                android:backgroundTint="@color/primaryGreen"
-                android:fontFamily="@font/source_sans_semibold"
-                android:textSize="20sp"
-                android:letterSpacing="0.11" />
+                android:layout_marginVertical="24dp" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/loading"
@@ -153,25 +142,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGoogle"
+        style="@style/App.SecondaryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/separator"
         android:layout_marginHorizontal="16dp"
-        android:insetRight="0dp"
-        android:insetBottom="0dp"
-        android:insetTop="0dp"
-        android:insetLeft="0dp"
         android:layout_marginTop="20dp"
         android:text="Continue With Google"
-        android:backgroundTint="@color/surface"
-        app:strokeWidth="2dp"
-        app:strokeColor="@color/textDark200"
-        android:fontFamily="@font/source_sans_semibold"
-        android:textColor="@color/textDark200"
-        android:textSize="18sp"
-        app:icon="@drawable/ic_google"
-        app:iconSize="24dp"
-        app:iconTint="@null" />
-
+        app:icon="@drawable/ic_google" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

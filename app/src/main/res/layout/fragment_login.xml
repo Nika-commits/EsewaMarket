@@ -70,18 +70,10 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
+                style="@style/App.PrimaryButton"
                 android:layout_width="match_parent"
                 android:text="LOG IN"
-                android:textColor="@color/surface"
-                android:fontFamily="@font/source_sans_semibold"
-                android:letterSpacing="0.1"
-                android:backgroundTint="@color/primaryGreen"
-                android:layout_height="wrap_content"
-                android:insetBottom="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetLeft="0dp"
-                android:layout_marginVertical="16dp" />
+                android:layout_height="wrap_content" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@id/loading"
@@ -134,23 +126,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGoogle"
+        style="@style/App.SecondaryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/separator"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetBottom="0dp"
-        android:insetTop="0dp"
         android:layout_marginHorizontal="16dp"
-        android:backgroundTint="@color/surface"
-        app:strokeWidth="2dp"
-        app:strokeColor="@color/textDark200"
         app:icon="@drawable/ic_google"
-        app:iconTint="@null"
-        app:iconSize="24dp"
-        app:iconGravity="start"
-        android:text="Continue With Google"
-        android:textColor="@color/lightGrey"
-        android:layout_marginVertical="16dp" />
-
+        android:text="Continue With Google" />
 </androidx.constraintlayout.widget.ConstraintLayout>

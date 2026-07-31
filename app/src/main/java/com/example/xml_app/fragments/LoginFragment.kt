@@ -77,18 +77,28 @@ class LoginFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.result.collect { result ->
-                    if (result == true) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Signed In Successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Intent(requireContext(), MainActivity::class.java).also {
-                            startActivity(it)
+                    when (result) {
+                        true -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "Signed In Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Intent(requireContext(), MainActivity::class.java).also {
+                                startActivity(it)
+                            }
                         }
-                    } else {
-                        Toast.makeText(requireContext(), "Failed to Sign in", Toast.LENGTH_SHORT)
-                            .show()
+
+                        false -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "Failed to Sign in",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+
+                        null -> {}
                     }
                 }
             }
