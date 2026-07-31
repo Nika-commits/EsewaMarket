@@ -16,7 +16,6 @@ class RegisterViewModel(
 ) : ViewModel() {
     private val _formState = MutableStateFlow(RegisterFormState())
     val formState = _formState.asStateFlow()
-    private val auth = Firebase.auth
     private val _result = MutableStateFlow<Boolean?>(null)
     val result = _result.asStateFlow()
 

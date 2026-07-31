@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 class LoginViewModel(
     private val validate: LoginValidation = LoginValidation()
 ) : ViewModel() {
-    private var _formState = MutableStateFlow(LoginFormState())
+    private val _formState = MutableStateFlow(LoginFormState())
     val formState = _formState.asStateFlow()
-    private var _result = MutableStateFlow(false)
+    private var _result = MutableStateFlow<Boolean?>(null)
     val result = _result.asStateFlow()
 
     fun login(email: String, password: String) {
