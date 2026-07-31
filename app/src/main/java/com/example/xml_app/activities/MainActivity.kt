@@ -37,7 +37,23 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        if (savedInstanceState == null) {
+            replaceFragment(homeFragment)
+            setSelectedTab(binding.tabHome)
+        }
+
+        setupBottomNavigation()
+
+    }
+
+    private fun setupBottomNavigation() {
         val productsStateFlow: Flow<Map<Int, ProductState>> =
             this.productDataStore.data.map { products ->
                 products.products
@@ -51,15 +67,6 @@ class MainActivity : AppCompatActivity() {
             p.values.count { it.isFavourite }
         }
 
-
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-
         binding.tabHome.ivNavIcon.setImageResource(R.drawable.ic_market)
         binding.tabHome.tvNavText.text = "Home"
 
@@ -72,10 +79,6 @@ class MainActivity : AppCompatActivity() {
         binding.tabMore.ivNavIcon.setImageResource(R.drawable.ic_more)
         binding.tabMore.tvNavText.text = "More"
 
-        if (savedInstanceState == null) {
-            replaceFragment(homeFragment)
-            setSelectedTab(binding.tabHome)
-        }
 
         binding.tabHome.root.setOnClickListener {
             replaceFragment(homeFragment)
@@ -99,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 cartCount.collect { count ->
                     if (count > 0) {
                         binding.tabCart.viewBadge.visibility = View.VISIBLE
@@ -124,12 +127,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
     }
+
 
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().apply {
