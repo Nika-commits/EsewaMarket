@@ -13,6 +13,9 @@ import androidx.fragment.app.Fragment
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 private const val ARG_PARAM1 = "param1"
 
@@ -20,6 +23,8 @@ class More : Fragment() {
 
     private var _binding: FragmentMoreBinding? = null
     private val binding get() = _binding!!
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -68,9 +73,11 @@ class More : Fragment() {
     }
 
     fun setupSettingsOption() {
-        val isAuth = false
+        auth = Firebase.auth
 
-        if (isAuth) {
+        val currentUser = auth.currentUser
+
+        if (currentUser != null) {
             setupAuthSettingsRow()
             binding.authLayout.root.visibility = View.VISIBLE
         } else {
@@ -101,6 +108,13 @@ class More : Fragment() {
         myCancellation.tvName.text = "My Cancellation"
 
 
+        binding.authLayout.btnLogout.setOnClickListener {
+            auth = Firebase.auth
+
+            auth.signOut()
+            openAuthActivity(AuthActivity.LOGIN)
+            requireActivity().finish()
+        }
     }
 
     fun setupAuthButtons() {

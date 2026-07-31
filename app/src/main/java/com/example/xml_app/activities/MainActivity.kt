@@ -36,7 +36,6 @@ private val TAG = "Home"
 class MainActivity : AppCompatActivity() {
     private var userName = "Pranish" + ","
     private lateinit var binding: ActivityMainBinding
-
     private lateinit var auth: FirebaseAuth
     private val homeFragment = Home()
     private val cartFragment = Cart()
