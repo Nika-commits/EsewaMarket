@@ -4,16 +4,22 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.xml_app.utils.formstates.RegisterFormState
 import com.example.xml_app.utils.validation.RegisterValidation
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+
+private val TAG = "Register"
 
 class RegisterViewModel(
     private val validate: RegisterValidation = RegisterValidation()
 ) : ViewModel() {
     private val _formState = MutableStateFlow(RegisterFormState())
     val formState = _formState.asStateFlow()
-    var auth = FirebaseAuth.getInstance()
+    private val auth = Firebase.auth
+
+    private val _result = MutableStateFlow<Boolean?>(null)
+    val result = _result.asStateFlow()
 
     fun register(
         username: String,
@@ -35,14 +41,17 @@ class RegisterViewModel(
 
         if (!usernameResult.successful || !emailResult.successful || !passwordResult.successful) return
 
+        Log.d(TAG, "$username , $email , $password")
+
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener {
-                Log.d("Register", "User Created")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Created User.")
+                    _result.value = true
+                } else {
+                    Log.d(TAG, "Failed to create user.")
+                    _result.value = false
+                }
             }
-
-
-        Log.d("Register", "$username , $email , $password")
-
-
     }
 }

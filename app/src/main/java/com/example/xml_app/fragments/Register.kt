@@ -1,14 +1,17 @@
 package com.example.xml_app.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.xml_app.activities.MainActivity
 import com.example.xml_app.databinding.FragmentRegisterBinding
 import com.example.xml_app.viewModel.RegisterViewModel
 import kotlinx.coroutines.launch
@@ -32,6 +35,7 @@ class Register : Fragment() {
 
         setupRegisterButton()
         observeFormState()
+        showResultToast()
     }
 
     private fun setupRegisterButton() {
@@ -54,6 +58,28 @@ class Register : Fragment() {
                     binding.tilUsername.error = state.usernameError
                     binding.tilEmail.error = state.emailError
                     binding.tilPassword.error = state.passwordError
+                }
+            }
+        }
+    }
+
+    private fun showResultToast() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.result.collect { result ->
+                    if (result == true) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Created User Successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Intent(requireContext(), MainActivity::class.java).also {
+                            startActivity(it)
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to Signup", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         }
