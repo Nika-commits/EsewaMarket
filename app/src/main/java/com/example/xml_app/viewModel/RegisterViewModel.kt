@@ -1,7 +1,7 @@
 package com.example.xml_app.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.RegisterFormState
 import com.example.xml_app.utils.validation.RegisterValidation
 import com.google.firebase.Firebase
@@ -40,17 +40,7 @@ class RegisterViewModel(
 
         if (!usernameResult.successful || !emailResult.successful || !passwordResult.successful) return
 
-        Log.d(TAG, "$username , $email , $password")
+        _result.value = AuthRepository.register(email, password)
 
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "Created User.")
-                    _result.value = true
-                } else {
-                    Log.d(TAG, "Failed to create user.")
-                    _result.value = false
-                }
-            }
     }
 }
