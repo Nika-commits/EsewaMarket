@@ -32,6 +32,10 @@ object AuthRepository {
         }
     }
 
+    fun logout() {
+        auth.signOut()
+    }
+
     fun isAuth(): Boolean {
         val currentUser = auth.currentUser
         return currentUser != null

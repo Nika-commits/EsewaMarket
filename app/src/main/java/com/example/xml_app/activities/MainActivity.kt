@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -24,9 +23,6 @@ import com.example.xml_app.fragments.Favourite
 import com.example.xml_app.fragments.Home
 import com.example.xml_app.fragments.More
 import com.example.xml_app.models.ProductState
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -34,9 +30,7 @@ import kotlinx.coroutines.launch
 private val TAG = "Home"
 
 class MainActivity : AppCompatActivity() {
-    private var userName = "Pranish" + ","
     private lateinit var binding: ActivityMainBinding
-    private lateinit var auth: FirebaseAuth
     private val homeFragment = Home()
     private val cartFragment = Cart()
     private val favouriteFragment = Favourite()
@@ -58,22 +52,11 @@ class MainActivity : AppCompatActivity() {
 
         setupBottomNavigation()
 
-        auth = Firebase.auth
 
     }
 
     override fun onStart() {
         super.onStart()
-        val currentUser = auth.currentUser
-
-        if (currentUser == null) {
-            Log.d(TAG, "User is null")
-            Toast.makeText(this, "NO USER SESSION", Toast.LENGTH_SHORT).show()
-        } else {
-            Log.d(TAG, "$currentUser")
-            Toast.makeText(this, "${currentUser.email}", Toast.LENGTH_SHORT).show()
-        }
-
     }
 
 

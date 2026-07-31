@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -13,21 +14,14 @@ import androidx.fragment.app.Fragment
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
+import com.example.xml_app.utils.firebase.AuthRepository
 
 private const val ARG_PARAM1 = "param1"
 
 class More : Fragment() {
-
     private var _binding: FragmentMoreBinding? = null
     private val binding get() = _binding!!
-    private lateinit var auth: FirebaseAuth
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,8 +67,7 @@ class More : Fragment() {
     }
 
     fun setupSettingsOption() {
-        auth = Firebase.auth
-        val currentUser = auth.currentUser
+        val currentUser = AuthRepository.getUser()
 
         if (currentUser != null) {
             setupAuthSettingsRow()
@@ -108,11 +101,10 @@ class More : Fragment() {
 
 
         binding.authLayout.btnLogout.setOnClickListener {
-            auth = Firebase.auth
-
-            auth.signOut()
+            AuthRepository.logout()
+            Toast.makeText(requireContext(), "Logged Out Successfully", Toast.LENGTH_SHORT).show()
             openAuthActivity(AuthActivity.LOGIN)
-            requireActivity().finish()
+
         }
     }
 
