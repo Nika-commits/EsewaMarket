@@ -1,29 +1,35 @@
 package com.example.xml_app.utils.firebase
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.tasks.await
+
+val tag = "Auth"
 
 object AuthRepository {
     private val auth: FirebaseAuth = Firebase.auth
 
-    fun login(email: String, password: String): Boolean {
-        var result = false
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                result = task.isSuccessful
-            }
-        return result
+    suspend fun login(email: String, password: String): Boolean {
+        return try {
+            auth.signInWithEmailAndPassword(email, password).await()
+            true
+        } catch (e: Exception) {
+            Log.e(tag, "$e")
+            false
+        }
     }
 
-    fun register(email: String, password: String): Boolean {
-        var result = false
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                result = task.isSuccessful
-            }
-        return result
+    suspend fun register(email: String, password: String): Boolean {
+        return try {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            true
+        } catch (e: Exception) {
+            Log.e(tag, "$e")
+            false
+        }
     }
 
     fun isAuth(): Boolean {

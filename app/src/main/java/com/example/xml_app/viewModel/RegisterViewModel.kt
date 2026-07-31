@@ -1,13 +1,13 @@
 package com.example.xml_app.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.RegisterFormState
 import com.example.xml_app.utils.validation.RegisterValidation
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 private val TAG = "Register"
 
@@ -39,7 +39,9 @@ class RegisterViewModel(
 
         if (!usernameResult.successful || !emailResult.successful || !passwordResult.successful) return
 
-        _result.value = AuthRepository.register(email, password)
+        viewModelScope.launch {
+            _result.value = AuthRepository.register(email, password)
+        }
 
     }
 }

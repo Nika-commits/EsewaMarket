@@ -2,6 +2,7 @@ package com.example.xml_app.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,6 +68,7 @@ class Register : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.result.collect { result ->
+                    Log.d("Register", "$result")
                     if (result == true) {
                         Toast.makeText(
                             requireContext(),

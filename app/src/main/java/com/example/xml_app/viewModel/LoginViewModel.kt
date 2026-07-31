@@ -1,11 +1,13 @@
 package com.example.xml_app.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.LoginFormState
 import com.example.xml_app.utils.validation.LoginValidation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val validate: LoginValidation = LoginValidation()
@@ -28,6 +30,8 @@ class LoginViewModel(
 
         if (!emailResult.successful || !passwordResult.successful) return
 
-        _result.value = AuthRepository.login(email, password)
+        viewModelScope.launch {
+            _result.value = AuthRepository.login(email, password)
+        }
     }
 }
