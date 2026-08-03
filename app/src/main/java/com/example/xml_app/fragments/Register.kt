@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
@@ -104,12 +103,14 @@ class Register : Fragment() {
 
                     binding.btnSignup.isEnabled = !state.isLoading
 
-                    binding.loading.isVisible = state.isLoading
 
                     if (state.isLoading) {
-                        binding.btnSignup.text = ""
+                        binding.btnSignup.visibility = View.GONE
+                        binding.btnSignup.isEnabled = false
+                        binding.loading.visibility = View.VISIBLE
                     } else {
-                        binding.btnSignup.text = "SIGN UP"
+                        binding.loading.visibility = View.GONE
+                        binding.btnSignup.isEnabled = true
                     }
                 }
             }

@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
@@ -76,7 +75,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun createGoogleSignInRequest(): GetCredentialRequest {
-        var googleIdOption = GetGoogleIdOption.Builder()
+        val googleIdOption = GetGoogleIdOption.Builder()
             .setServerClientId(getString(R.string.google_oauth2_0_client_id))
             .setFilterByAuthorizedAccounts(true)
             .build()
@@ -95,14 +94,14 @@ class LoginFragment : Fragment() {
                     binding.tilEmail.error = state.emailError
                     binding.tilPassword.error = state.passwordError
 
-                    binding.btnLogin.isEnabled = !state.isLoading
-
-                    binding.loading.isVisible = state.isLoading
-
                     if (state.isLoading) {
-                        binding.btnLogin.text = ""
+                        binding.btnLogin.visibility = View.GONE
+                        binding.btnLogin.isEnabled = false
+                        binding.loading.visibility = View.VISIBLE
                     } else {
-                        binding.btnLogin.text = "LOGIN"
+                        binding.loading.visibility = View.GONE
+                        binding.btnLogin.isEnabled = true
+
                     }
 
                 }
