@@ -1,5 +1,6 @@
 package com.example.xml_app.viewModel
 
+import androidx.credentials.Credential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.utils.firebase.AuthRepository
@@ -33,6 +34,14 @@ class LoginViewModel(
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
             _result.value = AuthRepository.login(email, password)
+            _formState.value = _formState.value.copy(isLoading = false)
+        }
+    }
+
+    fun loginWithGoogle(credential: Credential) {
+        viewModelScope.launch {
+            _formState.value = _formState.value.copy(isLoading = true)
+            _result.value = AuthRepository.signInWithGoogle(credential)
             _formState.value = _formState.value.copy(isLoading = false)
         }
     }
