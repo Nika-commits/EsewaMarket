@@ -68,7 +68,8 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
@@ -77,14 +78,23 @@
                 android:text="LOG IN"
                 android:layout_height="wrap_content" />
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
+            <!--            <com.google.android.material.progressindicator.CircularProgressIndicator-->
+            <!--                android:id="@id/loading"-->
+            <!--                android:layout_width="24dp"-->
+            <!--                android:layout_height="24dp"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                app:indicatorColor="@color/surface"-->
+            <!--                app:trackThickness="3dp"-->
+            <!--                android:visibility="gone" />-->
+
+
+            <com.google.android.material.loadingindicator.LoadingIndicator
                 android:id="@id/loading"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                app:indicatorColor="@color/surface"
-                app:trackThickness="3dp"
-                android:visibility="gone" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/App.Loader"
+                android:layout_gravity="center" />
+
         </FrameLayout>
     </LinearLayout>
 
@@ -100,8 +110,6 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="16dp"
         android:gravity="center_vertical"
-
-
         android:orientation="horizontal">
 
         <View
@@ -124,6 +132,7 @@
             android:layout_height="1dp"
             android:layout_weight="1"
             android:background="@color/textDark200" />
+
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -131,6 +140,7 @@
         style="@style/App.SecondaryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
         app:layout_constraintTop_toBottomOf="@id/separator"
         android:layout_marginHorizontal="16dp"
         app:icon="@drawable/ic_google"
