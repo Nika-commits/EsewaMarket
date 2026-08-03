@@ -1,9 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
-    <style name="Base.Theme.XMLApp" parent="Theme.Material3.DayNight.NoActionBar">
-        Customize your light theme here.
-        <item name="android:colorPrimary">@color/offWhiteBackground</item>
+
+    <style name="Base.Theme.XMLApp" parent="Theme.Material3.Light.NoActionBar">
+
+        <item name="colorPrimary">@color/primaryGreen</item>
+        <item name="colorSecondary">@color/secondaryGreen</item>
+
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/textDark</item>
+
+        <item name="android:windowBackground">@color/offWhiteBackground</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/offWhiteBackground</item>
+
+        <!-- true means dark icons for a light background -->
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Navigation bar -->
+        <item name="android:navigationBarColor">@color/offWhiteBackground</item>
+
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <item name="materialAlertDialogTheme">
+            @style/ThemeOverlay.XMLApp.MaterialAlertDialog
+        </item>
+
     </style>
 
     <style name="Theme.XMLApp" parent="Base.Theme.XMLApp" />
+
 </resources>

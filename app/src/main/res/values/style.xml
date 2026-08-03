@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
     <style name="SizeSelectorButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="backgroundTint">@color/surface</item>
         <item name="strokeColor">@color/light</item>
@@ -10,14 +9,12 @@
         <item name="cornerRadius">12dp</item>
     </style>
 
-
     <style name="ToolbarTitleStyle" parent="TextAppearance.Material3.ActionBar.Title">
         <item name="android:textSize">16sp</item>
         <item name="android:letterSpacing">0.02</item>
         <item name="fontFamily">@font/source_sans_regular</item>
-        <item name="textFillColor">@color/textDark</item>
+        <item name="android:textColor">@color/textDark</item>
     </style>
-
 
     <style name="App.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxCornerRadiusTopStart">16dp</item>
@@ -43,15 +40,15 @@
         <item name="fontFamily">@font/source_sans_regular</item>
     </style>
 
-
     <style name="App.PrimaryButton" parent="Widget.Material3.Button">
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetRight">0dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="android:radius">16dp</item>
+
         <item name="cornerRadius">16dp</item>
         <item name="backgroundTint">@color/primaryGreen</item>
+
         <item name="android:textColor">@color/surface</item>
         <item name="android:fontFamily">@font/source_sans_semibold</item>
         <item name="android:textSize">16sp</item>
@@ -67,7 +64,6 @@
         <item name="backgroundTint">@color/surface</item>
         <item name="strokeWidth">2dp</item>
         <item name="strokeColor">@color/lightGrey</item>
-
         <item name="cornerRadius">16dp</item>
 
         <item name="android:fontFamily">@font/source_sans_semibold</item>
@@ -78,16 +74,58 @@
         <item name="iconTint">@null</item>
     </style>
 
-
     <style name="App.Loader" parent="Widget.Material3.LoadingIndicator">
         <item name="indicatorColor">@color/primaryGreen</item>
         <item name="containerColor">@color/secondaryGreen</item>
     </style>
 
+    <style name="ThemeOverlay.XMLApp.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
 
-    <style name="App.AlertDialogDestructive" parent="MaterialAlertDialog.Material3">
+        <item name="colorPrimary">@color/primaryGreen</item>
+        <item name="colorSecondary">@color/secondaryGreen</item>
 
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/textDark</item>
+        <item name="colorOnSurfaceVariant">@color/lightGrey</item>
+
+        <item name="alertDialogStyle">
+            @style/MaterialAlertDialog.XMLApp
+        </item>
+
+        <item name="materialAlertDialogTitleTextStyle">
+            @style/MaterialAlertDialog.XMLApp.Title
+        </item>
+
+        <item name="buttonBarPositiveButtonStyle">
+            @style/Widget.XMLApp.DialogButton
+        </item>
+
+        <item name="buttonBarNegativeButtonStyle">
+            @style/Widget.XMLApp.DialogButton
+        </item>
     </style>
+
+    <style name="MaterialAlertDialog.XMLApp" parent="MaterialAlertDialog.Material3">
+
+        <item name="shapeAppearance">
+            @style/ShapeAppearance.XMLApp.Dialog
+        </item>
+    </style>
+
+    <style name="MaterialAlertDialog.XMLApp.Title" parent="MaterialAlertDialog.Material3.Title.Text">
+
+        <item name="android:textColor">@color/primaryGreenDark</item>
+    </style>
+
+    <style name="Widget.XMLApp.DialogButton" parent="Widget.Material3.Button.TextButton.Dialog">
+
+        <item name="android:textColor">@color/primaryGreenDark</item>
+    </style>
+
+    <style name="ShapeAppearance.XMLApp.Dialog" parent="ShapeAppearance.Material3.MediumComponent">
+
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
 </resources>
-
-

@@ -1,7 +1,6 @@
 package com.example.xml_app.activities
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -12,7 +11,7 @@ import com.example.xml_app.databinding.ActivityNotificationBinding
 class NotificationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
 
         val binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
