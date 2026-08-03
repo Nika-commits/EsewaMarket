@@ -2,4 +2,6 @@
     <string name="app_name">Market</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="google_oauth2.0_client_id">628345405064-3sq1sebkin5tsrvtu2pstuu1caq2uilh.apps.googleusercontent.com</string>
 </resources>

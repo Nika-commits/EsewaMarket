@@ -1,5 +1,6 @@
 package com.example.xml_app.viewModel
 
+import androidx.credentials.Credential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.utils.firebase.AuthRepository
@@ -18,7 +19,6 @@ class RegisterViewModel(
     val formState = _formState.asStateFlow()
     private val _result = MutableStateFlow<Boolean?>(null)
     val result = _result.asStateFlow()
-
     fun register(
         username: String,
         email: String,
@@ -41,9 +41,15 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            _result.value = AuthRepository.register(email, password)
+            _result.value = AuthRepository.register(username, email, password)
             _formState.value = _formState.value.copy(isLoading = false)
         }
 
+    }
+
+    fun registerWithGoogle(credential: Credential) {
+        viewModelScope.launch {
+            _result.value = AuthRepository.signInWithGoogle(credential)
+        }
     }
 }
