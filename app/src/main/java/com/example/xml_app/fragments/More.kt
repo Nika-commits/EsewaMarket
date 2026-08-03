@@ -11,10 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
 import com.example.xml_app.utils.firebase.AuthRepository
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 private const val ARG_PARAM1 = "param1"
 
@@ -69,12 +71,14 @@ class More : Fragment() {
     fun setupSettingsOption() {
         val currentUser = AuthRepository.getUser()
 
+        binding.authLayout.root.visibility = if (currentUser != null) View.VISIBLE else View.GONE
+        binding.authButtonsLayout.root.visibility =
+            if (currentUser == null) View.VISIBLE else View.GONE
+
         if (currentUser != null) {
             setupAuthSettingsRow()
-            binding.authLayout.root.visibility = View.VISIBLE
         } else {
             setupAuthButtons()
-            binding.authButtonsLayout.root.visibility = View.VISIBLE
         }
     }
 
@@ -101,11 +105,36 @@ class More : Fragment() {
 
 
         binding.authLayout.btnLogout.setOnClickListener {
-            AuthRepository.logout()
-            Toast.makeText(requireContext(), "Logged Out Successfully", Toast.LENGTH_SHORT).show()
-            openAuthActivity(AuthActivity.LOGIN)
-
+//            AuthRepository.logout()
+//            Toast.makeText(requireContext(), "Logged Out Successfully", Toast.LENGTH_SHORT).show()
+//            openAuthActivity(AuthActivity.LOGIN)
+            setupLogoutAlertDialog()
         }
+    }
+
+    fun setupLogoutAlertDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Are you sure you want to Logout ?")
+            .setMessage("You might need to enter your email and password again")
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("Logout") { dialog, _ ->
+                AuthRepository.logout()
+                dialog.dismiss()
+                Toast.makeText(requireContext(), "Logged Out Successfully", Toast.LENGTH_SHORT)
+                    .show()
+//                val intent = Intent(requireContext(), MainActivity::class.java).apply {
+//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                }
+//                startActivity(intent)
+
+                parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, Home())
+                    .commit()
+            }.show()
     }
 
     fun setupAuthButtons() {

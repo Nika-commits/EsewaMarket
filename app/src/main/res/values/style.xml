@@ -83,6 +83,11 @@
         <item name="indicatorColor">@color/primaryGreen</item>
         <item name="containerColor">@color/secondaryGreen</item>
     </style>
+
+
+    <style name="App.AlertDialogDestructive" parent="MaterialAlertDialog.Material3">
+
+    </style>
 </resources>
 
 
