@@ -8,48 +8,36 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Co
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 const val TAG = "Auth"
 
 object AuthRepository {
-    suspend fun login(email: String, password: String, auth: FirebaseAuth): Boolean {
+    suspend fun login(email: String, password: String, auth: FirebaseAuth): FirebaseUser? {
         return try {
-            auth.signInWithEmailAndPassword(email, password).await()
-            true
+            val result = auth.signInWithEmailAndPassword(email, password).await()
+            result.user
         } catch (e: Exception) {
             Log.e(TAG, "$e")
-            false
+            null
         }
     }
 
     suspend fun register(
-        username: String,
         email: String,
         password: String,
         auth: FirebaseAuth,
-        db: FirebaseFirestore
-    ): Boolean {
+    ): FirebaseUser? {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val user = result.user ?: return false
-            db.collection("users")
-                .document(user.uid)
-                .set(
-                    mapOf(
-                        "username" to username,
-                        "email" to email
-                    )
-                ).await()
-            true
+            result.user
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
-            false
+            null
         }
     }
 
-    suspend fun signInWithGoogle(credential: Credential, auth: FirebaseAuth): Boolean {
+    suspend fun signInWithGoogle(credential: Credential, auth: FirebaseAuth): FirebaseUser? {
         return try {
             if (
                 credential is CustomCredential &&
@@ -58,27 +46,26 @@ object AuthRepository {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val firebaseCredential =
                     GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
-                auth.signInWithCredential(firebaseCredential).await()
-                true
+                val result = auth.signInWithCredential(firebaseCredential).await()
+                result.user
             } else {
                 Log.w(TAG, "Invalid Credentials")
-                false
+                null
             }
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
-            false
+            null
         }
     }
-
 
     fun logout(auth: FirebaseAuth) {
         auth.signOut()
     }
 
-    fun isAuth(auth: FirebaseAuth): Boolean {
-        val currentUser = auth.currentUser
-        return currentUser != null
-    }
+//    fun isAuth(auth: FirebaseAuth): Boolean {
+//        val currentUser = auth.currentUser
+//        return currentUser != null
+//    }
 
     fun getUser(auth: FirebaseAuth): FirebaseUser? {
         return auth.currentUser
