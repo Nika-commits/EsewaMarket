@@ -20,7 +20,6 @@ class RegisterViewModel(
     private val validate: RegisterValidation = RegisterValidation()
     private val app = getApplication<CustomApplicationContext>()
     private val auth = app.auth
-    private val db = app.db
     private val _formState = MutableStateFlow(RegisterFormState())
     val formState = _formState.asStateFlow()
     private val _result = MutableStateFlow<Boolean?>(null)
@@ -47,14 +46,19 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            _result.value = AuthRepository.register(username, email, password, auth, db)
+            val firebaseUser = AuthRepository.register(email, password, auth)
+
+            _result.value = firebaseUser != null
+
             _formState.value = _formState.value.copy(isLoading = false)
         }
     }
 
     fun registerWithGoogle(credential: Credential) {
         viewModelScope.launch {
-            _result.value = AuthRepository.signInWithGoogle(credential, auth)
+            val firebaseUser = AuthRepository.signInWithGoogle(credential, auth)
+
+            _result.value = firebaseUser != null
         }
     }
 }

@@ -39,7 +39,10 @@ class LoginViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            _result.value = AuthRepository.login(email, password, auth)
+            val firebaseUser = AuthRepository.login(email, password, auth)
+
+            _result.value = firebaseUser != null
+
             _formState.value = _formState.value.copy(isLoading = false)
         }
     }
@@ -47,7 +50,10 @@ class LoginViewModel(
     fun loginWithGoogle(credential: Credential) {
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            _result.value = AuthRepository.signInWithGoogle(credential, auth)
+            val firebaseUser = AuthRepository.signInWithGoogle(credential, auth)
+
+            _result.value = firebaseUser != null
+
             _formState.value = _formState.value.copy(isLoading = false)
         }
     }
