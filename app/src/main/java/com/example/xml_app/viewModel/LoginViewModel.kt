@@ -1,8 +1,10 @@
 package com.example.xml_app.viewModel
 
+import android.app.Application
 import androidx.credentials.Credential
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.LoginFormState
 import com.example.xml_app.utils.validation.LoginValidation
@@ -11,12 +13,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
+    application: Application
+) : AndroidViewModel(application) {
     private val validate: LoginValidation = LoginValidation()
-) : ViewModel() {
+    private val app = getApplication<CustomApplicationContext>()
+    private val auth = app.auth
     private val _formState = MutableStateFlow(LoginFormState())
     val formState = _formState.asStateFlow()
     private var _result = MutableStateFlow<Boolean?>(null)
     val result = _result.asStateFlow()
+
 
     fun login(email: String, password: String) {
         val emailResult = validate.validateEmail(email)
@@ -33,7 +39,7 @@ class LoginViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            _result.value = AuthRepository.login(email, password)
+            _result.value = AuthRepository.login(email, password, auth)
             _formState.value = _formState.value.copy(isLoading = false)
         }
     }
@@ -41,7 +47,7 @@ class LoginViewModel(
     fun loginWithGoogle(credential: Credential) {
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            _result.value = AuthRepository.signInWithGoogle(credential)
+            _result.value = AuthRepository.signInWithGoogle(credential, auth)
             _formState.value = _formState.value.copy(isLoading = false)
         }
     }

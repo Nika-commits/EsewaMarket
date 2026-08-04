@@ -15,14 +15,18 @@ import androidx.fragment.app.FragmentManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
+import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 
 private const val ARG_PARAM1 = "param1"
 
 class More : Fragment() {
     private var _binding: FragmentMoreBinding? = null
     private val binding get() = _binding!!
+    private lateinit var app: CustomApplicationContext
+    private lateinit var auth: FirebaseAuth
 
 
     override fun onCreateView(
@@ -35,6 +39,10 @@ class More : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        app = requireActivity().application as CustomApplicationContext
+        auth = app.auth
+
         setupToolbar()
         applyEdgeToEdgeInsets()
         setupSettingsOption()
@@ -69,7 +77,7 @@ class More : Fragment() {
     }
 
     fun setupSettingsOption() {
-        val currentUser = AuthRepository.getUser()
+        val currentUser = AuthRepository.getUser(auth)
 
         binding.authLayout.root.visibility = if (currentUser != null) View.VISIBLE else View.GONE
         binding.authButtonsLayout.root.visibility =
@@ -120,7 +128,7 @@ class More : Fragment() {
                 dialog.dismiss()
             }
             .setPositiveButton("Logout") { dialog, _ ->
-                AuthRepository.logout()
+                AuthRepository.logout(auth)
                 dialog.dismiss()
                 Toast.makeText(requireContext(), "Logged Out Successfully", Toast.LENGTH_SHORT)
                     .show()

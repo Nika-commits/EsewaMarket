@@ -22,6 +22,7 @@ import com.example.xml_app.fragments.Favourite
 import com.example.xml_app.fragments.Home
 import com.example.xml_app.fragments.More
 import com.example.xml_app.models.ProductState
+import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -50,7 +51,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupBottomNavigation()
-
+        val app = application as? CustomApplicationContext
+        app?.auth
 
     }
 

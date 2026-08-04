@@ -9,29 +9,34 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
-val tag = "Auth"
+const val TAG = "Auth"
+
 
 object AuthRepository {
-    private val auth: FirebaseAuth = Firebase.auth
+    //    private val auth: FirebaseAuth = Firebase.auth
     private val db: FirebaseFirestore
         get() = Firebase.firestore
 
-    suspend fun login(email: String, password: String): Boolean {
+    suspend fun login(email: String, password: String, auth: FirebaseAuth): Boolean {
         return try {
             auth.signInWithEmailAndPassword(email, password).await()
             true
         } catch (e: Exception) {
-            Log.e(tag, "$e")
+            Log.e(TAG, "$e")
             false
         }
     }
 
-    suspend fun register(username: String, email: String, password: String): Boolean {
+    suspend fun register(
+        username: String,
+        email: String,
+        password: String,
+        auth: FirebaseAuth
+    ): Boolean {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val user = result.user ?: return false
@@ -45,12 +50,12 @@ object AuthRepository {
                 ).await()
             true
         } catch (e: Exception) {
-            Log.e(tag, "${e.message}")
+            Log.e(TAG, "${e.message}")
             false
         }
     }
 
-    suspend fun signInWithGoogle(credential: Credential): Boolean {
+    suspend fun signInWithGoogle(credential: Credential, auth: FirebaseAuth): Boolean {
         return try {
             if (
                 credential is CustomCredential &&
@@ -62,26 +67,26 @@ object AuthRepository {
                 auth.signInWithCredential(firebaseCredential).await()
                 true
             } else {
-                Log.w(tag, "Invalid Credentials")
+                Log.w(TAG, "Invalid Credentials")
                 false
             }
         } catch (e: Exception) {
-            Log.e(tag, "${e.message}")
+            Log.e(TAG, "${e.message}")
             false
         }
     }
 
 
-    fun logout() {
+    fun logout(auth: FirebaseAuth) {
         auth.signOut()
     }
 
-    fun isAuth(): Boolean {
+    fun isAuth(auth: FirebaseAuth): Boolean {
         val currentUser = auth.currentUser
         return currentUser != null
     }
 
-    fun getUser(): FirebaseUser? {
+    fun getUser(auth: FirebaseAuth): FirebaseUser? {
         return auth.currentUser
     }
 

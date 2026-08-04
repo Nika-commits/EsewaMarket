@@ -4,7 +4,6 @@ import android.util.Patterns
 import com.example.xml_app.utils.dto.ValidationResult
 
 class LoginValidation {
-
     fun validateEmail(email: String): ValidationResult {
         if (email.isBlank()) {
             return ValidationResult(

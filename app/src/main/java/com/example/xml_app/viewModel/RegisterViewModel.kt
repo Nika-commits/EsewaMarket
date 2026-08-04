@@ -1,8 +1,10 @@
 package com.example.xml_app.viewModel
 
+import android.app.Application
 import androidx.credentials.Credential
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.RegisterFormState
 import com.example.xml_app.utils.validation.RegisterValidation
@@ -13,8 +15,11 @@ import kotlinx.coroutines.launch
 private val TAG = "Register"
 
 class RegisterViewModel(
+    application: Application
+) : AndroidViewModel(application) {
     private val validate: RegisterValidation = RegisterValidation()
-) : ViewModel() {
+    private val app = getApplication<CustomApplicationContext>()
+    private val auth = app.auth
     private val _formState = MutableStateFlow(RegisterFormState())
     val formState = _formState.asStateFlow()
     private val _result = MutableStateFlow<Boolean?>(null)
@@ -41,15 +46,14 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            _result.value = AuthRepository.register(username, email, password)
+            _result.value = AuthRepository.register(username, email, password, auth)
             _formState.value = _formState.value.copy(isLoading = false)
         }
-
     }
 
     fun registerWithGoogle(credential: Credential) {
         viewModelScope.launch {
-            _result.value = AuthRepository.signInWithGoogle(credential)
+            _result.value = AuthRepository.signInWithGoogle(credential, auth)
         }
     }
 }
