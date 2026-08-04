@@ -67,7 +67,8 @@
     <LinearLayout
         android:id="@+id/checkoutLayout"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="16dp"
         android:orientation="horizontal"
         android:gravity="center"
         android:background="@color/surface"

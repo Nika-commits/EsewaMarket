@@ -9,7 +9,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ProductApi {
-
     @GET("api/product")
     suspend fun getProducts(@Query("category") category: String?): Response<List<Product>>
 

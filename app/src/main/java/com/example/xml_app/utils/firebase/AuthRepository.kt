@@ -5,22 +5,15 @@ import androidx.credentials.Credential
 import androidx.credentials.CustomCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
 const val TAG = "Auth"
 
-
 object AuthRepository {
-    //    private val auth: FirebaseAuth = Firebase.auth
-    private val db: FirebaseFirestore
-        get() = Firebase.firestore
-
     suspend fun login(email: String, password: String, auth: FirebaseAuth): Boolean {
         return try {
             auth.signInWithEmailAndPassword(email, password).await()
@@ -35,7 +28,8 @@ object AuthRepository {
         username: String,
         email: String,
         password: String,
-        auth: FirebaseAuth
+        auth: FirebaseAuth,
+        db: FirebaseFirestore
     ): Boolean {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
