@@ -58,6 +58,7 @@ class CartAdapter(
     ) {
         val currentProduct = products[position]
         val state = productStates[currentProduct?.id] ?: ProductState()
+        val totalPrice = currentProduct?.price?.times(state.cartCount)
 
         holder.apply {
             Glide.with(holder.itemView.context)
@@ -65,7 +66,7 @@ class CartAdapter(
                 .placeholder(R.drawable.ic_more)
                 .into(holder.binding.ivProductImage)
 
-            binding.tvProductPrice.text = currentProduct?.price.toString()
+            binding.tvProductPrice.text = totalPrice.toString()
             binding.tvProductName.text = currentProduct?.name
             binding.tvProductBrand.text = currentProduct?.brand
 
