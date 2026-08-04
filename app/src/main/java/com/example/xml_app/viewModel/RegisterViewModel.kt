@@ -11,6 +11,7 @@ import com.example.xml_app.utils.validation.RegisterValidation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 private val TAG = "Register"
 
@@ -47,8 +48,10 @@ class RegisterViewModel(
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
             val firebaseUser = AuthRepository.register(email, password, auth)
+            val token = firebaseUser?.getIdToken(false)?.await()?.token
 
-            _result.value = firebaseUser != null
+            val createUserResult =
+                _result.value = firebaseUser != null
 
             _formState.value = _formState.value.copy(isLoading = false)
         }

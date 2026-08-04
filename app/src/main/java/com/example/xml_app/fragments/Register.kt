@@ -26,7 +26,6 @@ class Register : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
     private val viewModel: RegisterViewModel by viewModels()
-
     private lateinit var credentialManager: CredentialManager
 
 

@@ -11,6 +11,7 @@ import com.example.xml_app.utils.validation.LoginValidation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginViewModel(
     application: Application
@@ -40,6 +41,9 @@ class LoginViewModel(
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
             val firebaseUser = AuthRepository.login(email, password, auth)
+            val token = firebaseUser?.getIdToken(false)?.await()?.token
+
+            User
 
             _result.value = firebaseUser != null
 
