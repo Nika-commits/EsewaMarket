@@ -70,6 +70,7 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center"
+        android:background="@color/surface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
