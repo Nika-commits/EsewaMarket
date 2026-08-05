@@ -37,6 +37,7 @@ import com.example.xml_app.models.Hero
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 import java.io.Serializable
@@ -62,7 +63,6 @@ class Home : Fragment() {
             )
         }
     }
-
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -199,7 +199,7 @@ class Home : Fragment() {
                 }
             }
         }
-       
+
         binding.rvFeaturedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
             "Featured Products"
         binding.rvFeaturedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
@@ -247,17 +247,29 @@ class Home : Fragment() {
             },
             onFavouriteClick = { p ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.toggleFavourite(p.id)
+                    if (viewModel.isLoggedIn()) {
+                        viewModel.toggleFavourite(p.id)
+                    } else {
+                        showLoginSnackbar("Log in to add to Favourites")
+                    }
                 }
             },
             onCartIncrement = { p ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.cartIncrement(p.id)
+                    if (viewModel.isLoggedIn()) {
+                        viewModel.cartIncrement(p.id)
+                    } else {
+                        showLoginSnackbar("Log in to add to cart")
+                    }
                 }
             },
             onCartDecrement = { p ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.decrementCart(p.id)
+                    if (viewModel.isLoggedIn()) {
+                        viewModel.decrementCart(p.id)
+                    } else {
+                        showLoginSnackbar("Log in to add to cart")
+                    }
                 }
 
             }
@@ -276,11 +288,18 @@ class Home : Fragment() {
         return adapter
     }
 
-
     private fun setupSearchBox() {
         binding.searchBox.setEndIconOnClickListener {
             Toast.makeText(requireContext(), "Filters Clicked", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showLoginSnackbar(message: String) {
+        Snackbar.make(
+            binding.root,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
 

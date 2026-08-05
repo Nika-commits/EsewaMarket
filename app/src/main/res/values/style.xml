@@ -128,4 +128,16 @@
         <item name="cornerSize">16dp</item>
     </style>
 
+    <style name="Widget.App.Snackbar" parent="Widget.Material3.Snackbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Snackbar</item>
+    </style>
+
+    <style name="Widget.App.SnackbarButton" parent="Widget.Material3.Button.TextButton.Snackbar">
+        <item name="android:textColor">@color/primaryGreen</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Snackbar" parent="">
+        <item name="colorPrimaryInverse">@color/surface</item>
+        <item name="colorOnSurfaceInverse">@color/surface</item>
+    </style>
 </resources>
