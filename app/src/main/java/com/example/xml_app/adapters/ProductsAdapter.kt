@@ -1,7 +1,6 @@
 package com.example.xml_app.adapters
 
 import android.content.res.ColorStateList
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemProductBinding
 import com.example.xml_app.models.Product
-import com.example.xml_app.models.ProductState
+import com.example.xml_app.models.ProductUiModel
 
 class ProductsAdapter(
     val onProductClick: (Product) -> Unit,
@@ -21,39 +20,24 @@ class ProductsAdapter(
     val onCartIncrement: (Product) -> Unit,
     val onCartDecrement: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
-
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
 
-    private val diffCallback = object : DiffUtil.ItemCallback<Product>() {
-        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem.id == newItem.id
+    private val diffCallback = object : DiffUtil.ItemCallback<ProductUiModel>() {
+        override fun areItemsTheSame(oldItem: ProductUiModel, newItem: ProductUiModel): Boolean {
+            return oldItem.product.id == newItem.product.id
         }
 
-        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+        override fun areContentsTheSame(oldItem: ProductUiModel, newItem: ProductUiModel): Boolean {
             return oldItem == newItem
         }
     }
 
     private val differ = AsyncListDiffer(this, diffCallback)
-    var products: List<Product>
+
+    var products: List<ProductUiModel>
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
-        }
-
-    var productStates: Map<Int, ProductState> = emptyMap()
-        set(newStates) {
-            val oldStates = field
-            field = newStates
-
-            products.forEachIndexed { index, product ->
-                val oldState = oldStates[product.id] ?: ProductState()
-                val newState = newStates[product.id] ?: ProductState()
-
-                if (oldState != newState) {
-                    notifyItemChanged(index)
-                }
-            }
         }
 
     override fun onCreateViewHolder(
@@ -72,71 +56,66 @@ class ProductsAdapter(
         position: Int
     ) {
         bindCount++
-        holder.apply {
-            val product = products[position]
-            val state = productStates[product.id] ?: ProductState()
 
-            Log.d("Product Adapter", "Bind count = $bindCount, position = $position")
-            if (state.isFavourite) {
-                binding.ibFavourites.setImageResource(R.drawable.ic_filled_favourite)
-                binding.ibFavourites.imageTintList =
+        val item = products[position]
+        val product = item.product
+
+        with(holder.binding) {
+            if (item.isFavourite) {
+                ibFavourites.setImageResource(R.drawable.ic_filled_favourite)
+                ibFavourites.imageTintList =
                     ColorStateList.valueOf(
                         ContextCompat.getColor(
-                            binding.root.context,
+                            root.context,
                             R.color.primaryGreen
                         )
                     )
             } else {
-                binding.ibFavourites.setImageResource(R.drawable.ic_fav)
-                binding.ibFavourites.imageTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        binding.root.context,
-                        R.color.lightGrey
-                    )
-                )
+                ibFavourites.setImageResource(R.drawable.ic_fav)
+                ibFavourites.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.lightGrey))
             }
 
-            if (state.cartCount > 0) {
-                binding.ibAddToCart.visibility = View.GONE
-                binding.llCartCountStepper.visibility = View.VISIBLE
-                binding.tvCartCount.text = state.cartCount.toString()
+            if (item.cartCount > 0) {
+                ibAddToCart.visibility = View.GONE
+                llCartCountStepper.visibility = View.VISIBLE
+                tvCartCount.text = item.cartCount.toString()
             } else {
-                binding.llCartCountStepper.visibility = View.GONE
-                binding.ibAddToCart.visibility = View.VISIBLE
+                llCartCountStepper.visibility = View.GONE
+                ibAddToCart.visibility = View.VISIBLE
             }
 
-            binding.tvProductName.text = product.name
-            binding.tvPrice.text = product.price.toString()
-            binding.tvProductStatus.text = product.status
-            binding.tvProductBrand.text = product.brand
+            tvProductName.text = product.name
+            tvPrice.text = product.price.toString()
+            tvProductStatus.text = product.status
+            tvProductBrand.text = product.brand
 
-            binding.root.setOnClickListener {
+            root.setOnClickListener {
                 onProductClick(product)
             }
 
-            binding.ibFavourites.setOnClickListener {
+            ibFavourites.setOnClickListener {
                 onFavouriteClick(product)
             }
 
-            binding.ibAddToCart.setOnClickListener {
+            ibAddToCart.setOnClickListener {
                 onCartIncrement(product)
             }
 
-            binding.ibCartDecrement.setOnClickListener {
+            ibCartIncrement.setOnClickListener {
+                onCartIncrement(product)
+            }
+
+            ibCartDecrement.setOnClickListener {
                 onCartDecrement(product)
             }
 
-            binding.ibCartIncrement.setOnClickListener {
-                onCartIncrement(product)
-            }
-
-            Glide.with(itemView)
-                .load(product.imageUrls[0])
-                .placeholder(R.drawable.tshirt)
+            Glide.with(root)
+                .load(product.imageUrls.firstOrNull())
+                .placeholder(R.drawable.resource_default)
                 .error(R.drawable.resource_default)
-                .into(binding.ivProductImage)
+                .into(ivProductImage)
         }
-
 
     }
 
