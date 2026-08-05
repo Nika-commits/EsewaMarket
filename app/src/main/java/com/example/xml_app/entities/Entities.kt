@@ -51,7 +51,6 @@ data class Cart(
     ],
 
     indices = [
-        Index("cart_id"),
         Index(value = ["cart_id", "product_id"], unique = true)
     ]
 )

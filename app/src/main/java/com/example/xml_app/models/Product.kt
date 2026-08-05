@@ -24,6 +24,11 @@ data class Product(
 
 data class Color(val name: String, val hexCode: String)
 
+data class ProductUiModel(
+    val product: Product,
+    val isFavourite: Boolean,
+    val cartCount: Int
+)
 
 @Serializable
 data class ProductState(

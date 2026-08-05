@@ -12,7 +12,7 @@ interface FavouriteDao {
     @Insert
     suspend fun insert(favourite: Favourite)
 
-    @Query("""delete from favourites where user_id = :userId and productId = :productId""")
+    @Query("""delete from favourites where user_id = :userId and product_id = :productId""")
     suspend fun delete(userId: Int, productId: Int)
 
     @Query("""select Exists(select 1 from favourites where user_id = :userId and product_id = :productId)""")
