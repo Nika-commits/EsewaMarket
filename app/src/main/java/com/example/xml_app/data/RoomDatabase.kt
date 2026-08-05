@@ -1,6 +1,7 @@
 package com.example.xml_app.data
 
 import androidx.room3.Database
+import androidx.room3.RoomDatabase
 import com.example.xml_app.data.dao.CartDao
 import com.example.xml_app.data.dao.FavouriteDao
 import com.example.xml_app.data.dao.UserDao
@@ -18,7 +19,7 @@ import com.example.xml_app.entities.User
     ],
     version = 1
 )
-abstract class RoomDatabase {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun cartDao(): CartDao
     abstract fun favouriteDao(): FavouriteDao
