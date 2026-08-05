@@ -8,18 +8,17 @@ import com.example.xml_app.entities.CartItem
 import kotlinx.coroutines.flow.Flow
 
 interface CartDao {
-
     @Insert
-    suspend fun upsert(cart: Cart)
+    suspend fun insert(cart: Cart): Long
 
     @Query("""select * from carts where user_id = :userId LIMIT 1""")
-    suspend fun getCartByUserId(userId: Int): Cart
+    suspend fun getCartByUserId(userId: Int): Cart?
 
     @Query("""select * from cart_items where cart_id = :cartId""")
     fun observeCartItems(cartId: Int, productId: Int): Flow<List<CartItem>>
 
     @Query("""select * from cart where cart_id = :cartId and product_id = :productId LIMIT 1 """)
-    suspend fun getCartItem(cartId: Int, productId: Int): CartItem
+    suspend fun getCartItem(cartId: Int, productId: Int): CartItem?
 
     @Insert
     suspend fun insertCartItem(item: CartItem)
