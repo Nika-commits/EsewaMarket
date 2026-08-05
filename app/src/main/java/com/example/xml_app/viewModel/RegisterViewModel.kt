@@ -1,10 +1,13 @@
 package com.example.xml_app.viewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.credentials.Credential
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
+import com.example.xml_app.utils.dto.CreateUserRequest
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.RegisterFormState
 import com.example.xml_app.utils.validation.RegisterValidation
@@ -21,6 +24,7 @@ class RegisterViewModel(
     private val validate: RegisterValidation = RegisterValidation()
     private val app = getApplication<CustomApplicationContext>()
     private val auth = app.auth
+    private val repository = UserRepository()
     private val _formState = MutableStateFlow(RegisterFormState())
     val formState = _formState.asStateFlow()
     private val _result = MutableStateFlow<Boolean?>(null)
@@ -47,21 +51,75 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            val firebaseUser = AuthRepository.register(email, password, auth)
-            val token = firebaseUser?.getIdToken(false)?.await()?.token
 
-            val createUserResult =
-                _result.value = firebaseUser != null
+            try {
+                val firebaseUser = AuthRepository.register(email, password, auth)
+                if (firebaseUser == null) {
+                    _result.value = false
+                    return@launch
+                }
 
-            _formState.value = _formState.value.copy(isLoading = false)
+                val token = firebaseUser.getIdToken(false).await().token
+                if (token == null) {
+                    _result.value = false
+                    return@launch
+                }
+
+                val request = CreateUserRequest(
+                    username = username,
+                    fullName = "",
+                    address = null,
+                    phone = null
+                )
+                val result = repository.createUser(token, request)
+
+                if (!result.isSuccessful) {
+                    _result.value = false
+                    return@launch
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "${e.message}")
+                _result.value = false
+            } finally {
+                _formState.value = _formState.value.copy(isLoading = false)
+            }
+
         }
     }
 
     fun registerWithGoogle(credential: Credential) {
         viewModelScope.launch {
-            val firebaseUser = AuthRepository.signInWithGoogle(credential, auth)
+            _formState.value = _formState.value.copy(isLoading = true)
 
-            _result.value = firebaseUser != null
+            try {
+                val firebaseUser = AuthRepository.signInWithGoogle(credential, auth)
+                if (firebaseUser == null) {
+                    _result.value = false
+                    return@launch
+                }
+
+                val token = firebaseUser.getIdToken(false).await().token
+                if (token == null) {
+                    _result.value = false
+                    return@launch
+                }
+
+                val request = CreateUserRequest(
+                    username = firebaseUser.displayName ?: firebaseUser.email?.substringBefore("@")
+                    ?: "user",
+                    fullName = firebaseUser.displayName ?: "",
+                    address = null,
+                    phone = firebaseUser.phoneNumber
+                )
+
+                val response = repository.createUser(token, request)
+                _result.value = response.isSuccessful
+            } catch (e: Exception) {
+                _result.value = false
+                Log.e("Register", "${e.message}")
+            } finally {
+                _formState.value = _formState.value.copy(isLoading = false)
+            }
         }
     }
 }

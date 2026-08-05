@@ -1,9 +1,11 @@
 package com.example.xml_app.viewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.credentials.Credential
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.LoginFormState
@@ -16,6 +18,7 @@ import kotlinx.coroutines.tasks.await
 class LoginViewModel(
     application: Application
 ) : AndroidViewModel(application) {
+    private val repository = UserRepository()
     private val validate: LoginValidation = LoginValidation()
     private val app = getApplication<CustomApplicationContext>()
     private val auth = app.auth
@@ -40,14 +43,26 @@ class LoginViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            val firebaseUser = AuthRepository.login(email, password, auth)
-            val token = firebaseUser?.getIdToken(false)?.await()?.token
 
-            User
+            try {
 
-            _result.value = firebaseUser != null
+                val firebaseUser = AuthRepository.login(email, password, auth)
 
-            _formState.value = _formState.value.copy(isLoading = false)
+                val token = firebaseUser?.getIdToken(false)?.await()?.token ?: run {
+                    _result.value = false
+                    return@launch
+                }
+
+                val response = repository.getCurrentUser(token)
+
+                _result.value = response.isSuccessful
+            } catch (e: Exception) {
+                _result.value = false
+                Log.d("Login", "${e.message}")
+            } finally {
+                _formState.value = _formState.value.copy(isLoading = false)
+            }
+
         }
     }
 
