@@ -13,7 +13,7 @@ import androidx.room3.PrimaryKey
     ]
 )
 data class User(
-    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+    @PrimaryKey(autoGenerate = false) val uid: Int,
     @ColumnInfo(name = "firebase_uid") val firebaseUid: String,
     @ColumnInfo(name = "full_name") val fullName: String,
     val username: String,

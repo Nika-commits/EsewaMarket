@@ -18,9 +18,9 @@ import kotlinx.coroutines.tasks.await
 class LoginViewModel(
     application: Application
 ) : AndroidViewModel(application) {
-    private val repository = UserRepository()
     private val validate: LoginValidation = LoginValidation()
     private val app = getApplication<CustomApplicationContext>()
+    private val repository = UserRepository(userDao = app.database.userDao())
     private val auth = app.auth
     private val _formState = MutableStateFlow(LoginFormState())
     val formState = _formState.asStateFlow()
@@ -53,9 +53,9 @@ class LoginViewModel(
                     return@launch
                 }
 
-                val response = repository.getCurrentUser(token)
+                repository.getCurrentUser(token)
 
-                _result.value = response.isSuccessful
+                _result.value = true
             } catch (e: Exception) {
                 _result.value = false
                 Log.d("Login", "${e.message}")

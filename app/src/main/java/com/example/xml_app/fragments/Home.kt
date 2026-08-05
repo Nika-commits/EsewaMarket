@@ -31,18 +31,13 @@ import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
 import com.example.xml_app.adapters.HeroViewPagerAdapter
 import com.example.xml_app.adapters.ProductsAdapter
-import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
-import com.example.xml_app.models.ProductState
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.Serializable
 
@@ -68,10 +63,6 @@ class Home : Fragment() {
         }
     }
 
-    fun productStateFlow(): Flow<Map<Int, ProductState>> =
-        requireContext().productDataStore.data.map { products ->
-            products.products
-        }
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -100,7 +91,6 @@ class Home : Fragment() {
         setupFeaturedProducts()
         setupHotDealsProducts()
     }
-
 
     private fun applyEdgeToEdgeInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
@@ -200,21 +190,16 @@ class Home : Fragment() {
                 HorizontalItemDecoration(spacing)
             )
 
-
-        viewModel.featuredProducts.observe(viewLifecycleOwner) { products ->
-            featuredProductsAdapter.products = products
-        }
-
-        viewModel.getFeaturedProduct()
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                productStateFlow().collect { states ->
-                    featuredProductsAdapter.productStates = states
-//                    featuredProductsAdapter.notifyDataSetChanged()
+                launch {
+                    viewModel.featuredProducts.collect {
+                        featuredProductsAdapter.products = it
+                    }
                 }
             }
         }
+       
         binding.rvFeaturedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
             "Featured Products"
         binding.rvFeaturedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
@@ -231,18 +216,12 @@ class Home : Fragment() {
             SpacingItemDecoration(spacing)
         )
 
-        viewModel.hotDealsProducts.observe(viewLifecycleOwner) { products ->
-            hotDealsAdapter.products = products
-        }
-
-        viewModel.getHotDealsProducts()
-
         viewLifecycleOwner.lifecycleScope.launch {
-
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                productStateFlow().collect { states ->
-                    hotDealsAdapter.productStates = states
-//                    hotDealsAdapter.notifyDataSetChanged()
+                launch {
+                    viewModel.hotDealsProducts.collect {
+                        hotDealsAdapter.products = it
+                    }
                 }
             }
         }
@@ -268,35 +247,17 @@ class Home : Fragment() {
             },
             onFavouriteClick = { p ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    requireContext().productDataStore.updateData { current ->
-                        val updatedProducts = current.products.toMutableMap()
-                        val currentState = updatedProducts[p.id] ?: ProductState()
-                        updatedProducts[p.id] =
-                            currentState.copy(isFavourite = !currentState.isFavourite)
-                        current.copy(products = updatedProducts)
-                    }
+                    viewModel.toggleFavourite(p.id)
                 }
             },
             onCartIncrement = { p ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    requireContext().productDataStore.updateData { current ->
-                        val updatedProducts = current.products.toMutableMap()
-                        val currentState = updatedProducts[p.id] ?: ProductState()
-                        updatedProducts[p.id] =
-                            currentState.copy(cartCount = currentState.cartCount + 1)
-                        current.copy(products = updatedProducts)
-                    }
+                    viewModel.cartIncrement(p.id)
                 }
             },
             onCartDecrement = { p ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    requireContext().productDataStore.updateData { current ->
-                        val updatedProducts = current.products.toMutableMap()
-                        val currentState = updatedProducts[p.id] ?: ProductState()
-                        updatedProducts[p.id] =
-                            currentState.copy(cartCount = currentState.cartCount - 1)
-                        current.copy(products = updatedProducts)
-                    }
+                    viewModel.decrementCart(p.id)
                 }
 
             }
@@ -327,25 +288,5 @@ class Home : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    private suspend fun getAllProductState(): Map<Int, ProductState> {
-        return requireContext().productDataStore.data.first().products
-    }
-
-
-//    private suspend fun getProductState(productId: Int): ProductState {
-//        val productStates = requireContext().productDataStore.data.first()
-//        return productStates.products[productId] ?: ProductState()
-//    }
-//
-//    private suspend fun updateProductState(productId: Int, state: ProductState) {
-//        requireContext().productDataStore.updateData { current ->
-//            val updatedProducts = current.products.toMutableMap()
-//            updatedProducts[productId] = state
-//
-//            current.copy(products = updatedProducts)
-//        }
-//    }
-
 
 }

@@ -24,7 +24,7 @@ class RegisterViewModel(
     private val validate: RegisterValidation = RegisterValidation()
     private val app = getApplication<CustomApplicationContext>()
     private val auth = app.auth
-    private val repository = UserRepository()
+    private val repository = UserRepository(app.database.userDao())
     private val _formState = MutableStateFlow(RegisterFormState())
     val formState = _formState.asStateFlow()
     private val _result = MutableStateFlow<Boolean?>(null)
@@ -71,12 +71,9 @@ class RegisterViewModel(
                     address = null,
                     phone = null
                 )
-                val result = repository.createUser(token, request)
-
-                if (!result.isSuccessful) {
-                    _result.value = false
-                    return@launch
-                }
+                repository.createUser(token, request)
+                _result.value = true
+                return@launch
             } catch (e: Exception) {
                 Log.d(TAG, "${e.message}")
                 _result.value = false
@@ -112,8 +109,8 @@ class RegisterViewModel(
                     phone = firebaseUser.phoneNumber
                 )
 
-                val response = repository.createUser(token, request)
-                _result.value = response.isSuccessful
+                repository.createUser(token, request)
+                _result.value = true
             } catch (e: Exception) {
                 _result.value = false
                 Log.e("Register", "${e.message}")
