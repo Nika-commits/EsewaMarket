@@ -98,6 +98,8 @@ class Cart : Fragment() {
         binding.rvCartProducts.apply {
             adapter = cartAdapter
             layoutManager = LinearLayoutManager(requireContext())
+            itemAnimator = null
+            
         }
     }
 
