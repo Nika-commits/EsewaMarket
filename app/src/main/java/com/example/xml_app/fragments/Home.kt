@@ -70,6 +70,7 @@ class Home : Fragment() {
     private val userName = "Pranish" + ","
     private lateinit var featuredProductsAdapter: ProductsAdapter
     private lateinit var hotDealsAdapter: ProductsAdapter
+    private lateinit var recommendedAdapter: ProductsAdapter
 
 
     override fun onCreateView(
@@ -90,6 +91,7 @@ class Home : Fragment() {
         setupCategories()
         setupFeaturedProducts()
         setupHotDealsProducts()
+        setupRecommendedProducts()
     }
 
     private fun applyEdgeToEdgeInsets() {
@@ -176,7 +178,6 @@ class Home : Fragment() {
         }
     }
 
-
     private fun setupFeaturedProducts() {
         val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
         featuredProductsAdapter =
@@ -229,6 +230,31 @@ class Home : Fragment() {
         binding.rvHotDealsLayout.featuredProducts.tvHeaderTitle.text = "Hot Deals of the Day"
         binding.rvHotDealsLayout.featuredProducts.ibHeaderButton.setOnClickListener {
             Toast.makeText(requireContext(), "Hot Deals Clicked", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupRecommendedProducts() {
+        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
+        recommendedAdapter = setupRecyclerView(
+            binding.rvRecommendedProductsSectionLayout.rvFeaturedProducts,
+            GridLayoutManager(requireContext(), 2),
+            SpacingItemDecoration(spacing)
+        )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.recommendedProducts.collect {
+                        recommendedAdapter.products = it
+                    }
+                }
+            }
+        }
+
+        binding.rvRecommendedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
+            "Recommended Products"
+        binding.rvRecommendedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Recommended Products", Toast.LENGTH_SHORT).show()
         }
     }
 
