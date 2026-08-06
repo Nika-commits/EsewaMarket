@@ -18,12 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CartAdapter
-import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.FragmentCartBinding
-import com.example.xml_app.models.ProductState
 import com.example.xml_app.viewModel.CartViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
@@ -35,16 +31,6 @@ class Cart : Fragment() {
 
     private lateinit var cartAdapter: CartAdapter
 
-    fun productStateFlow(): Flow<Map<Int, ProductState>> =
-        requireContext().productDataStore.data.map { products ->
-            products.products
-        }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,7 +45,6 @@ class Cart : Fragment() {
 
         applyEdgeToEdgeInsets()
         setupToolbar()
-        setupCart()
         setupRecyclerView()
         observerCartData()
     }
@@ -92,32 +77,6 @@ class Cart : Fragment() {
         }
     }
 
-    fun setupCart() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            productStateFlow().collect { products ->
-                val cartIds = products.filter { (_, productState) ->
-                    productState.cartCount > 0
-                }.keys.toList()
-                viewModel.getProductsInCart(cartIds)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            productStateFlow().collect { products ->
-                val cartCount = products.filter { (_, productState) ->
-                    productState.cartCount > 0
-                }.keys.toList()
-                if (cartCount.size == 0) {
-                    binding.emptyCart.root.visibility = View.VISIBLE
-                    binding.rvCartProducts.visibility = View.GONE
-                } else {
-                    binding.emptyCart.root.visibility = View.GONE
-                    binding.rvCartProducts.visibility = View.VISIBLE
-                }
-            }
-        }
-    }
-
     private fun setupRecyclerView() {
         cartAdapter = CartAdapter(
             onProductClick = { id ->
@@ -128,28 +87,11 @@ class Cart : Fragment() {
             },
 
             onCartIncrement = { id ->
-                viewLifecycleOwner.lifecycleScope.launch {
-                    requireContext().productDataStore.updateData { current ->
-                        val updatedProducts = current.products.toMutableMap()
-                        val currentState = updatedProducts[id] ?: ProductState()
-
-                        updatedProducts[id!!] =
-                            currentState.copy(cartCount = currentState.cartCount + 1)
-                        current.copy(products = updatedProducts)
-                    }
-                }
+                if (id != null) viewModel.cartIncrement(id)
             },
 
             onCartDecrement = { id ->
-                viewLifecycleOwner.lifecycleScope.launch {
-                    requireContext().productDataStore.updateData { current ->
-                        val updatedProducts = current.products.toMutableMap()
-                        val currentState = updatedProducts[id] ?: ProductState()
-                        updatedProducts[id!!] =
-                            currentState.copy(cartCount = currentState.cartCount - 1)
-                        current.copy(products = updatedProducts)
-                    }
-                }
+                if (id != null) viewModel.cartDecrement(id)
             }
         )
 
@@ -157,20 +99,34 @@ class Cart : Fragment() {
             adapter = cartAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                productStateFlow().collect { states ->
-                    cartAdapter.productStates = states
-                    cartAdapter.notifyDataSetChanged()
-                }
-            }
-        }
     }
 
     private fun observerCartData() {
-        viewModel.productsInCart.observe(viewLifecycleOwner) { products ->
-            cartAdapter.products = products
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.productsInCart.collect { products ->
+                        cartAdapter.products = products
+
+                        if (products.isEmpty()) {
+                            binding.emptyCart.root.visibility = View.VISIBLE
+                            binding.rvCartProducts.visibility = View.GONE
+                        } else {
+                            binding.emptyCart.root.visibility = View.GONE
+                            binding.rvCartProducts.visibility = View.VISIBLE
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.user.collect { user ->
+                        if (user == null) {
+                            binding.emptyCart.root.visibility = View.VISIBLE
+                            binding.rvCartProducts.visibility = View.GONE
+                        }
+                    }
+                }
+            }
         }
     }
 

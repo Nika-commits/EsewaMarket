@@ -67,7 +67,6 @@ class CartViewModel(
 
     init {
         initializeUser()
-        getProductsInCart()
     }
 
     private fun initializeUser() {
@@ -88,6 +87,7 @@ class CartViewModel(
         database.cartDao().observeCartItems(cart.uid)
             .collect { cartItems ->
                 _cartItems.value = cartItems
+                getProductsInCart()
             }
     }
 
