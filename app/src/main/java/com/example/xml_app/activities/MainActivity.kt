@@ -15,25 +15,20 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.xml_app.R
-import com.example.xml_app.data.productDataStore
 import com.example.xml_app.databinding.ActivityMainBinding
 import com.example.xml_app.databinding.ItemNavigationBinding
 import com.example.xml_app.fragments.Cart
 import com.example.xml_app.fragments.Favourite
 import com.example.xml_app.fragments.Home
 import com.example.xml_app.fragments.More
-import com.example.xml_app.models.ProductState
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.viewModel.MainViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 private val TAG = "Home"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
     private val viewModel: MainViewModel by viewModels()
     private val homeFragment = Home()
     private val cartFragment = Cart()
@@ -43,8 +38,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -64,21 +57,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
     }
 
-
     private fun setupBottomNavigation() {
-        val productsStateFlow: Flow<Map<Int, ProductState>> =
-            this.productDataStore.data.map { products ->
-                products.products
-            }
-
-        val cartCount: Flow<Int> = productsStateFlow.map { p ->
-            p.values.sumOf { it.cartCount }
-        }
-
-        val favouriteCount: Flow<Int> = productsStateFlow.map { p ->
-            p.values.count { it.isFavourite }
-        }
-
         binding.tabHome.ivNavIcon.setImageResource(R.drawable.ic_market)
         binding.tabHome.tvNavText.text = "Home"
 
@@ -115,13 +94,15 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                cartCount.collect { count ->
-                    if (count > 0) {
-                        binding.tabCart.viewBadge.visibility = View.VISIBLE
-                        binding.tabCart.viewBadge.text = count.toString()
-                        Log.d("Home", count.toString())
-                    } else {
-                        binding.tabCart.viewBadge.visibility = View.GONE
+                launch {
+                    viewModel.cartCount.collect { count ->
+                        if (count > 0) {
+                            binding.tabCart.viewBadge.visibility = View.VISIBLE
+                            binding.tabCart.viewBadge.text = count.toString()
+                            Log.d("Home", count.toString())
+                        } else {
+                            binding.tabCart.viewBadge.visibility = View.GONE
+                        }
                     }
                 }
             }
@@ -129,12 +110,14 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                favouriteCount.collect { count ->
-                    if (count > 0) {
-                        binding.tabFavourites.viewBadge.visibility = View.VISIBLE
-                        binding.tabFavourites.viewBadge.text = count.toString()
-                    } else {
-                        binding.tabFavourites.viewBadge.visibility = View.GONE
+                launch {
+                    viewModel.favouriteCount.collect { count ->
+                        if (count > 0) {
+                            binding.tabFavourites.viewBadge.visibility = View.VISIBLE
+                            binding.tabFavourites.viewBadge.text = count.toString()
+                        } else {
+                            binding.tabFavourites.viewBadge.visibility = View.GONE
+                        }
                     }
                 }
             }

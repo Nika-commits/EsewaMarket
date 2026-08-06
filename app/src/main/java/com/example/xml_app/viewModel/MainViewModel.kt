@@ -40,7 +40,7 @@ class MainViewModel(
 
             _user.value = localUser
 
-            initializeUser()
+            initializeCart(localUser.uid)
             observeFavouriteCount(localUser.uid)
         }
     }
