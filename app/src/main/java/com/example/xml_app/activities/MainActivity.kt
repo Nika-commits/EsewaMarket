@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -23,6 +24,7 @@ import com.example.xml_app.fragments.Home
 import com.example.xml_app.fragments.More
 import com.example.xml_app.models.ProductState
 import com.example.xml_app.utils.CustomApplicationContext
+import com.example.xml_app.viewModel.MainViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -31,6 +33,8 @@ private val TAG = "Home"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    private val viewModel: MainViewModel by viewModels()
     private val homeFragment = Home()
     private val cartFragment = Cart()
     private val favouriteFragment = Favourite()
