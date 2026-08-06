@@ -22,4 +22,6 @@ interface ProductApi {
     @GET("/api/product/{id}")
     suspend fun getProduct(@Path("id") id: Int): Response<Product>
 
+    @GET("/api/product/popular")
+    suspend fun getPopularChips(): Response<List<String>>
 }

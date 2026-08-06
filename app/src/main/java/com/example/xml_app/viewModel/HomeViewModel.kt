@@ -16,6 +16,7 @@ import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,6 +27,8 @@ class HomeViewModel(
     private val _featuredProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _hotDealsProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _recommendedProducts = MutableStateFlow<List<Product>>(emptyList())
+    private val _popularChips = MutableStateFlow<List<String>>(emptyList())
+    val popularChips = _popularChips.asStateFlow()
     private val productRepository = ProductRepository()
     private val app = getApplication<CustomApplicationContext>()
     private val database = app.database
@@ -109,6 +112,7 @@ class HomeViewModel(
         getFeaturedProduct()
         getHotDealsProducts()
         getRecommendedProducts()
+        getPopularChips()
     }
 
     private fun initializeUser() {
@@ -207,6 +211,19 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 Log.d("API", "${e.message}")
+            }
+        }
+    }
+
+    fun getPopularChips() {
+        viewModelScope.launch {
+            try {
+                val response = productRepository.getPopularChips()
+                if (response.isSuccessful) {
+                    _popularChips.value = response.body() ?: emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("API", "${e.message}")
             }
         }
     }
