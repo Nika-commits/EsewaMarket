@@ -28,7 +28,6 @@ class Cart : Fragment() {
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CartViewModel by viewModels()
-
     private lateinit var cartAdapter: CartAdapter
 
 
@@ -99,7 +98,7 @@ class Cart : Fragment() {
             adapter = cartAdapter
             layoutManager = LinearLayoutManager(requireContext())
             itemAnimator = null
-            
+
         }
     }
 
@@ -126,6 +125,12 @@ class Cart : Fragment() {
                             binding.emptyCart.root.visibility = View.VISIBLE
                             binding.rvCartProducts.visibility = View.GONE
                         }
+                    }
+                }
+
+                launch {
+                    viewModel.totalPrice.collect {
+                        binding.tvTotalPrice.text = it.toString()
                     }
                 }
             }
