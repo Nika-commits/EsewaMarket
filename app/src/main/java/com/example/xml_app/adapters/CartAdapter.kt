@@ -8,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemCartProductBinding
-import com.example.xml_app.models.Product
-import com.example.xml_app.models.ProductState
+import com.example.xml_app.models.ProductUiModel
 
 class CartAdapter(
     val onProductClick: (Int?) -> Unit,
@@ -25,17 +24,17 @@ class CartAdapter(
         return ViewHolder(binding)
     }
 
-    private val differCallback = object : DiffUtil.ItemCallback<Product>() {
+    private val differCallback = object : DiffUtil.ItemCallback<ProductUiModel>() {
         override fun areItemsTheSame(
-            oldItem: Product,
-            newItem: Product
+            oldItem: ProductUiModel,
+            newItem: ProductUiModel
         ): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.product.id == newItem.product.id
         }
 
         override fun areContentsTheSame(
-            oldItem: Product,
-            newItem: Product
+            oldItem: ProductUiModel,
+            newItem: ProductUiModel
         ): Boolean {
             return oldItem == newItem
         }
@@ -43,45 +42,46 @@ class CartAdapter(
     }
 
     private val differ = AsyncListDiffer(this, differCallback)
-    var products: List<Product?>
+    var products: List<ProductUiModel>
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
         }
 
-    var productStates: Map<Int, ProductState> = emptyMap()
+//    var productStates: Map<Int, ProductState> = emptyMap()
 
 
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int
     ) {
-        val currentProduct = products[position]
-        val state = productStates[currentProduct?.id] ?: ProductState()
-        val totalPrice = currentProduct?.price?.times(state.cartCount)
+        val item = products[position]
+        val product = item.product
+        val totalPrice = product.price.times(item.cartCount)
 
-        holder.apply {
-            Glide.with(holder.itemView.context)
-                .load(currentProduct?.imageUrls[0])
-                .placeholder(R.drawable.ic_more)
-                .into(holder.binding.ivProductImage)
+        with(holder.binding) {
 
-            binding.tvProductPrice.text = totalPrice.toString()
-            binding.tvProductName.text = currentProduct?.name
-            binding.tvProductBrand.text = currentProduct?.brand
+            Glide.with(root)
+                .load(product.imageUrls.firstOrNull())
+                .placeholder(R.drawable.resource_default)
+                .error(R.drawable.resource_default)
+                .into(ivProductImage)
 
-            binding.tvCartCount.text = state.cartCount.toString()
+            tvProductName.text = product.name
+            tvProductBrand.text = product.brand
+            tvProductPrice.text = product.price.toString()
+            tvCartCount.text = item.cartCount.toString()
 
-            binding.root.setOnClickListener {
-                onProductClick(currentProduct?.id)
+            root.setOnClickListener {
+                onProductClick(product.id)
             }
 
-            binding.btnDecrementCart.setOnClickListener {
-                onCartDecrement(currentProduct?.id)
+            btnDecrementCart.setOnClickListener {
+                onCartDecrement(product.id)
             }
 
-            binding.btnIncrementCart.setOnClickListener {
-                onCartIncrement(currentProduct?.id)
+            btnIncrementCart.setOnClickListener {
+                onCartIncrement(product.id)
             }
         }
     }
