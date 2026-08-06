@@ -80,6 +80,8 @@ dependencies {
     implementation("androidx.room3:room3-runtime:$room_version")
     ksp("androidx.room3:room3-compiler:$room_version")
 
+
+    implementation(libs.flexbox)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.glide)
     annotationProcessor(libs.compiler)

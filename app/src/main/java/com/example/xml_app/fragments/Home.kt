@@ -30,6 +30,7 @@ import com.example.xml_app.activities.NotificationActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
 import com.example.xml_app.adapters.HeroViewPagerAdapter
+import com.example.xml_app.adapters.PopularChipsAdapter
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.example.xml_app.models.Category
@@ -37,6 +38,10 @@ import com.example.xml_app.models.Hero
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
@@ -71,6 +76,7 @@ class Home : Fragment() {
     private lateinit var featuredProductsAdapter: ProductsAdapter
     private lateinit var hotDealsAdapter: ProductsAdapter
     private lateinit var recommendedAdapter: ProductsAdapter
+    private lateinit var mostPopularChipsAdapter: PopularChipsAdapter
 
 
     override fun onCreateView(
@@ -91,6 +97,7 @@ class Home : Fragment() {
         setupCategories()
         setupFeaturedProducts()
         setupHotDealsProducts()
+        setupMostPopularSection()
         setupRecommendedProducts()
     }
 
@@ -312,6 +319,28 @@ class Home : Fragment() {
         }
 
         return adapter
+    }
+
+    private fun setupMostPopularSection() {
+        mostPopularChipsAdapter = PopularChipsAdapter { category ->
+            Toast.makeText(requireContext(), category, Toast.LENGTH_SHORT).show()
+        }
+
+        binding.rvMostPopular.apply {
+            layoutManager = FlexboxLayoutManager(requireContext()).apply {
+                flexDirection = FlexDirection.ROW
+                flexWrap = FlexWrap.WRAP
+                justifyContent = JustifyContent.FLEX_START
+            }
+            adapter = mostPopularChipsAdapter
+        }
+        binding.mostPopularHeader.tvHeaderTitle.text = "Most Popular"
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.popularChips.collect { mostPopularChipsAdapter.item = it }
+            }
+        }
     }
 
     private fun setupSearchBox() {
