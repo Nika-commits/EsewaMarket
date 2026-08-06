@@ -1,12 +1,11 @@
 package com.example.xml_app.repository
 
 import com.example.xml_app.data.dao.CartDao
-import com.example.xml_app.data.dao.UserDao
 import com.example.xml_app.entities.Cart
 import com.example.xml_app.entities.CartItem
+import kotlinx.coroutines.flow.Flow
 
 class CartRepository(
-    private val userDao: UserDao,
     private val cartDao: CartDao
 ) {
     suspend fun getOrCreateCart(userId: Int): Cart {
@@ -59,4 +58,7 @@ class CartRepository(
         }
     }
 
+    fun observeCartCount(cartId: Int): Flow<Int> {
+        return cartDao.observeCartCount(cartId)
+    }
 }

@@ -16,7 +16,6 @@ import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,7 +29,8 @@ class HomeViewModel(
     private val app = getApplication<CustomApplicationContext>()
     private val database = app.database
     private val _user = MutableStateFlow<User?>(null)
-    val user = _user.asStateFlow()
+
+    //    val user = _user.asStateFlow()
     private val _cartId = MutableStateFlow<Int?>(null)
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())

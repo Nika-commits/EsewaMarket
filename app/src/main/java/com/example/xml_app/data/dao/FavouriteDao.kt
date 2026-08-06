@@ -21,4 +21,6 @@ interface FavouriteDao {
     @Query("""select product_id from favourites where user_id = :userId""")
     fun observeFavouriteProducts(userId: Int): Flow<List<Int>>
 
+    @Query("""select count(*) from favourites where user_id = :userId""")
+    fun observeFavouritesCount(userId: Int): Flow<Int>
 }

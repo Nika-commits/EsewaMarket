@@ -18,4 +18,8 @@ class FavouriteRepository(
             favouriteDao.insert(Favourite(userId = userId, productId = productId))
         }
     }
+
+    suspend fun observeFavouriteCount(userId: Int): Flow<Int> {
+        return favouriteDao.observeFavouritesCount(userId)
+    }
 }

@@ -31,6 +31,9 @@ interface CartDao {
     @Query("""delete from cart_items where cart_id = :cartId and product_id = :productId""")
     suspend fun deleteCartItem(cartId: Int, productId: Int)
 
+    @Query("""select count(*) from cart_items where cart_id = :cartId""")
+    fun observeCartCount(cartId: Int): Flow<Int>
+
     @Query("""delete from cart_items where cart_id = :cartId""")
     suspend fun clearCart(cartId: Int)
 }
