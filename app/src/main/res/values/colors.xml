@@ -19,8 +19,8 @@
     <color name="textDark200">#8E90A6</color>
     <color name="esewaLight">#F8F8FA</color>
     <color name="textDark">#263238</color>
-
-
+    <color name="BackgroundGrey">#2B2B2B0A</color>
     <color name="error">#D3494E</color>
+    <color name="lightCharcoal">#182B3C</color>
 
 </resources>
