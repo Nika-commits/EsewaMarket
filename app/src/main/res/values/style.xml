@@ -142,9 +142,19 @@
     </style>
 
     <style name="App.Chip" parent="Widget.Material3.Chip.Suggestion">
-        <item name="backgroundColor">@color/BackgroundGrey</item>
-        <item name="strokeWidth">0dp</item>
-        <item name="android:strokeWidth">0</item>
+        <item name="chipBackgroundColor">@color/textLighter</item>
+        <item name="chipStrokeWidth">0dp</item>
         <item name="android:textColor">@color/lightCharcoal</item>
+        <item name="chipStartPadding">8dp</item>
+        <item name="chipEndPadding">8dp</item>
+
+        <item name="android:layout_marginHorizontal">8dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">@font/source_sans_regular</item>
+
+        <item name="chipSpacing">8dp</item>
+
+        <item name="textStartPadding">0dp</item>
+        <item name="textEndPadding">0dp</item>
     </style>
 </resources>
