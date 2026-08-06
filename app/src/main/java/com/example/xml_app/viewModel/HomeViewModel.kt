@@ -34,7 +34,7 @@ class HomeViewModel(
     private val _cartId = MutableStateFlow<Int?>(null)
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())
-    private val cartRepository = CartRepository(database.userDao(), database.cartDao())
+    private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(userDao = database.userDao())
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
 

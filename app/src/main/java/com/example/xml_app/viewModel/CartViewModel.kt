@@ -37,7 +37,7 @@ class CartViewModel(
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())
     private val productRepository = ProductRepository()
-    private val cartRepository = CartRepository(database.userDao(), database.cartDao())
+    private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(app.database.userDao())
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
     val productsInCart: StateFlow<List<ProductUiModel>> = combine(
