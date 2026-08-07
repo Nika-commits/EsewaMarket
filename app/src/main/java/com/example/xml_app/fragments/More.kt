@@ -11,9 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
+import com.example.xml_app.activities.MainActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
@@ -132,16 +132,16 @@ class More : Fragment() {
                 dialog.dismiss()
                 Toast.makeText(requireContext(), "Logged Out Successfully", Toast.LENGTH_SHORT)
                     .show()
-//                val intent = Intent(requireContext(), MainActivity::class.java).apply {
-//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//                }
-//                startActivity(intent)
+//                parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
-                parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, Home())
-                    .commit()
+//                parentFragmentManager.beginTransaction()
+//                    .replace(R.id.fragmentContainer, Home())
+//                    .commit()
+                Intent(requireContext(), MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }.also {
+                    startActivity(it)
+                }
             }.show()
     }
 

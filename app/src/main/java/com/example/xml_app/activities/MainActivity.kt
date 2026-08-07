@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         if (savedInstanceState == null) {
-            replaceFragment(homeFragment)
+            replaceFragment(homeFragment, false)
             setSelectedTab(binding.tabHome)
         }
 
@@ -124,10 +124,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    private fun replaceFragment(fragment: Fragment, addToBackStack: Boolean = true) {
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.fragmentContainer, fragment)
-            addToBackStack(null)
+
+            if (addToBackStack) {
+                addToBackStack(null)
+            }
             commit()
         }
     }
