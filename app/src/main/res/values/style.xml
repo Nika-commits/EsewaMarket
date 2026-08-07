@@ -17,17 +17,21 @@
     </style>
 
     <style name="App.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">16dp</item>
-        <item name="boxCornerRadiusTopEnd">16dp</item>
-        <item name="boxCornerRadiusBottomStart">16dp</item>
-        <item name="boxCornerRadiusBottomEnd">16dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
 
         <item name="android:layout_marginVertical">8dp</item>
-
+        <item name="backgroundColor">@color/surface</item>
         <item name="boxStrokeColor">@color/primaryGreen</item>
-        <item name="hintTextColor">@color/primaryGreen</item>
-        <item name="cursorColor">@color/primaryGreen</item>
-
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="android:pointerIcon">text</item>
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="hintTextColor">@color/textLight</item>
+        <item name="cursorColor">@color/lightGrey</item>
+        <item name="android:textColorHint">@color/light</item>
         <item name="startIconTint">@color/lightGrey</item>
         <item name="errorTextColor">@color/error</item>
         <item name="errorIconTint">@color/error</item>

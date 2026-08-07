@@ -109,6 +109,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/searchBox"
+            style="@style/App.TextInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/greetings"
@@ -116,36 +117,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="16dp"
-            android:paddingHorizontal="12dp"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:startIconDrawable="@drawable/ic_search"
-            app:startIconTint="@color/lightGrey"
-            app:endIconTint="@color/lightGrey"
+
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="16dp"
             app:endIconDrawable="@drawable/ic_slider"
             app:endIconMode="custom"
-            android:hint="What are you searching for ? "
-            android:textColorHint="@color/light"
-            app:hintTextColor="@color/textLight"
-            app:cursorColor="@color/lightGrey"
-            app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="@color/surface"
-            app:boxStrokeWidth="0dp"
-            android:pointerIcon="text"
-            app:boxStrokeWidthFocused="0dp"
-            app:boxStrokeColor="@color/primaryGreen">
+            android:hint="What are you searching for ? ">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
-                android:typeface="normal"
                 android:inputType="text"
-                android:maxLines="1"
-                android:textColor="@color/black"
-                android:textColorHint="@color/textLight"
                 android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
