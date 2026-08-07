@@ -7,12 +7,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
@@ -23,7 +25,7 @@ import com.example.xml_app.fragments.Cart
 import com.example.xml_app.fragments.Favourite
 import com.example.xml_app.fragments.Home
 import com.example.xml_app.fragments.More
-import com.example.xml_app.utils.CustomApplicationContext
+import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.viewModel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -32,13 +34,7 @@ private val TAG = "Home"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-
-    //    private val homeFragment = Home()
-//    private val cartFragment = Cart()
-//    private val favouriteFragment = Favourite()
-//    private val moreFragment = More()
     private lateinit var navController: NavController
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,28 +43,44 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         if (savedInstanceState == null) {
-//            replaceFragment(homeFragment, false)
             setSelectedTab(binding.tabHome)
         }
-
-        val app = application as? CustomApplicationContext
-        app?.auth
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(binding.fragmentContainer.id) as NavHostFragment
 
         navController = navHostFragment.navController
         navController.graph = navController.createGraph(
-            startDestination = com.example.xml_app.navigation.Home
+            startDestination = ApiRoute.Home
         ) {
-            fragment<Home, com.example.xml_app.navigation.Home> { label = "Home" }
-            fragment<Cart, com.example.xml_app.navigation.Cart> { label = "Cart" }
-            fragment<Favourite, com.example.xml_app.navigation.Favourite> { label = "Favourite" }
-            fragment<More, com.example.xml_app.navigation.More> { label = "More" }
+            fragment<Home, ApiRoute.Home> { label = "Home" }
+            fragment<Cart, ApiRoute.Cart> { label = "Cart" }
+            fragment<Favourite, ApiRoute.Favourite> { label = "Favourite" }
+            fragment<More, ApiRoute.More> { label = "More" }
         }
 
         setupBottomNavigation()
         setSelectedTab(binding.tabHome)
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (!navController.currentDestination!!.hasRoute<ApiRoute.Home>()) {
+                navigateTo(ApiRoute.Home)
+                setSelectedTab(binding.tabHome)
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
+            }
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when {
+                destination.hasRoute<ApiRoute.Home>() -> setSelectedTab(binding.tabHome)
+                destination.hasRoute<ApiRoute.Cart>() -> setSelectedTab(binding.tabCart)
+                destination.hasRoute<ApiRoute.Favourite>() -> setSelectedTab(binding.tabFavourites)
+                destination.hasRoute<ApiRoute.More>() -> setSelectedTab(binding.tabMore)
+            }
+        }
 
     }
 
@@ -91,23 +103,19 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.tabHome.root.setOnClickListener {
-            navController.navigate(route = com.example.xml_app.navigation.Home)
-            setSelectedTab(binding.tabHome)
+            navigateTo(ApiRoute.Home)
         }
 
         binding.tabCart.root.setOnClickListener {
-            navController.navigate(route = com.example.xml_app.navigation.Cart)
-            setSelectedTab(binding.tabCart)
+            navigateTo(ApiRoute.Cart)
         }
 
         binding.tabFavourites.root.setOnClickListener {
-            navController.navigate(route = com.example.xml_app.navigation.Favourite)
-            setSelectedTab(binding.tabFavourites)
+            navigateTo(ApiRoute.Favourite)
         }
 
         binding.tabMore.root.setOnClickListener {
-            navController.navigate(route = com.example.xml_app.navigation.More)
-            setSelectedTab(binding.tabMore)
+            navigateTo(ApiRoute.More)
         }
 
         lifecycleScope.launch {
@@ -142,24 +150,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun replaceFragment(fragment: Fragment, addToBackStack: Boolean = true) {
-//
-//        navController.navigate(R.id.tabHome)
-//        val options = navOptions {
-//            popUpToId(navController.graph.startDestinationId) {
-//                saveState = true
-//            }
-//            launchedFromUid
-//        }
-//        supportFragmentManager.beginTransaction().apply {
-//            replace(R.id.fragmentContainer, fragment)
-//
-//            if (addToBackStack) {
-//                addToBackStack(null)
-//            }
-//            commit()
-//        }
-//    }
+    private fun navigateTo(route: ApiRoute) {
+        navController.navigate(route = route) {
+            popUpTo<ApiRoute.Home> { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
 
     private fun setSelectedTab(selected: ItemNavigationBinding) {
         val tabs = listOf(

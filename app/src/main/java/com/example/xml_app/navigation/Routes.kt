@@ -2,13 +2,15 @@ package com.example.xml_app.navigation
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-data object Home
+sealed interface ApiRoute {
+    @Serializable
+    data object Home : ApiRoute
+    @Serializable
+    data object Cart : ApiRoute
 
-@Serializable
-data object Cart
+    @Serializable
+    data object Favourite : ApiRoute
 
-@Serializable
-data object Favourite
-@Serializable
-data object More
+    @Serializable
+    data object More : ApiRoute
+}
