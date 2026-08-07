@@ -1,6 +1,5 @@
 package com.example.xml_app.activities
 
-import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -10,10 +9,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.createGraph
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.fragment
 import com.example.xml_app.R
 import com.example.xml_app.databinding.ActivityMainBinding
 import com.example.xml_app.databinding.ItemNavigationBinding
@@ -30,10 +32,12 @@ private val TAG = "Home"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private val homeFragment = Home()
-    private val cartFragment = Cart()
-    private val favouriteFragment = Favourite()
-    private val moreFragment = More()
+
+    //    private val homeFragment = Home()
+//    private val cartFragment = Cart()
+//    private val favouriteFragment = Favourite()
+//    private val moreFragment = More()
+    private lateinit var navController: NavController
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,13 +47,28 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         if (savedInstanceState == null) {
-            replaceFragment(homeFragment, false)
+//            replaceFragment(homeFragment, false)
             setSelectedTab(binding.tabHome)
         }
 
-        setupBottomNavigation()
         val app = application as? CustomApplicationContext
         app?.auth
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(binding.fragmentContainer.id) as NavHostFragment
+
+        navController = navHostFragment.navController
+        navController.graph = navController.createGraph(
+            startDestination = com.example.xml_app.navigation.Home
+        ) {
+            fragment<Home, com.example.xml_app.navigation.Home> { label = "Home" }
+            fragment<Cart, com.example.xml_app.navigation.Cart> { label = "Cart" }
+            fragment<Favourite, com.example.xml_app.navigation.Favourite> { label = "Favourite" }
+            fragment<More, com.example.xml_app.navigation.More> { label = "More" }
+        }
+
+        setupBottomNavigation()
+        setSelectedTab(binding.tabHome)
 
     }
 
@@ -72,24 +91,23 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.tabHome.root.setOnClickListener {
-            replaceFragment(homeFragment)
+            navController.navigate(route = com.example.xml_app.navigation.Home)
             setSelectedTab(binding.tabHome)
         }
 
         binding.tabCart.root.setOnClickListener {
-            replaceFragment(cartFragment)
+            navController.navigate(route = com.example.xml_app.navigation.Cart)
             setSelectedTab(binding.tabCart)
         }
 
         binding.tabFavourites.root.setOnClickListener {
-            replaceFragment(favouriteFragment)
+            navController.navigate(route = com.example.xml_app.navigation.Favourite)
             setSelectedTab(binding.tabFavourites)
         }
 
         binding.tabMore.root.setOnClickListener {
-            replaceFragment(moreFragment)
+            navController.navigate(route = com.example.xml_app.navigation.More)
             setSelectedTab(binding.tabMore)
-//            throw RuntimeException("Test")
         }
 
         lifecycleScope.launch {
@@ -124,16 +142,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment, addToBackStack: Boolean = true) {
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.fragmentContainer, fragment)
-
-            if (addToBackStack) {
-                addToBackStack(null)
-            }
-            commit()
-        }
-    }
+//    private fun replaceFragment(fragment: Fragment, addToBackStack: Boolean = true) {
+//
+//        navController.navigate(R.id.tabHome)
+//        val options = navOptions {
+//            popUpToId(navController.graph.startDestinationId) {
+//                saveState = true
+//            }
+//            launchedFromUid
+//        }
+//        supportFragmentManager.beginTransaction().apply {
+//            replace(R.id.fragmentContainer, fragment)
+//
+//            if (addToBackStack) {
+//                addToBackStack(null)
+//            }
+//            commit()
+//        }
+//    }
 
     private fun setSelectedTab(selected: ItemNavigationBinding) {
         val tabs = listOf(
@@ -145,13 +171,6 @@ class MainActivity : AppCompatActivity() {
 
         tabs.forEach {
             it.tvNavText.visibility = View.GONE
-//            it.tvNavText.animate()
-//                .alpha(0f)
-//                .setDuration(150)
-//                .withEndAction {
-//                    it.tvNavText.visibility = View.GONE
-//                }
-//                .start()
             it.ivNavIcon.setColorFilter(getColor(R.color.textDark))
             it.tvNavText.setTextColor(getColor(R.color.textDark))
             it.rootLayout.setBackgroundColor(getColor(android.R.color.transparent))
@@ -163,33 +182,11 @@ class MainActivity : AppCompatActivity() {
                 .start()
         }
 
-//        selected.tvNavText.apply {
-//            alpha = 0f
-//            visibility = View.VISIBLE
-//
-//            animate()
-//                .alpha(1f)
-//                .setDuration(200)
-//                .start()
-//        }
         selected.tvNavText.visibility = View.VISIBLE
         selected.ivNavIcon.setColorFilter(getColor(R.color.primaryGreen))
         selected.tvNavText.setTextColor(getColor(R.color.primaryGreen))
         selected.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
 
-//        selected.rootLayout.apply {
-//            scaleX = 0.6f
-//            scaleY = 0.6f
-//            alpha = 0f
-//            setBackgroundResource(R.drawable.bg_selected_tab)
-//
-//            animate()
-//                .scaleX(1f)
-//                .scaleY(1f)
-//                .alpha(1f)
-//                .setDuration(200)
-//                .start()
-//        }
         selected.ivNavIcon.animate()
             .setDuration(200)
             .start()
@@ -208,12 +205,11 @@ class MainActivity : AppCompatActivity() {
                 v.getGlobalVisibleRect(outRect)
                 if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
                     v.clearFocus()
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v.windowToken, 0)
                 }
             }
         }
         return super.dispatchTouchEvent(ev)
     }
-
 }
