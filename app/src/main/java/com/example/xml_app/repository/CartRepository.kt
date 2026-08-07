@@ -61,4 +61,8 @@ class CartRepository(
     fun observeCartCount(cartId: Int): Flow<Int> {
         return cartDao.observeCartCount(cartId)
     }
+
+    fun observeCartItem(cartId: Int, productId: Int): Flow<CartItem?> {
+        return cartDao.observeCartItem(cartId, productId)
+    }
 }

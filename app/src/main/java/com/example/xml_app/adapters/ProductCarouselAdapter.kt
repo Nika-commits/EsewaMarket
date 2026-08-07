@@ -10,7 +10,7 @@ import com.example.xml_app.R
 import com.example.xml_app.databinding.ItemCarouselImageBinding
 
 class ProductCarouselAdapter(
-    val onImageClick: (String) -> Unit
+    val onImageClick: () -> Unit
 ) : RecyclerView.Adapter<ProductCarouselAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -48,6 +48,10 @@ class ProductCarouselAdapter(
                 .load(currentImage)
                 .placeholder(R.drawable.tshirt)
                 .into(holder.binding.ivProductCarouselImage)
+
+            holder.binding.ivProductCarouselImage.setOnClickListener {
+                onImageClick()
+            }
         }
     }
 
@@ -55,6 +59,6 @@ class ProductCarouselAdapter(
         return imageUrls.size
     }
 
-    inner class ViewHolder(val binding: ItemCarouselImageBinding) :
+    class ViewHolder(val binding: ItemCarouselImageBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

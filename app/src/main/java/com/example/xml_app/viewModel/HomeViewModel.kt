@@ -33,8 +33,6 @@ class HomeViewModel(
     private val app = getApplication<CustomApplicationContext>()
     private val database = app.database
     private val _user = MutableStateFlow<User?>(null)
-
-    //    val user = _user.asStateFlow()
     private val _cartId = MutableStateFlow<Int?>(null)
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())

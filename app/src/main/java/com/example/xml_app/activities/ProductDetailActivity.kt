@@ -29,13 +29,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class ProductDetailActivity : AppCompatActivity() {
-
     private val viewModel: ProductDetailsViewModel by viewModels()
-
     private lateinit var binding: ActivityProductDetailBinding
-
     private lateinit var carouselAdapter: ProductCarouselAdapter
-
     private lateinit var colorAdapter: ColorSelectorAdapter
 
     private fun productStateFlow(): Flow<Map<Int, ProductState>> =
@@ -45,8 +41,6 @@ class ProductDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-
         binding = ActivityProductDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->

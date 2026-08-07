@@ -19,6 +19,9 @@ interface CartDao {
     @Query("""select * from cart_items where cart_id = :cartId""")
     fun observeCartItems(cartId: Int): Flow<List<CartItem>>
 
+    @Query("""select * from cart_items where cart_id = :cartId and product_id = :productId LIMIT 1""")
+    fun observeCartItem(cartId: Int, productId: Int): Flow<CartItem?>
+
     @Query("""select * from cart_items where cart_id = :cartId and product_id = :productId LIMIT 1 """)
     suspend fun getCartItem(cartId: Int, productId: Int): CartItem?
 
