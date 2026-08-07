@@ -167,32 +167,41 @@ class MainActivity : AppCompatActivity() {
             binding.tabMore
         )
 
-        tabs.forEach {
-            it.tvNavText.visibility = View.GONE
-            it.ivNavIcon.setColorFilter(getColor(R.color.textDark))
-            it.tvNavText.setTextColor(getColor(R.color.textDark))
-            it.rootLayout.setBackgroundColor(getColor(android.R.color.transparent))
+        tabs.forEach { tab ->
+            val isSelected = tab == selected
 
-            it.ivNavIcon.animate()
-                .scaleX(1f)
-                .scaleY(1f)
-                .setDuration(200)
-                .start()
+            tab.tvNavText.visibility = if (isSelected) View.VISIBLE else View.GONE
+            tab.ivNavIcon.setColorFilter(getColor(if (isSelected) R.color.primaryGreen else R.color.textDark))
+            tab.tvNavText.setTextColor(getColor(if (isSelected) R.color.primaryGreen else R.color.textDark))
+
+            if (isSelected) {
+                tab.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
+                animateSelectedTab(tab.root)
+            } else {
+                tab.rootLayout.setBackgroundColor(getColor(android.R.color.transparent))
+                tab.root.animate().cancel()
+                tab.root.scaleX = 1f
+                tab.root.scaleY = 1f
+                tab.root.alpha = 1f
+            }
         }
+    }
 
-        selected.tvNavText.visibility = View.VISIBLE
-        selected.ivNavIcon.setColorFilter(getColor(R.color.primaryGreen))
-        selected.tvNavText.setTextColor(getColor(R.color.primaryGreen))
-        selected.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
+    private fun animateSelectedTab(view: View) {
+        view.animate().cancel()
+        view.scaleY = 0.92f
+        view.scaleX = 0.92f
+        view.alpha = 0.75f
 
-        selected.ivNavIcon.animate()
-            .setDuration(200)
+        view.animate()
+            .scaleX(1f)
+            .scaleY(1f)
+            .alpha(1f)
+            .setDuration(220)
+            .setInterpolator(
+                android.view.animation.OvershootInterpolator(1.4f)
+            )
             .start()
-
-        selected.tvNavText.animate()
-            .setDuration(200)
-            .start()
-
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
