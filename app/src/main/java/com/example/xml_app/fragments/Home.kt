@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
+import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.NotificationActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
@@ -35,6 +37,7 @@ import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
+import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
@@ -42,7 +45,6 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 import java.io.Serializable
@@ -350,11 +352,20 @@ class Home : Fragment() {
     }
 
     private fun showLoginSnackbar(message: String) {
-        Snackbar.make(
-            binding.root,
-            message,
-            Snackbar.LENGTH_SHORT
-        ).show()
+        val bottomNav = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
+        CustomSnackbar.show(
+            view = binding.root,
+            context = requireContext(),
+            text = message,
+            anchorView = bottomNav,
+            actionText = "Login",
+            action = {
+                val intent = Intent(requireContext(), AuthActivity::class.java).apply {
+                    putExtra(AuthActivity.DESTINATION, AuthActivity.LOGIN)
+                }
+                startActivity(intent)
+            }
+        )
     }
 
 
