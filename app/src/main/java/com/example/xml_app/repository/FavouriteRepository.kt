@@ -19,7 +19,7 @@ class FavouriteRepository(
         }
     }
 
-    suspend fun observeFavouriteCount(userId: Int): Flow<Int> {
+    fun observeFavouriteCount(userId: Int): Flow<Int> {
         return favouriteDao.observeFavouritesCount(userId)
     }
 }

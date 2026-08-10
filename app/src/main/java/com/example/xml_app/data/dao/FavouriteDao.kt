@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FavouriteDao {
-
     @Insert
     suspend fun insert(favourite: Favourite)
 
