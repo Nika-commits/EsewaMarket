@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -80,5 +81,9 @@ class Favourite : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+}
 
+@Composable
+fun FavouriteCountText(count: Int) {
+    Text("Items $count")
 }
