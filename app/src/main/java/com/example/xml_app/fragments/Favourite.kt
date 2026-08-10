@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -13,13 +16,8 @@ import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
 
 class Favourite : Fragment() {
-
     private var _binding: FragmentFavouriteBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +32,7 @@ class Favourite : Fragment() {
 
         applyEdgeToEdgeInsets()
         setupToolbar()
+        setupFavourites()
     }
 
     fun applyEdgeToEdgeInsets() {
@@ -63,7 +62,23 @@ class Favourite : Fragment() {
         toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+    }
 
+    fun setupFavourites() {
+        val composeView = binding.composeFavourite
+        composeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MaterialTheme {
+                    Text("Hello")
+                }
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
