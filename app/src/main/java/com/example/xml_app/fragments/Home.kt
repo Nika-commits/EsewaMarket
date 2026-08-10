@@ -281,30 +281,24 @@ class Home : Fragment() {
                 }
             },
             onFavouriteClick = { p ->
-                viewLifecycleOwner.lifecycleScope.launch {
-                    if (viewModel.isLoggedIn()) {
-                        viewModel.toggleFavourite(p.id)
-                    } else {
-                        showLoginSnackbar("Log in to add to Favourites")
-                    }
+                if (viewModel.isLoggedIn()) {
+                    viewModel.toggleFavourite(p.id)
+                } else {
+                    showLoginSnackbar("Log in to add to Favourites")
                 }
             },
             onCartIncrement = { p ->
-                viewLifecycleOwner.lifecycleScope.launch {
-                    if (viewModel.isLoggedIn()) {
-                        viewModel.cartIncrement(p.id)
-                    } else {
-                        showLoginSnackbar("Log in to add to cart")
-                    }
+                if (viewModel.isLoggedIn()) {
+                    viewModel.cartIncrement(p.id)
+                } else {
+                    showLoginSnackbar("Log in to add to cart")
                 }
             },
             onCartDecrement = { p ->
-                viewLifecycleOwner.lifecycleScope.launch {
-                    if (viewModel.isLoggedIn()) {
-                        viewModel.decrementCart(p.id)
-                    } else {
-                        showLoginSnackbar("Log in to add to cart")
-                    }
+                if (viewModel.isLoggedIn()) {
+                    viewModel.decrementCart(p.id)
+                } else {
+                    showLoginSnackbar("Log in to add to cart")
                 }
 
             }

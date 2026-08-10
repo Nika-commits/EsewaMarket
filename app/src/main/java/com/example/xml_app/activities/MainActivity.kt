@@ -42,16 +42,12 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        if (savedInstanceState == null) {
-            setSelectedTab(binding.tabHome)
-        }
-
         val navHostFragment =
             supportFragmentManager.findFragmentById(binding.fragmentContainer.id) as NavHostFragment
 
         navController = navHostFragment.navController
         navController.graph = navController.createGraph(
-            startDestination = ApiRoute.Home
+            startDestination = ApiRoute.Home,
         ) {
             fragment<Home, ApiRoute.Home> { label = "Home" }
             fragment<Cart, ApiRoute.Cart> { label = "Cart" }
@@ -60,18 +56,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupBottomNavigation()
-        setSelectedTab(binding.tabHome)
-
-        onBackPressedDispatcher.addCallback(this) {
-            if (!navController.currentDestination!!.hasRoute<ApiRoute.Home>()) {
-                navigateTo(ApiRoute.Home)
-                setSelectedTab(binding.tabHome)
-            } else {
-                isEnabled = false
-                onBackPressedDispatcher.onBackPressed()
-                isEnabled = true
-            }
-        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when {
@@ -82,6 +66,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        onBackPressedDispatcher.addCallback(this) {
+            if (!navController.currentDestination!!.hasRoute<ApiRoute.Home>()) {
+                navigateTo(ApiRoute.Home)
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
+            }
+        }
     }
 
     override fun onStart() {
@@ -103,19 +96,27 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.tabHome.root.setOnClickListener {
-            navigateTo(ApiRoute.Home)
+            if (!navController.currentDestination!!.hasRoute<ApiRoute.Home>()) {
+                navigateTo(ApiRoute.Home)
+            }
         }
 
         binding.tabCart.root.setOnClickListener {
-            navigateTo(ApiRoute.Cart)
+            if (!navController.currentDestination!!.hasRoute<ApiRoute.Cart>()) {
+                navigateTo(ApiRoute.Cart)
+            }
         }
 
         binding.tabFavourites.root.setOnClickListener {
-            navigateTo(ApiRoute.Favourite)
+            if (!navController.currentDestination!!.hasRoute<ApiRoute.Favourite>()) {
+                navigateTo(ApiRoute.Favourite)
+            }
         }
 
         binding.tabMore.root.setOnClickListener {
-            navigateTo(ApiRoute.More)
+            if (!navController.currentDestination!!.hasRoute<ApiRoute.More>()) {
+                navigateTo(ApiRoute.More)
+            }
         }
 
         lifecycleScope.launch {
@@ -189,18 +190,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun animateSelectedTab(view: View) {
         view.animate().cancel()
-        view.scaleY = 0.92f
-        view.scaleX = 0.92f
-        view.alpha = 0.75f
+        view.scaleY = 0.95f
+        view.scaleX = 0.95f
+//        view.alpha = 0.75f
 
         view.animate()
             .scaleX(1f)
             .scaleY(1f)
             .alpha(1f)
             .setDuration(220)
-            .setInterpolator(
-                android.view.animation.OvershootInterpolator(1.4f)
-            )
+//            .setInterpolator(
+//                android.view.animation.OvershootInterpolator(1.4f)
+//            )
             .start()
     }
 
