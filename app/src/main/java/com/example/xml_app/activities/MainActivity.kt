@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity() {
             .scaleX(1f)
             .scaleY(1f)
             .alpha(1f)
-            .setDuration(220)
+            .setDuration(300)
 //            .setInterpolator(
 //                android.view.animation.OvershootInterpolator(1.4f)
 //            )

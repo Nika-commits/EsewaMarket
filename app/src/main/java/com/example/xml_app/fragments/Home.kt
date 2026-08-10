@@ -133,8 +133,6 @@ class Home : Fragment() {
                 return when (menuItem.itemId) {
                     R.id.miAbout -> {
                         throw RuntimeException("Test Exception")
-//                        Toast.makeText(requireContext(), "Clicked on About", Toast.LENGTH_SHORT)
-//                            .show()
                     }
 
                     R.id.miNotification -> {
@@ -284,21 +282,21 @@ class Home : Fragment() {
                 if (viewModel.isLoggedIn()) {
                     viewModel.toggleFavourite(p.id)
                 } else {
-                    showLoginSnackbar("Log in to add to Favourites")
+                    showLoginSnackBar("Log in to add to Favourites")
                 }
             },
             onCartIncrement = { p ->
                 if (viewModel.isLoggedIn()) {
                     viewModel.cartIncrement(p.id)
                 } else {
-                    showLoginSnackbar("Log in to add to cart")
+                    showLoginSnackBar("Log in to add to cart")
                 }
             },
             onCartDecrement = { p ->
                 if (viewModel.isLoggedIn()) {
                     viewModel.decrementCart(p.id)
                 } else {
-                    showLoginSnackbar("Log in to add to cart")
+                    showLoginSnackBar("Log in to add to cart")
                 }
 
             }
@@ -345,7 +343,7 @@ class Home : Fragment() {
         }
     }
 
-    private fun showLoginSnackbar(message: String) {
+    private fun showLoginSnackBar(message: String) {
         val bottomNav = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
         CustomSnackbar.show(
             view = binding.root,
