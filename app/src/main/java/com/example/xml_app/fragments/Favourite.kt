@@ -1,21 +1,24 @@
 package com.example.xml_app.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +48,8 @@ import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
 import com.example.xml_app.models.Color
 import com.example.xml_app.models.Product
+import com.example.xml_app.utils.custom.ActionIcon
+import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.viewModel.FavouriteViewModel
 
 class Favourite : Fragment() {
@@ -106,7 +112,7 @@ class Favourite : Fragment() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     MaterialTheme {
-                        FavouriteScreen(viewModel)
+                        FavouriteScreen(viewModel, requireContext())
                     }
 
                 }
@@ -130,7 +136,7 @@ fun FavouriteList(product: Product) {
     val sourceSans = FontFamily(
         Font(R.font.source_sans_regular, FontWeight.Normal),
         Font(R.font.source_sans_medium, FontWeight.Medium),
-        Font(R.font.source_sans_semibold, FontWeight.Normal),
+        Font(R.font.source_sans_semibold, FontWeight.SemiBold),
         Font(R.font.source_sans_bold, FontWeight.Bold),
     )
     Row(
@@ -160,7 +166,7 @@ fun FavouriteList(product: Product) {
                 text = product.name,
                 fontSize = 16.sp,
                 fontFamily = sourceSans,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Medium,
                 color = colorResource(R.color.textDark400)
             )
             Text(
@@ -189,7 +195,7 @@ fun FavouriteList(product: Product) {
                     text = product.price.toString(),
                     fontSize = 20.sp,
                     fontFamily = sourceSans,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Normal,
                     color = colorResource(R.color.textDark400)
                 )
             }
@@ -198,8 +204,9 @@ fun FavouriteList(product: Product) {
 
     }
 }
+
 @Composable
-fun FavouriteScreen(viewModel: FavouriteViewModel) {
+fun FavouriteScreen(viewModel: FavouriteViewModel, context: Context) {
     val products by viewModel.favouriteProducts.collectAsStateWithLifecycle()
 
     Column(
@@ -214,15 +221,38 @@ fun FavouriteScreen(viewModel: FavouriteViewModel) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(
+            itemsIndexed(
                 items = products,
-                key = { product -> product.id }
-            ) { product ->
-                FavouriteList(product = product)
+                key = { _, product -> product.product.id }
+            ) { index, product ->
+//                FavouriteList(product = product)
+                SwipableItemsWithActions(
+                    isRevealed = product.isOptionsRevealed,
+                    onExpanded = {
+                        viewModel.setOptionsRevealed(product.product.id, true)
+                    },
+
+                    onCollapsed = {
+                        viewModel.setOptionsRevealed(product.product.id, false)
+                    },
+                    actions = {
+                        ActionIcon(
+                            onClick = {
+                                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                                viewModel.setOptionsRevealed(product.product.id, false)
+                            },
+                            icon = painterResource(R.drawable.ic_trash),
+                            modifier = Modifier.fillMaxHeight()
+                        )
+                    }
+                ) {
+                    FavouriteList(product.product)
+                }
             }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun Preview() {

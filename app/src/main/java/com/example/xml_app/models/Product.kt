@@ -1,13 +1,5 @@
 package com.example.xml_app.models
 
-import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.Serializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import java.io.InputStream
-import java.io.OutputStream
-
 data class Product(
     val id: Int,
     val name: String,
@@ -30,34 +22,7 @@ data class ProductUiModel(
     val cartCount: Int
 )
 
-@Serializable
-data class ProductState(
-    val isFavourite: Boolean = false,
-    val cartCount: Int = 0
+data class ProductUiFavourite(
+    val product: Product,
+    val isOptionsRevealed: Boolean
 )
-
-@Serializable
-data class ProductStates(
-    val products: Map<Int, ProductState> = emptyMap()
-)
-
-object ProductSerializer : Serializer<ProductStates> {
-    override val defaultValue: ProductStates
-        get() = ProductStates()
-
-    override suspend fun readFrom(input: InputStream): ProductStates =
-        try {
-            Json.decodeFromString<ProductStates>(
-                input.readBytes().decodeToString()
-            )
-        } catch (serialization: SerializationException) {
-            throw CorruptionException("Unable to read", serialization)
-        }
-
-    override suspend fun writeTo(t: ProductStates, output: OutputStream) {
-        output.write(
-            Json.encodeToString(t).encodeToByteArray()
-        )
-    }
-}
-

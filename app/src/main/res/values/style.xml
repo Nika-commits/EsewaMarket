@@ -17,31 +17,43 @@
     </style>
 
     <style name="App.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">8dp</item>
-        <item name="boxCornerRadiusTopEnd">8dp</item>
-        <item name="boxCornerRadiusBottomStart">8dp</item>
-        <item name="boxCornerRadiusBottomEnd">8dp</item>
+
+        <!-- Corners -->
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
 
         <item name="android:layout_marginVertical">8dp</item>
-        <item name="backgroundColor">@color/surface</item>
-        <item name="boxStrokeColor">@color/primaryGreen</item>
-        <item name="boxStrokeWidth">0dp</item>
-        <item name="android:pointerIcon">text</item>
-        <item name="boxBackgroundMode">filled</item>
-        <item name="boxStrokeWidthFocused">0dp</item>
+
+        <item name="boxBackgroundColor">@color/inputBackground</item>
+
+        <!-- Border -->
+        <item name="boxStrokeColor">@color/text_input</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+
+        <item name="strokeColor">@color/inputBorder</item>
+
+        <!-- Hint -->
         <item name="hintTextColor">@color/textLight</item>
-        <item name="cursorColor">@color/lightGrey</item>
         <item name="android:textColorHint">@color/light</item>
+
+        <!-- Icons -->
         <item name="startIconTint">@color/lightGrey</item>
+
+        <!-- Error -->
         <item name="errorTextColor">@color/error</item>
         <item name="errorIconTint">@color/error</item>
         <item name="errorTextAppearance">@style/App.TextInputError</item>
     </style>
+    >
 
     <style name="App.TextInputError" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textColor">@color/error</item>
         <item name="android:textSize">12sp</item>
         <item name="fontFamily">@font/source_sans_regular</item>
+
     </style>
 
     <style name="App.PrimaryButton" parent="Widget.Material3.Button">

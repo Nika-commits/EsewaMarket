@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.entities.User
-import com.example.xml_app.models.Product
+import com.example.xml_app.models.ProductUiFavourite
 import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
@@ -14,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -25,7 +26,7 @@ class FavouriteViewModel(
     private val app = getApplication<CustomApplicationContext>()
     private val database = app.database
     private val _user = MutableStateFlow<User?>(null)
-    private var _favouriteProducts = MutableStateFlow<List<Product>>(emptyList())
+    private var _favouriteProducts = MutableStateFlow<List<ProductUiFavourite>>(emptyList())
     val favouriteProducts = _favouriteProducts.asStateFlow()
     private val _favouriteIds = MutableStateFlow<List<Int>>(emptyList())
     private val productRepository = ProductRepository()
@@ -38,6 +39,22 @@ class FavouriteViewModel(
         getFavouriteProducts()
     }
 
+    fun setOptionsRevealed(
+        productId: Int,
+        isRevealed: Boolean
+    ) {
+        _favouriteProducts.update { products ->
+            products.map { item ->
+                if (item.product.id == productId) {
+                    item.copy(isOptionsRevealed = isRevealed)
+                } else {
+                    item
+                }
+            }
+        }
+
+    }
+
     private fun getFavouriteProducts() {
         Log.d(T, "products Fetching")
         if (_favouriteIds.value.isEmpty()) {
@@ -46,7 +63,7 @@ class FavouriteViewModel(
         }
         viewModelScope.launch {
             try {
-                _favouriteProducts.value = _favouriteIds.value.map {
+                val products = _favouriteIds.value.map {
                     async {
                         val response = productRepository.getProduct(it)
 
@@ -58,6 +75,13 @@ class FavouriteViewModel(
 
                     }
                 }.awaitAll()
+
+                _favouriteProducts.value = products.map {
+                    ProductUiFavourite(
+                        product = it,
+                        isOptionsRevealed = false
+                    )
+                }
 
                 Log.d(T, "${_favouriteProducts.value}")
             } catch (e: Exception) {

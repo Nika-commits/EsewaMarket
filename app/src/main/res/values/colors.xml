@@ -22,4 +22,10 @@
     <color name="BackgroundGrey">#2B2B2B0A</color>
     <color name="error">#D3494E</color>
     <color name="lightCharcoal">#182B3C</color>
+    <color name="t8E90A6">#8E90A6</color>
+
+    <color name="inputBackground">#F8F8FA</color>
+    <color name="inputBorder">#E3E4EB</color>
+    <color name="c8E90A6">#8E90A6</color>
+    <color name="esewaRed">#FF7F6A</color>
 </resources>

@@ -111,6 +111,8 @@
             android:id="@+id/searchBox"
             style="@style/App.TextInputLayout"
             android:layout_width="0dp"
+            app:boxStrokeWidth="0dp"
+            app:boxBackgroundColor="@color/surface"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/greetings"
             app:layout_constraintStart_toStartOf="parent"
