@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -46,7 +46,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
-import com.example.xml_app.models.Color
 import com.example.xml_app.models.Product
 import com.example.xml_app.utils.custom.ActionIcon
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
@@ -142,7 +141,6 @@ fun FavouriteList(product: Product) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(colorResource(R.color.surface)),
         verticalAlignment = Alignment.CenterVertically
@@ -160,7 +158,7 @@ fun FavouriteList(product: Product) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp, horizontal = 8.dp),
         ) {
             Text(
                 text = product.name,
@@ -187,15 +185,16 @@ fun FavouriteList(product: Product) {
                     fontFamily = sourceSans,
                     fontWeight = FontWeight.Normal,
                     color = colorResource(R.color.textDark400)
+
                 )
 
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = product.price.toString(),
+                    text = product.price.toFloat().toString(),
                     fontSize = 20.sp,
                     fontFamily = sourceSans,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.Medium,
                     color = colorResource(R.color.textDark400)
                 )
             }
@@ -212,6 +211,7 @@ fun FavouriteScreen(viewModel: FavouriteViewModel, context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(colorResource(R.color.offWhiteBackground))
             .padding(16.dp)
     ) {
         FavouriteCountText(products.size)
@@ -219,13 +219,14 @@ fun FavouriteScreen(viewModel: FavouriteViewModel, context: Context) {
         Spacer(modifier = Modifier.size(8.dp))
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             itemsIndexed(
                 items = products,
                 key = { _, product -> product.product.id }
-            ) { index, product ->
-//                FavouriteList(product = product)
+            ) { _, product ->
                 SwipableItemsWithActions(
                     isRevealed = product.isOptionsRevealed,
                     onExpanded = {
@@ -251,41 +252,4 @@ fun FavouriteScreen(viewModel: FavouriteViewModel, context: Context) {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    val product = Product(
-        id = 6,
-        name = "Classic Black T-Shirt",
-        price = 650,
-        description = """
-                  <ul>
-                      <li><strong>Material:</strong> 100% Cotton</li>
-                      <li><strong>Fit:</strong> Regular Fit</li>
-                      <li><strong>Neck:</strong> Crew Neck</li>
-                      <li><strong>Style:</strong> Everyday Casual</li>
-                  </ul>
-
-                  <p>A simple everyday t-shirt suitable for casual outfits.</p>
-                  """,
-        brand = "Adiddydas",
-        status = "In-Stock",
-        imageUrls = listOf(
-            "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/tshirt-blacknwhite-adiddydas/1770641109200"
-        ),
-        colors = listOf(
-            Color("Black", "#000000"),
-            Color("White", "#FFFFFF"),
-            Color("Grey", "#808080")
-        ),
-        sizes = listOf(
-            "M",
-            "L",
-            "XL",
-            "XXL"
-        )
-    )
-    FavouriteList(product)
 }

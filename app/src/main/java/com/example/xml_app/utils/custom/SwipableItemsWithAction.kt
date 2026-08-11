@@ -1,13 +1,12 @@
 package com.example.xml_app.utils.custom
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -22,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,8 +54,9 @@ fun SwipableItemsWithActions(
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
+            .fillMaxSize()
+            .height(104.dp)
+            .background(colorResource(com.example.xml_app.R.color.offWhiteBackground))
     ) {
         Row(
             modifier = modifier
