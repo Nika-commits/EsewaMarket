@@ -110,4 +110,11 @@ class FavouriteViewModel(
                 }
         }
     }
+
+    fun removeFavourite(productId: Int) {
+        val userId = _user.value?.uid ?: return
+        viewModelScope.launch {
+            favouriteRepository.toggleFavourite(userId, productId)
+        }
+    }
 }

@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +47,7 @@ import coil3.compose.AsyncImage
 import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
 import com.example.xml_app.models.Product
+import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.utils.custom.ActionIcon
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.viewModel.FavouriteViewModel
@@ -103,6 +104,7 @@ class Favourite : Fragment() {
 
     fun setupFavourites() {
         val composeView = binding.composeFavourite
+        val bottomNavigation = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
         composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -111,7 +113,7 @@ class Favourite : Fragment() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     MaterialTheme {
-                        FavouriteScreen(viewModel, requireContext())
+                        FavouriteScreen(viewModel, requireContext(), binding.root, bottomNavigation)
                     }
 
                 }
@@ -205,7 +207,12 @@ fun FavouriteList(product: Product) {
 }
 
 @Composable
-fun FavouriteScreen(viewModel: FavouriteViewModel, context: Context) {
+fun FavouriteScreen(
+    viewModel: FavouriteViewModel,
+    context: Context,
+    rootView: View,
+    anchor: View
+) {
     val products by viewModel.favouriteProducts.collectAsStateWithLifecycle()
 
     Column(
@@ -239,8 +246,19 @@ fun FavouriteScreen(viewModel: FavouriteViewModel, context: Context) {
                     actions = {
                         ActionIcon(
                             onClick = {
-                                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                                viewModel.removeFavourite(product.product.id)
                                 viewModel.setOptionsRevealed(product.product.id, false)
+                                CustomSnackbar.show(
+                                    view = rootView,
+                                    context = context,
+                                    text = "(1) item has been deleted",
+                                    actionText = "UNDO",
+                                    anchorView = anchor,
+                                    action = {
+                                        viewModel.removeFavourite(product.product.id)
+                                    }
+
+                                )
                             },
                             icon = painterResource(R.drawable.ic_trash),
                             modifier = Modifier.fillMaxHeight()
