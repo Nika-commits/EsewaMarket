@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -36,7 +37,7 @@ fun SwipableItemsWithActions(
         mutableFloatStateOf(0f)
     }
 
-    var offset = remember {
+    val offset = remember {
         Animatable(0f)
     }
 
@@ -44,7 +45,7 @@ fun SwipableItemsWithActions(
 
     LaunchedEffect(isRevealed, contextMenuWidth) {
         if (isRevealed) {
-            offset.animateTo(contextMenuWidth)
+            offset.animateTo(-contextMenuWidth)
         } else {
             offset.animateTo(0f)
         }
@@ -52,11 +53,12 @@ fun SwipableItemsWithActions(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .height(IntrinsicSize.Min)
     ) {
         Row(
             modifier = modifier
+                .align(Alignment.CenterEnd)
                 .onSizeChanged {
                     contextMenuWidth = it.width.toFloat()
                 },
@@ -75,16 +77,16 @@ fun SwipableItemsWithActions(
                         onHorizontalDrag = { _, dragAmount ->
                             scope.launch {
                                 val newOffset = (offset.value + dragAmount)
-                                    .coerceIn(0f, contextMenuWidth)
+                                    .coerceIn(-contextMenuWidth, 0f)
                                 offset.snapTo(newOffset)
 
                             }
                         },
                         onDragEnd = {
                             when {
-                                offset.value >= contextMenuWidth / 2f -> {
+                                offset.value <= -contextMenuWidth / 2f -> {
                                     scope.launch {
-                                        offset.animateTo(contextMenuWidth)
+                                        offset.animateTo(-contextMenuWidth)
                                         onExpanded()
                                     }
                                 }
