@@ -48,6 +48,7 @@ import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
 import com.example.xml_app.models.Product
 import com.example.xml_app.utils.CustomSnackbar
+import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.ActionIcon
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.viewModel.FavouriteViewModel
@@ -134,12 +135,6 @@ fun FavouriteCountText(count: Int) {
 
 @Composable
 fun FavouriteList(product: Product) {
-    val sourceSans = FontFamily(
-        Font(R.font.source_sans_regular, FontWeight.Normal),
-        Font(R.font.source_sans_medium, FontWeight.Medium),
-        Font(R.font.source_sans_semibold, FontWeight.SemiBold),
-        Font(R.font.source_sans_bold, FontWeight.Bold),
-    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -165,14 +160,14 @@ fun FavouriteList(product: Product) {
             Text(
                 text = product.name,
                 fontSize = 16.sp,
-                fontFamily = sourceSans,
+                fontFamily = SourceSansPro,
                 fontWeight = FontWeight.Medium,
                 color = colorResource(R.color.textDark400)
             )
             Text(
                 text = product.brand,
                 fontSize = 10.sp,
-                fontFamily = sourceSans,
+                fontFamily = SourceSansPro,
                 fontWeight = FontWeight.Normal,
                 color = colorResource(R.color.textDark200),
                 letterSpacing = 1.2.sp
@@ -184,7 +179,7 @@ fun FavouriteList(product: Product) {
                 Text(
                     text = "Rs.",
                     fontSize = 14.sp,
-                    fontFamily = sourceSans,
+                    fontFamily = SourceSansPro,
                     fontWeight = FontWeight.Normal,
                     color = colorResource(R.color.textDark400)
 
@@ -195,7 +190,7 @@ fun FavouriteList(product: Product) {
                 Text(
                     text = product.price.toFloat().toString(),
                     fontSize = 20.sp,
-                    fontFamily = sourceSans,
+                    fontFamily = SourceSansPro,
                     fontWeight = FontWeight.Medium,
                     color = colorResource(R.color.textDark400)
                 )

@@ -1,14 +1,17 @@
 plugins {
     kotlin("plugin.serialization") version "2.4.10"
+
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
+
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.devtools.ksp")
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.example.xml_app"
+
     compileSdk {
         version = release(37) {
             minorApiLevel = 1
@@ -22,7 +25,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner =
+            "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -32,10 +36,12 @@ android {
             }
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         viewBinding = true
         compose = true
@@ -43,109 +49,108 @@ android {
 }
 
 dependencies {
-    val navVersion = "2.9.8"
-    // Jetpack Compose integration
-    implementation("androidx.navigation:navigation-compose:$navVersion")
 
-    // Views/Fragments integration
+    // Navigation
+    val navVersion = "2.9.8"
+
+    implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.navigation:navigation-fragment:$navVersion")
     implementation("androidx.navigation:navigation-ui:$navVersion")
-
-    // Feature module support for Fragments
     implementation("androidx.navigation:navigation-dynamic-features-fragment:$navVersion")
-
-    // Testing Navigation
     androidTestImplementation("androidx.navigation:navigation-testing:$navVersion")
 
-    // JSON serialization library, works with the Kotlin serialization plugin
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
+    // Compose
+    val composeBom = platform(libs.androidx.compose.bom)
 
-    val composeBom = platform("androidx.compose:compose-bom:2026.06.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    // Choose one of the following:
-    // Material Design 3
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.foundation)
+
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
     implementation("androidx.compose.material3:material3")
-    // or skip Material Design and build directly on top of foundational components
-
-    // Android Studio Preview support
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-    // Optional - Add window size utils
     implementation("androidx.compose.material3.adaptive:adaptive")
 
-    // Optional - Integration with activities
     implementation("androidx.activity:activity-compose:1.13.0")
-    // Optional - Integration with ViewModels
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
-    // Optional - Integration with LiveData
     implementation("androidx.compose.runtime:runtime-livedata")
 
+
+    // Images
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation("io.coil-kt.coil3:coil-compose:3.5.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")
 
+
+    // DataStore
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.datastore:datastore:1.2.1")
-    implementation("androidx.datastore:datastore-core:1.2.1")
 
+
+    // Lifecycle
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
-    implementation("androidx.datastore:datastore-preferences-core:1.2.1")
+
+    // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
 
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 
     implementation("com.firebaseui:firebase-ui-auth:9.0.0")
-    implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
-    implementation("com.google.firebase:firebase-auth")
 
 
+    // Credential Manager / Google Sign-In
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    implementation("com.google.firebase:firebase-crashlytics")
-    implementation("com.google.firebase:firebase-analytics")
 
-    // Import the BoM for the Firebase platform
-
-    // Declare the dependency for the Cloud Firestore library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-firestore")
-
-
-    //Room Database
+    // Room 3
     val roomVersion = "3.0.1"
 
     implementation("androidx.room3:room3-runtime:$roomVersion")
     ksp("androidx.room3:room3-compiler:$roomVersion")
 
-//    val activityVersion = "1.13.0"
 
-//    implementation("androidx.activity:activity-ktx:${activityVersion}")
-
+    // UI
     implementation(libs.flexbox)
     implementation(libs.androidx.fragment.ktx)
-    implementation(libs.glide)
-    annotationProcessor(libs.compiler)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+
+
+    // Networking
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+
+    // Glide
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
-
 }
