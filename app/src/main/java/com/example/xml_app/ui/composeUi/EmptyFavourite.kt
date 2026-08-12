@@ -34,8 +34,8 @@ fun EmptyFavourites(
 ) {
     Column(
         modifier = modifier
-            .background(colorResource(R.color.surface))
             .clip(RoundedCornerShape(16.dp))
+            .background(colorResource(R.color.surface))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround

@@ -36,7 +36,6 @@ class FavouriteViewModel(
 
     init {
         initializeUser()
-        getFavouriteProducts()
     }
 
     fun setOptionsRevealed(
@@ -56,9 +55,8 @@ class FavouriteViewModel(
     }
 
     private fun getFavouriteProducts() {
-        Log.d(T, "products Fetching")
         if (_favouriteIds.value.isEmpty()) {
-            Log.d(T, "${_favouriteIds.value.size}")
+            _favouriteProducts.value = emptyList()
             return
         }
         viewModelScope.launch {
@@ -111,7 +109,7 @@ class FavouriteViewModel(
         }
     }
 
-    fun removeFavourite(productId: Int) {
+    fun toggleFavourite(productId: Int) {
         val userId = _user.value?.uid ?: return
         viewModelScope.launch {
             favouriteRepository.toggleFavourite(userId, productId)
