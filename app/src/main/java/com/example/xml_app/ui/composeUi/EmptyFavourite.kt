@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -63,9 +66,26 @@ fun EmptyFavourites(
         )
 
         Button(
-            onClick = onContinueShopping
+            onClick = onContinueShopping,
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.primaryGreen),
+            )
 
-        ) { }
+        ) {
+            Text(
+                text = "CONTINUE SHOPPING",
+                letterSpacing = 1.sp,
+                fontFamily = SourceSansPro,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+
+
+                )
+        }
 
     }
 
