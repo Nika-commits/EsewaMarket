@@ -19,17 +19,16 @@ import com.example.xml_app.R
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
+import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.viewModel.CartViewModel
 import kotlinx.coroutines.launch
 
 
 class Cart : Fragment() {
-
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CartViewModel by viewModels()
     private lateinit var cartAdapter: CartAdapter
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,11 +86,22 @@ class Cart : Fragment() {
             },
 
             onCartIncrement = { id ->
-                if (id != null) viewModel.cartIncrement(id)
+                viewModel.cartIncrement(id)
             },
 
-            onCartDecrement = { id ->
-                if (id != null) viewModel.cartDecrement(id)
+            onCartDecrement = { id, count ->
+                if (count == 1) {
+                    DeleteCartBottomSheet(
+                        onDelete = {
+                            viewModel.cartDecrement(id)
+                        }
+                    ).show(
+                        childFragmentManager,
+                        "DeleteCartBottomSheet"
+                    )
+                } else {
+                    viewModel.cartDecrement(id)
+                }
             }
         )
 

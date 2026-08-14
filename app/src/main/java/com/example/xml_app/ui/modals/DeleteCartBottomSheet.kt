@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import com.example.xml_app.databinding.ItemBottomSheetDeleteCartBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class DeleteCartBottomSheet : BottomSheetDialogFragment() {
+class DeleteCartBottomSheet(
+    private val onDelete: () -> Unit
+) : BottomSheetDialogFragment() {
     private var _binding: ItemBottomSheetDeleteCartBinding? = null
     private val binding get() = _binding!!
 
@@ -18,5 +20,22 @@ class DeleteCartBottomSheet : BottomSheetDialogFragment() {
     ): View {
         _binding = ItemBottomSheetDeleteCartBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.btnCancel.setOnClickListener {
+            dismiss()
+        }
+
+        binding.btnDelete.setOnClickListener {
+            onDelete()
+            dismiss()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -11,9 +11,9 @@ import com.example.xml_app.databinding.ItemCartProductBinding
 import com.example.xml_app.models.ProductUiModel
 
 class CartAdapter(
-    val onProductClick: (Int?) -> Unit,
-    val onCartIncrement: (Int?) -> Unit,
-    val onCartDecrement: (Int?) -> Unit
+    val onProductClick: (Int) -> Unit,
+    val onCartIncrement: (Int) -> Unit,
+    val onCartDecrement: (Int, Int) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -77,7 +77,7 @@ class CartAdapter(
             }
 
             btnDecrementCart.setOnClickListener {
-                onCartDecrement(product.id)
+                onCartDecrement(product.id, item.cartCount)
             }
 
             btnIncrementCart.setOnClickListener {
