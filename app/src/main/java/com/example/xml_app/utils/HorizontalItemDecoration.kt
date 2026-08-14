@@ -15,7 +15,7 @@ class HorizontalItemDecoration(private val spacing: Int) : RecyclerView.ItemDeco
         val position = parent.getChildAdapterPosition(view)
 
         if (position == RecyclerView.NO_POSITION) return
-        outRect.left = if (position == 0) spacing else spacing / 2
+        outRect.left = if (position == 0) 0 else spacing
         outRect.right = spacing / 2
         outRect.top = spacing
         outRect.bottom = spacing

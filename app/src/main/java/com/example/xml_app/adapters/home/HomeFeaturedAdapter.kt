@@ -4,8 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.xml_app.R
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.databinding.SectionHomeProductsBinding
+import com.example.xml_app.utils.HorizontalItemDecoration
 
 class HomeFeaturedAdapter(
     private val productsAdapter: ProductsAdapter,
@@ -35,6 +37,15 @@ class HomeFeaturedAdapter(
                     false
                 )
                 adapter = productsAdapter
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(
+                        HorizontalItemDecoration(
+                            context.resources.getDimensionPixelSize(
+                                R.dimen.spacing_medium
+                            )
+                        )
+                    )
+                }
             }
         }
     }

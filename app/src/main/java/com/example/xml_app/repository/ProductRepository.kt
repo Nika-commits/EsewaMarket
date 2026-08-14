@@ -12,6 +12,7 @@ class ProductRepository {
         config = PagingConfig(
             pageSize = 4,
             initialLoadSize = 4,
+            prefetchDistance = 1,
             enablePlaceholders = false,
         ),
         pagingSourceFactory = {

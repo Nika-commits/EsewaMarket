@@ -1,50 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/categoryCard"
     android:layout_width="62dp"
     android:layout_height="85dp"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="8dp"
-    android:layout_marginHorizontal="8dp"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:strokeWidth="0dp"
-    app:cardBackgroundColor="@color/white">
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
         <FrameLayout
-            android:layout_margin="7dp"
-            android:padding="8dp"
             android:layout_width="46dp"
-            android:layout_height="46dp">
+            android:layout_height="46dp"
+            android:layout_margin="7dp"
+            android:padding="8dp">
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/category_card_background"/>
+                android:background="@drawable/category_card_background" />
 
             <ImageView
-                android:layout_gravity="center"
                 android:id="@+id/ivCategoryIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:tint="@color/primaryGreen"
-                />
+                android:layout_gravity="center"
+                android:tint="@color/primaryGreen" />
         </FrameLayout>
+
         <TextView
             android:id="@+id/tvCategoryName"
-            android:textSize="10sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:letterSpacing="0.02"
-            android:textColor="@color/textDark"
             android:layout_marginTop="8dp"
-
-            android:maxLines="1"
-            android:paddingHorizontal="4dp"
             android:ellipsize="end"
-            />
+            android:letterSpacing="0.02"
+            android:maxLines="1"
+
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/textDark"
+            android:textSize="10sp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

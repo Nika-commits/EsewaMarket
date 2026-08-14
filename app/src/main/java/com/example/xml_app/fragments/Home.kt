@@ -2,7 +2,6 @@ package com.example.xml_app.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -17,7 +16,6 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -25,9 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.NotificationActivity
@@ -40,16 +36,14 @@ import com.example.xml_app.adapters.home.HomeCategoriesAdapter
 import com.example.xml_app.adapters.home.HomeFeaturedAdapter
 import com.example.xml_app.adapters.home.HomeHeadAdapter
 import com.example.xml_app.adapters.home.HomeHotDealsAdapter
+import com.example.xml_app.adapters.home.HomeMostPopularAdapter
+import com.example.xml_app.adapters.home.HomeRecommendedAdapter
 import com.example.xml_app.databinding.FragmentHomeConcatBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
 import com.example.xml_app.utils.CustomSnackbar
-import com.example.xml_app.utils.SpacingItemDecoration
+import com.example.xml_app.utils.HomeConcatAdapterSpacing
 import com.example.xml_app.viewModel.HomeViewModel
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexWrap
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -65,8 +59,10 @@ class Home : Fragment() {
     private lateinit var homeHotDealsAdapter: HomeHotDealsAdapter
     private lateinit var hotDealsAdapter: ProductsAdapter
     private lateinit var homeBannerAdapter: HomeBannerAdapter
-    private lateinit var recommendedAdapter: RecommendedProductsAdapter
+    private lateinit var homeMostPopularAdapter: HomeMostPopularAdapter
     private lateinit var mostPopularChipsAdapter: PopularChipsAdapter
+    private lateinit var homeRecommendedSectionAdapter: HomeRecommendedAdapter
+    private lateinit var recommendedAdapter: RecommendedProductsAdapter
 
 
     override fun onCreateView(
@@ -83,13 +79,13 @@ class Home : Fragment() {
         viewModel.initializeUser()
 
         applyEdgeToEdgeInsets()
-        setupHomeRecyclerview()
         setupCategoriesRecyclerView()
         setupFeaturedProductsRecyclerview()
         setupHotDealsProductsRecyclerview()
         setupHomeBannerRecyclerview()
-        setupMostPopularSection()
+        setupMostPopularRecyclerView()
         setupRecommendedProducts()
+        setupHomeRecyclerview()
     }
 
     private fun applyEdgeToEdgeInsets() {
@@ -151,11 +147,18 @@ class Home : Fragment() {
             homeCategoriesAdapter,
             homeFeaturedAdapter,
             homeHotDealsAdapter,
-            homeBannerAdapter
+            homeBannerAdapter,
+            homeMostPopularAdapter,
+            homeRecommendedSectionAdapter,
         )
         binding.rvHome.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = concatAdapter
+            addItemDecoration(
+                HomeConcatAdapterSpacing(
+                    resources.getDimensionPixelSize(R.dimen.spacing_medium)
+                )
+            )
         }
     }
 
@@ -255,58 +258,20 @@ class Home : Fragment() {
         )
     }
 
+
     private fun setupRecommendedProducts() {
-        Log.d("PAGING", "setupRecommendedCalled")
-        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
-
         recommendedAdapter = RecommendedProductsAdapter(
-            onProductClick = { p ->
-                Intent(requireContext(), ProductDetailActivity::class.java).also {
-                    it.putExtra("id", p.id)
-                    startActivity(it)
-                }
-            },
-
-            onFavouriteClick = { p ->
-                if (viewModel.isLoggedIn()) {
-                    viewModel.toggleFavourite(p.id)
-                } else {
-                    showLoginSnackBar("Log in to add to Favourites")
-                }
-            },
-
-            onCartIncrement = { p ->
-                if (viewModel.isLoggedIn()) {
-                    viewModel.cartIncrement(p.id)
-                } else {
-                    showLoginSnackBar("Log in to add to cart")
-                }
-            },
-
-            onCartDecrement = { p ->
-                if (viewModel.isLoggedIn()) {
-                    viewModel.decrementCart(p.id)
-                } else {
-                    showLoginSnackBar("Log in to add to cart")
-                }
-            }
+            onProductClick = { goToDetails(it.id) },
+            onFavouriteClick = { toggleFavourite(it.id) },
+            onCartIncrement = { incrementCart(it.id) },
+            onCartDecrement = { decrementCart(it.id) }
         )
-        binding.rvRecommendedProductsSectionLayout.rvFeaturedProducts.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = recommendedAdapter
-            itemAnimator = null
-            addItemDecoration(SpacingItemDecoration(spacing))
-            layoutParams = layoutParams.apply {
-                height = resources.getDimensionPixelSize(R.dimen.recommended_list_height)
-            }
-            isNestedScrollingEnabled = true
-        }
 
-        binding.rvRecommendedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
-            "Recommended Products"
-        binding.rvRecommendedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Recommended Products", Toast.LENGTH_SHORT).show()
-        }
+
+        homeRecommendedSectionAdapter = HomeRecommendedAdapter(
+            onSeeAllClick = {},
+            recommendedAdapter = recommendedAdapter
+        )
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -319,86 +284,35 @@ class Home : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 recommendedAdapter.loadStateFlow.collectLatest { loadStates ->
-                    val isInitialLoading = loadStates.refresh is LoadState.Loading
-                    val isLoadingMore = loadStates.append is LoadState.Loading
+                    val isInitialLoading =
+                        loadStates.refresh is LoadState.Loading
 
-                    binding.Spinner.isVisible = isInitialLoading || isLoadingMore
-                    binding.tvLoading.isVisible = isInitialLoading || isLoadingMore
+                    val isLoadingMore =
+                        loadStates.append is LoadState.Loading
+
+                    homeRecommendedSectionAdapter.setLoading(
+                        isInitialLoading || isLoadingMore
+                    )
                 }
             }
         }
     }
 
-    fun setupRecyclerView(
-        recyclerView: RecyclerView,
-        layoutManager: RecyclerView.LayoutManager,
-        itemDecoration: RecyclerView.ItemDecoration? = null
-    ): ProductsAdapter {
-
-        val adapter = ProductsAdapter(
-            onProductClick = { p ->
-                Intent(requireContext(), ProductDetailActivity::class.java).also {
-                    it.putExtra("id", p.id)
-                    startActivity(it)
-                }
-            },
-            onFavouriteClick = { p ->
-                if (viewModel.isLoggedIn()) {
-                    viewModel.toggleFavourite(p.id)
-                } else {
-                    showLoginSnackBar("Log in to add to Favourites")
-                }
-            },
-            onCartIncrement = { p ->
-                if (viewModel.isLoggedIn()) {
-                    viewModel.cartIncrement(p.id)
-                } else {
-                    showLoginSnackBar("Log in to add to cart")
-                }
-            },
-            onCartDecrement = { p ->
-                if (viewModel.isLoggedIn()) {
-                    viewModel.decrementCart(p.id)
-                } else {
-                    showLoginSnackBar("Log in to add to cart")
-                }
-
-            }
-        )
-
-        recyclerView.apply {
-            this.adapter = adapter
-            this.layoutManager = layoutManager
-            itemAnimator = null
-
-            itemDecoration?.let {
-                addItemDecoration(it)
-            }
-        }
-
-        return adapter
-    }
-
-    private fun setupMostPopularSection() {
+    private fun setupMostPopularRecyclerView() {
         mostPopularChipsAdapter = PopularChipsAdapter { category ->
             Toast.makeText(requireContext(), category, Toast.LENGTH_SHORT).show()
         }
 
-        binding.rvMostPopular.apply {
-            layoutManager = FlexboxLayoutManager(requireContext()).apply {
-                flexDirection = FlexDirection.ROW
-                flexWrap = FlexWrap.WRAP
-                justifyContent = JustifyContent.FLEX_START
-            }
-            adapter = mostPopularChipsAdapter
-        }
-        binding.mostPopularHeader.tvHeaderTitle.text = "Most Popular"
-
+        homeMostPopularAdapter = HomeMostPopularAdapter(
+            onClick = {},
+            chipsAdapter = mostPopularChipsAdapter
+        )
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.popularChips.collect { mostPopularChipsAdapter.item = it }
             }
         }
+
         viewModel.getPopularChips()
     }
 

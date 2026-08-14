@@ -4,11 +4,9 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class SpacingItemDecoration(
-    private val spanCount: Int,
+class HomeConcatAdapterSpacing(
     private val spacing: Int
 ) : RecyclerView.ItemDecoration() {
-
     override fun getItemOffsets(
         outRect: Rect,
         view: View,
@@ -16,16 +14,8 @@ class SpacingItemDecoration(
         state: RecyclerView.State
     ) {
         val position = parent.getChildAdapterPosition(view)
-        if (position == RecyclerView.NO_POSITION) return
-
-        val column = position % spanCount
-
-        if (column == 0) {
-            outRect.right = spacing / 2
-        } else {
-            outRect.left = spacing / 2
+        if (position != RecyclerView.NO_POSITION && position > 0) {
+            outRect.top = spacing
         }
-        outRect.top = spacing
-        outRect.bottom = spacing
     }
 }

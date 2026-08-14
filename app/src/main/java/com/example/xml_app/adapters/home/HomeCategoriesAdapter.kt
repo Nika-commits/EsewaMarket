@@ -4,9 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.xml_app.R
 import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
 import com.example.xml_app.databinding.SectionCategoriesBinding
 import com.example.xml_app.models.Category
+import com.example.xml_app.utils.HorizontalItemDecoration
 
 class HomeCategoriesAdapter(
     private val categories: List<Category>,
@@ -39,6 +41,11 @@ class HomeCategoriesAdapter(
                 )
                 adapter = CategoryRecyclerViewAdapter(categories) { category ->
                     onCategoryClick(category)
+                }
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(
+                        HorizontalItemDecoration(context.resources.getDimensionPixelSize(R.dimen.spacing_low))
+                    )
                 }
             }
         }
