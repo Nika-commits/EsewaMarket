@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -146,10 +147,17 @@ class Favourite : Fragment() {
 @Composable
 fun FavouriteList(
     product: Product,
-    isChecked: Boolean = false
+    isChecked: Boolean = false,
+    onClick: (Int) -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = {
+                    onClick(product.id)
+                }
+            ),
     ) {
         Row(
             modifier = Modifier
@@ -368,7 +376,14 @@ fun FavouriteScreen(
                         ) {
                             FavouriteList(
                                 product = product.product,
-                                isChecked = selectedSet.contains(product.product.id)
+                                isChecked = selectedSet.contains(product.product.id),
+                                onClick = { id ->
+                                    if (selectedSet.contains(id)) {
+                                        selectedSet.remove(id)
+                                    } else {
+                                        selectedSet.add(id)
+                                    }
+                                }
                             )
                         }
                     }
