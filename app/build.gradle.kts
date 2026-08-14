@@ -153,4 +153,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
+
+    implementation(libs.androidx.paging.common)
+
+    // Jetpack Compose integration
+    implementation(libs.androidx.paging.compose)
 }
