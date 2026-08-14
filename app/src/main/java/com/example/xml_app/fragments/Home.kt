@@ -38,6 +38,7 @@ import com.example.xml_app.adapters.RecommendedProductsAdapter
 import com.example.xml_app.adapters.home.HomeCategoriesAdapter
 import com.example.xml_app.adapters.home.HomeFeaturedAdapter
 import com.example.xml_app.adapters.home.HomeHeadAdapter
+import com.example.xml_app.adapters.home.HomeHotDealsAdapter
 import com.example.xml_app.databinding.FragmentHomeConcatBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
@@ -60,6 +61,7 @@ class Home : Fragment() {
     private lateinit var homeCategoriesAdapter: HomeCategoriesAdapter
     private lateinit var homeFeaturedAdapter: HomeFeaturedAdapter
     private lateinit var featuredProductsAdapter: ProductsAdapter
+    private lateinit var homeHotDealsAdapter: HomeHotDealsAdapter
     private lateinit var hotDealsAdapter: ProductsAdapter
     private lateinit var recommendedAdapter: RecommendedProductsAdapter
     private lateinit var mostPopularChipsAdapter: PopularChipsAdapter
@@ -233,7 +235,25 @@ class Home : Fragment() {
     }
 
     private fun setupHotDealsProductsRecyclerview() {
+        hotDealsAdapter = ProductsAdapter(
+            onProductClick = { goToDetails(it.id) },
+            onCartIncrement = { incrementCart(it.id) },
+            onCartDecrement = { decrementCart(it.id) },
+            onFavouriteClick = { toggleFavourite(it.id) }
+        )
 
+        homeHotDealsAdapter = HomeHotDealsAdapter(
+            productsAdapter = hotDealsAdapter,
+            onSeeAllClick = {}
+        )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.hotDealsProducts.collect { hotDealsAdapter.products = it }
+            }
+        }
+
+        viewModel.getHotDealsProducts()
     }
 
     private fun setupRecommendedProducts() {
