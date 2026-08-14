@@ -294,6 +294,9 @@ class Home : Fragment() {
             adapter = recommendedAdapter
             itemAnimator = null
             addItemDecoration(SpacingItemDecoration(spacing))
+//            layoutParams = layoutParams.apply {
+//                height = resources.getDimensionPixelSize(R.dimen.recommended_list_height)
+//            }
         }
 
         binding.rvRecommendedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
