@@ -28,12 +28,12 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     application: Application
 ) : AndroidViewModel(application) {
+    private val app = getApplication<CustomApplicationContext>()
     private val _featuredProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _hotDealsProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _popularChips = MutableStateFlow<List<String>>(emptyList())
     val popularChips = _popularChips.asStateFlow()
     private val productRepository = ProductRepository()
-    private val app = getApplication<CustomApplicationContext>()
     private val database = app.database
     private val _user = MutableStateFlow<User?>(null)
     private val _cartId = MutableStateFlow<Int?>(null)
