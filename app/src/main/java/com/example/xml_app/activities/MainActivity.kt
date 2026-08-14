@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity() {
 
             if (isSelected) {
                 tab.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
-                animateSelectedTab(tab.root)
+//                animateSelectedTab(tab.root)
             } else {
                 tab.rootLayout.setBackgroundColor(getColor(android.R.color.transparent))
                 tab.root.animate().cancel()

@@ -101,6 +101,7 @@ class Home : Fragment() {
         setupHotDealsProducts()
         setupMostPopularSection()
         setupRecommendedProducts()
+
     }
 
     private fun applyEdgeToEdgeInsets() {

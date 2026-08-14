@@ -29,4 +29,5 @@
     <color name="c8E90A6">#8E90A6</color>
     <color name="esewaRed">#FF7F6A</color>
     <color name="textLight300">#F2F2F5</color>
+    <color name="textDark300">#555770</color>
 </resources>

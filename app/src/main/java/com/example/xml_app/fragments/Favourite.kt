@@ -20,21 +20,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.visible
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateSetOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -139,19 +144,10 @@ class Favourite : Fragment() {
 }
 
 @Composable
-fun FavouriteCountText(count: Int) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(
-            checked = true,
-            onCheckedChange = {},
-            modifier = Modifier
-        )
-        Text("Items $count")
-    }
-}
-
-@Composable
-fun FavouriteList(product: Product) {
+fun FavouriteList(
+    product: Product,
+    isChecked: Boolean = false
+) {
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -230,10 +226,10 @@ fun FavouriteList(product: Product) {
                     )
                 }
 
-
                 FilledIconButton(
                     onClick = {},
                     modifier = Modifier
+                        .visible(isChecked)
                         .wrapContentWidth()
                         .wrapContentHeight()
                         .padding(12.dp),
@@ -255,6 +251,7 @@ fun FavouriteList(product: Product) {
             painter = painterResource(R.drawable.ic_tick_green),
             contentDescription = null,
             modifier = Modifier
+                .visible(isChecked)
                 .align(Alignment.TopStart)
 //                .offset(x = (-12).dp, y = (-12).dp)
                 .size(24.dp)
@@ -278,14 +275,58 @@ fun FavouriteScreen(
             .background(colorResource(R.color.offWhiteBackground))
             .padding(16.dp)
     ) {
-        FavouriteCountText(products.size)
 
         Spacer(modifier = Modifier.size(8.dp))
 
         when {
-            products.isEmpty() -> EmptyFavourites()
+            products.isEmpty() -> {
+                Text("Items ${0}")
+                EmptyFavourites()
+            }
 
             else -> {
+                val selectedSet = remember { mutableStateSetOf<Int>() }
+                val parentState = when {
+                    selectedSet.isEmpty() -> ToggleableState.Off
+                    selectedSet.size == products.size -> ToggleableState.On
+                    else -> ToggleableState.Indeterminate
+                }
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                    TriStateCheckbox(
+                        state = parentState,
+                        onClick = {
+                            if (parentState != ToggleableState.On) {
+                                selectedSet.clear()
+                                selectedSet.addAll(products.map { it.product.id })
+                            } else {
+                                selectedSet.clear()
+                            }
+                        },
+                        modifier = Modifier
+                            .size(18.dp),
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = colorResource(R.color.primaryGreen),
+                            checkmarkColor = colorResource(R.color.surface),
+                            uncheckedColor = colorResource(R.color.textDark),
+                        )
+
+                    )
+                    Text(
+                        text = "Items ${products.size}",
+                        color = colorResource(R.color.textDark300),
+                        fontFamily = SourceSansPro,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        letterSpacing = 0.25.sp
+                    )
+                }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -318,7 +359,6 @@ fun FavouriteScreen(
                                             action = {
                                                 viewModel.toggleFavourite(product.product.id)
                                             }
-
                                         )
                                     },
                                     icon = painterResource(R.drawable.ic_trash),
@@ -326,7 +366,10 @@ fun FavouriteScreen(
                                 )
                             }
                         ) {
-                            FavouriteList(product.product)
+                            FavouriteList(
+                                product = product.product,
+                                isChecked = selectedSet.contains(product.product.id)
+                            )
                         }
                     }
                 }
