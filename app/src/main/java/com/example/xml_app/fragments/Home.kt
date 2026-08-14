@@ -35,6 +35,7 @@ import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.PopularChipsAdapter
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.adapters.RecommendedProductsAdapter
+import com.example.xml_app.adapters.home.HomeBannerAdapter
 import com.example.xml_app.adapters.home.HomeCategoriesAdapter
 import com.example.xml_app.adapters.home.HomeFeaturedAdapter
 import com.example.xml_app.adapters.home.HomeHeadAdapter
@@ -63,6 +64,7 @@ class Home : Fragment() {
     private lateinit var featuredProductsAdapter: ProductsAdapter
     private lateinit var homeHotDealsAdapter: HomeHotDealsAdapter
     private lateinit var hotDealsAdapter: ProductsAdapter
+    private lateinit var homeBannerAdapter: HomeBannerAdapter
     private lateinit var recommendedAdapter: RecommendedProductsAdapter
     private lateinit var mostPopularChipsAdapter: PopularChipsAdapter
 
@@ -85,6 +87,7 @@ class Home : Fragment() {
         setupCategoriesRecyclerView()
         setupFeaturedProductsRecyclerview()
         setupHotDealsProductsRecyclerview()
+        setupHomeBannerRecyclerview()
         setupMostPopularSection()
         setupRecommendedProducts()
     }
@@ -147,7 +150,8 @@ class Home : Fragment() {
             homeHeadAdapter,
             homeCategoriesAdapter,
             homeFeaturedAdapter,
-            homeHotDealsAdapter
+            homeHotDealsAdapter,
+            homeBannerAdapter
         )
         binding.rvHome.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -243,6 +247,12 @@ class Home : Fragment() {
         }
 
         viewModel.getHotDealsProducts()
+    }
+
+    private fun setupHomeBannerRecyclerview() {
+        homeBannerAdapter = HomeBannerAdapter(
+            onClick = {}
+        )
     }
 
     private fun setupRecommendedProducts() {

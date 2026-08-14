@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <include xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/mostPopularHeader"
+        layout="@layout/layout_title_and_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rvMostPopular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp" />
+</LinearLayout>
