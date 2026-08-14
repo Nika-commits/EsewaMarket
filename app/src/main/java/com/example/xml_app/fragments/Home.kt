@@ -19,11 +19,13 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -311,7 +313,11 @@ class Home : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 recommendedAdapter.loadStateFlow.collectLatest { loadStates ->
+                    val isInitialLoading = loadStates.refresh is LoadState.Loading
+                    val isLoadingMore = loadStates.append is LoadState.Loading
 
+                    binding.Spinner.isVisible = isInitialLoading || isLoadingMore
+                    binding.tvLoading.isVisible = isInitialLoading || isLoadingMore
                 }
             }
         }
