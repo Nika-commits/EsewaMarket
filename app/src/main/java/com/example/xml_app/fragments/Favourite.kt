@@ -59,10 +59,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.findNavController
 import coil3.compose.AsyncImage
 import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
 import com.example.xml_app.models.Product
+import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.composeUi.EmptyFavourites
 import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.utils.SourceSansPro
@@ -133,7 +135,21 @@ class Favourite : Fragment() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     MaterialTheme {
-                        FavouriteScreen(viewModel, requireContext(), binding.root, bottomNavigation)
+                        FavouriteScreen(
+                            viewModel,
+                            requireContext(),
+                            binding.root,
+                            bottomNavigation,
+                            onNavigateToCart = {
+                                findNavController().navigate(ApiRoute.Cart) {
+                                    popUpTo<ApiRoute.Home> {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
                     }
 
                 }
@@ -153,7 +169,6 @@ fun FavouriteList(
     isChecked: Boolean = false,
     onClick: (Int) -> Unit,
     onAddToCart: (Int) -> Unit,
-    onRemoveFromCart: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -281,7 +296,8 @@ fun FavouriteScreen(
     viewModel: FavouriteViewModel,
     context: Context,
     rootView: View,
-    anchor: View
+    anchor: View,
+    onNavigateToCart: () -> Unit
 ) {
     val products by viewModel.favouriteProducts.collectAsStateWithLifecycle()
     Column(
@@ -447,14 +463,12 @@ fun FavouriteScreen(
                                         context = context,
                                         text = "Added To Cart Successfully",
                                         anchorView = anchor,
+                                        actionText = "GOTO CART",
                                         action = {
-
+                                            onNavigateToCart()
                                         }
                                     )
                                 },
-                                onRemoveFromCart = { id ->
-                                    viewModel.removeFromCart(id)
-                                }
                             )
                         }
                     }
