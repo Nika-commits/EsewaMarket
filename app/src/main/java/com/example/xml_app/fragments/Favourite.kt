@@ -50,6 +50,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -58,7 +59,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import coil3.compose.AsyncImage
 import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
@@ -69,7 +69,6 @@ import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.ActionIcon
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.viewModel.FavouriteViewModel
-import kotlinx.coroutines.launch
 
 class Favourite : Fragment() {
     private var _binding: FragmentFavouriteBinding? = null
@@ -87,9 +86,7 @@ class Favourite : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.initializeUser()
-        }
+        viewModel.initializeUser()
 
         applyEdgeToEdgeInsets()
         setupToolbar()
@@ -154,7 +151,9 @@ class Favourite : Fragment() {
 fun FavouriteList(
     product: Product,
     isChecked: Boolean = false,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
+    onAddToCart: (Int) -> Unit,
+    onRemoveFromCart: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -242,7 +241,7 @@ fun FavouriteList(
 
                 FilledIconButton(
                     onClick = {
-
+                        onAddToCart(product.id)
                     },
                     modifier = Modifier
                         .visible(isChecked)
@@ -309,7 +308,7 @@ fun FavouriteScreen(
                 }
                 Row(
                     modifier = Modifier
-                        .align(Alignment.Start)
+                        .fillMaxWidth()
                         .padding(vertical = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -342,6 +341,48 @@ fun FavouriteScreen(
                         fontSize = 14.sp,
                         letterSpacing = 0.25.sp
                     )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+//                    Text(
+//                        text = "ADD TO CART",
+//                        color = colorResource(R.color.primaryGreen),
+//                        fontFamily = SourceSansPro,
+//                        fontWeight = FontWeight.Medium,
+//                        fontSize = 14.sp,
+//                        letterSpacing = 1.sp,
+//                        textAlign = TextAlign.End
+//
+//                    )
+
+                    Text(
+                        text = "DELETE ALL",
+                        color = colorResource(R.color.textDark300),
+                        fontFamily = SourceSansPro,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp,
+                        letterSpacing = 1.sp,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.clickable {
+                            val count = selectedSet.size
+                            val favouriteIdsCopy = selectedSet.toSet()
+                            selectedSet.forEach {
+                                viewModel.toggleFavourite(it)
+                            }
+                            CustomSnackbar.show(
+                                view = rootView,
+                                context = context,
+                                text = "($count) items has been deleted",
+                                actionText = "UNDO",
+                                anchorView = anchor,
+                                action = {
+                                    favouriteIdsCopy.forEach {
+                                        viewModel.toggleFavourite(it)
+                                    }
+                                }
+                            )
+                        }
+                    )
                 }
                 LazyColumn(
                     modifier = Modifier
@@ -357,7 +398,6 @@ fun FavouriteScreen(
                             onExpanded = {
                                 viewModel.setOptionsRevealed(product.product.id, true)
                             },
-
                             onCollapsed = {
                                 viewModel.setOptionsRevealed(product.product.id, false)
                             },
@@ -391,6 +431,21 @@ fun FavouriteScreen(
                                     } else {
                                         selectedSet.add(id)
                                     }
+                                },
+                                onAddToCart = { id ->
+                                    viewModel.addToCart(id)
+                                    CustomSnackbar.show(
+                                        view = rootView,
+                                        context = context,
+                                        text = "Added To Cart Successfully",
+                                        anchorView = anchor,
+                                        action = {
+
+                                        }
+                                    )
+                                },
+                                onRemoveFromCart = { id ->
+                                    viewModel.removeFromCart(id)
                                 }
                             )
                         }

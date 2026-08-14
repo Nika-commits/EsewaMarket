@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.entities.User
 import com.example.xml_app.models.ProductUiFavourite
+import com.example.xml_app.repository.CartRepository
 import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
@@ -32,11 +33,7 @@ class FavouriteViewModel(
     private val productRepository = ProductRepository()
     private val userRepository = UserRepository(database.userDao())
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
-
-
-//    init {
-//        initializeUser()
-//    }
+    private val cartRepository = CartRepository(database.cartDao())
 
     fun setOptionsRevealed(
         productId: Int,
@@ -113,6 +110,20 @@ class FavouriteViewModel(
         val userId = _user.value?.uid ?: return
         viewModelScope.launch {
             favouriteRepository.toggleFavourite(userId, productId)
+        }
+    }
+
+    fun addToCart(productId: Int) {
+        val userId = _user.value?.uid ?: return
+        viewModelScope.launch {
+            cartRepository.increment(userId, productId)
+        }
+    }
+
+    fun removeFromCart(productId: Int) {
+        val userId = _user.value?.uid ?: return
+        viewModelScope.launch {
+            cartRepository.decrement(userId, productId)
         }
     }
 }
