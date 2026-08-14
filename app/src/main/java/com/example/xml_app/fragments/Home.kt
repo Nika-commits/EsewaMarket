@@ -146,24 +146,13 @@ class Home : Fragment() {
         concatAdapter = ConcatAdapter(
             homeHeadAdapter,
             homeCategoriesAdapter,
-            homeFeaturedAdapter
+            homeFeaturedAdapter,
+            homeHotDealsAdapter
         )
         binding.rvHome.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = concatAdapter
         }
-
-        val categories = listOf(
-            Category(1, R.drawable.ic_shop_clothing, "Fashion"),
-            Category(2, R.drawable.ic_shop_computer, "Electronic Device"),
-            Category(3, R.drawable.ic_shop_mobile, "Mobile"),
-            Category(4, R.drawable.ic_shop_grocery, "Grocery"),
-            Category(5, R.drawable.ic_shop_computer, "Fashions"),
-            Category(6, R.drawable.ic_shop_clothing, "Women Fashion"),
-            Category(7, R.drawable.ic_shop_computer, "Laptops")
-        )
-
-
     }
 
     private fun setupCategoriesRecyclerView() {
