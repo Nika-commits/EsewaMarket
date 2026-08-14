@@ -1,6 +1,5 @@
 package com.example.xml_app.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
@@ -26,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,53 +32,33 @@ import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.NotificationActivity
 import com.example.xml_app.activities.ProductDetailActivity
-import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
-import com.example.xml_app.adapters.HeroViewPagerAdapter
 import com.example.xml_app.adapters.PopularChipsAdapter
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.adapters.RecommendedProductsAdapter
-import com.example.xml_app.databinding.FragmentHomeBinding
+import com.example.xml_app.adapters.home.HomeCategoriesAdapter
+import com.example.xml_app.adapters.home.HomeFeaturedAdapter
+import com.example.xml_app.adapters.home.HomeHeadAdapter
+import com.example.xml_app.databinding.FragmentHomeConcatBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
 import com.example.xml_app.utils.CustomSnackbar
-import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.HomeViewModel
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.Serializable
-
-
-data class ProductDetailActivityArgs(
-    val id: Int
-) : Serializable
 
 class Home : Fragment() {
-    companion object {
-        const val ARGS_RESPONSE = "ARGS_RESPONSE"
-
-        fun startActivity(
-            context: Context,
-            resultLauncher: ActivityResultLauncher<Intent>,
-            args: ProductDetailActivityArgs
-        ) {
-            resultLauncher.launch(
-                Intent(context, ProductDetailActivity::class.java).apply {
-                    putExtra(ARGS_RESPONSE, args)
-                }
-            )
-        }
-    }
-
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentHomeConcatBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
-    private val userName = "Pranish" + ","
+    private lateinit var concatAdapter: ConcatAdapter
+    private lateinit var homeHeadAdapter: HomeHeadAdapter
+    private lateinit var homeCategoriesAdapter: HomeCategoriesAdapter
+    private lateinit var homeFeaturedAdapter: HomeFeaturedAdapter
     private lateinit var featuredProductsAdapter: ProductsAdapter
     private lateinit var hotDealsAdapter: ProductsAdapter
     private lateinit var recommendedAdapter: RecommendedProductsAdapter
@@ -91,41 +70,37 @@ class Home : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentHomeConcatBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewModel.initializeUser()
 
         applyEdgeToEdgeInsets()
-        setUpToolbarAndMenu()
-        setupHeroPage()
-        setupSearchBox()
-        setupCategories()
-        setupFeaturedProducts()
-        setupHotDealsProducts()
+        setupHomeRecyclerview()
+        setupCategoriesRecyclerView()
+        setupFeaturedProductsRecyclerview()
+        setupHotDealsProductsRecyclerview()
         setupMostPopularSection()
         setupRecommendedProducts()
-
     }
 
     private fun applyEdgeToEdgeInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
     }
 
-    private fun setUpToolbarAndMenu() {
+    private fun setUpToolbarAndMenu(toolbar: androidx.appcompat.widget.Toolbar) {
         val activity = requireActivity() as AppCompatActivity
-        activity.setSupportActionBar(binding.toolbar)
+        activity.setSupportActionBar(toolbar)
         activity.supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.toolbar.overflowIcon?.setTint(
+        toolbar.overflowIcon?.setTint(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.textDark
@@ -155,23 +130,28 @@ class Home : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun setupHeroPage() {
+    private fun setupHomeRecyclerview() {
         val heroes = mutableListOf(
             Hero("Sale", R.drawable.hero1),
             Hero("Sale 2", R.drawable.hero2),
             Hero("Sale 3", R.drawable.hero3)
         )
+        homeHeadAdapter = HomeHeadAdapter(
+            heroes = heroes,
+            onFilterClick = {},
+            onToolbarReady = { setUpToolbarAndMenu(it) }
+        )
+        concatAdapter = ConcatAdapter(
+            homeHeadAdapter,
+            homeCategoriesAdapter,
+            homeFeaturedAdapter
+        )
+        binding.rvHome.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = concatAdapter
+        }
 
-        binding.heroViewPager.adapter = HeroViewPagerAdapter(heroes)
-        TabLayoutMediator(binding.heroIndicator, binding.heroViewPager) { tab, _ ->
-            tab.setCustomView(R.layout.item_indicator)
-        }.attach()
-
-        binding.tvUsername.text = userName
-    }
-
-    private fun setupCategories() {
-        val categories = mutableListOf(
+        val categories = listOf(
             Category(1, R.drawable.ic_shop_clothing, "Fashion"),
             Category(2, R.drawable.ic_shop_computer, "Electronic Device"),
             Category(3, R.drawable.ic_shop_mobile, "Mobile"),
@@ -181,76 +161,79 @@ class Home : Fragment() {
             Category(7, R.drawable.ic_shop_computer, "Laptops")
         )
 
-        val categoryRv = binding.rvCategoryOptionsLayout.rvCategoryOptions
-        categoryRv.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        categoryRv.adapter = CategoryRecyclerViewAdapter(categories) { category ->
-            Toast.makeText(requireContext(), category.categoryName, Toast.LENGTH_SHORT).show()
-        }
 
-        binding.rvCategoryOptionsLayout.categorySection.tvHeaderTitle.text = "Categories"
-        binding.rvCategoryOptionsLayout.categorySection.ibHeaderButton.setOnClickListener {
-            Toast.makeText(requireContext(), "ALl Categories", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setupCategoriesRecyclerView() {
+        val categories = mutableListOf(
+            Category(1, R.drawable.ic_shop_clothing, "Fashion"),
+            Category(2, R.drawable.ic_shop_computer, "Electronic Device"),
+            Category(3, R.drawable.ic_shop_mobile, "Mobile"),
+            Category(4, R.drawable.ic_shop_grocery, "Grocery"),
+            Category(5, R.drawable.ic_shop_computer, "Fashions"),
+            Category(6, R.drawable.ic_shop_clothing, "Women Fashion"),
+            Category(7, R.drawable.ic_shop_computer, "Laptops")
+        )
+        homeCategoriesAdapter = HomeCategoriesAdapter(
+            categories = categories,
+            onCategoryClick = { c ->
+                Toast.makeText(requireContext(), c.categoryName, Toast.LENGTH_SHORT).show()
+            },
+            onSeeAllClick = {}
+        )
+    }
+
+    private fun incrementCart(id: Int) {
+        if (viewModel.isLoggedIn()) {
+            viewModel.cartIncrement(id)
+        } else {
+            showLoginSnackBar("Log in to add to cart.")
         }
     }
 
-    private fun setupFeaturedProducts() {
-        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
-        featuredProductsAdapter =
-            setupRecyclerView(
-                binding.rvFeaturedProductsSectionLayout.rvFeaturedProducts,
-                LinearLayoutManager(
-                    requireContext(),
-                    LinearLayoutManager.HORIZONTAL,
-                    false
-                ),
-                HorizontalItemDecoration(spacing)
-            )
+    private fun decrementCart(id: Int) {
+        if (viewModel.isLoggedIn()) {
+            viewModel.decrementCart(id)
+        } else {
+            showLoginSnackBar("Log in to decrement your cart.")
+        }
+    }
 
+    private fun toggleFavourite(id: Int) {
+        if (viewModel.isLoggedIn()) {
+            viewModel.toggleFavourite(id)
+        } else {
+            showLoginSnackBar("Log in to add to favourites.")
+        }
+    }
+
+    private fun goToDetails(id: Int) {
+        ProductDetailActivity.startActivity(requireContext(), id)
+    }
+
+    private fun setupFeaturedProductsRecyclerview() {
+        featuredProductsAdapter = ProductsAdapter(
+            onProductClick = { goToDetails(it.id) },
+            onCartIncrement = { incrementCart(it.id) },
+            onCartDecrement = { decrementCart(it.id) },
+            onFavouriteClick = { toggleFavourite(it.id) }
+        )
+
+        homeFeaturedAdapter = HomeFeaturedAdapter(
+            productsAdapter = featuredProductsAdapter,
+            onSeeAllClick = {}
+        )
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.featuredProducts.collect {
-                        featuredProductsAdapter.products = it
-                    }
-                }
+                viewModel.featuredProducts.collect { featuredProductsAdapter.products = it }
             }
-        }
-
-        binding.rvFeaturedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
-            "Featured Products"
-        binding.rvFeaturedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Featured Products Clicked", Toast.LENGTH_SHORT).show()
         }
 
         viewModel.getFeaturedProduct()
-
     }
 
-    private fun setupHotDealsProducts() {
-        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
-        hotDealsAdapter = setupRecyclerView(
-            binding.rvHotDealsLayout.rvFeaturedProducts,
-            GridLayoutManager(requireContext(), 2),
-            SpacingItemDecoration(spacing)
-        )
+    private fun setupHotDealsProductsRecyclerview() {
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.hotDealsProducts.collect {
-                        hotDealsAdapter.products = it
-                    }
-                }
-            }
-        }
-
-        binding.rvHotDealsLayout.featuredProducts.tvHeaderTitle.text = "Hot Deals of the Day"
-        binding.rvHotDealsLayout.featuredProducts.ibHeaderButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Hot Deals Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        viewModel.getHotDealsProducts()
     }
 
     private fun setupRecommendedProducts() {
@@ -398,12 +381,6 @@ class Home : Fragment() {
             }
         }
         viewModel.getPopularChips()
-    }
-
-    private fun setupSearchBox() {
-        binding.searchBox.setEndIconOnClickListener {
-            Toast.makeText(requireContext(), "Filters Clicked", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun showLoginSnackBar(message: String) {

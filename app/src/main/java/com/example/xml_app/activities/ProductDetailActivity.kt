@@ -1,5 +1,6 @@
 package com.example.xml_app.activities
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -26,8 +27,25 @@ import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.viewModel.ProductDetailsViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
+import java.io.Serializable
+
+data class ProductDetailActivityArgs(
+    val id: Int
+) : Serializable
 
 class ProductDetailActivity : AppCompatActivity() {
+    companion object {
+        const val ID = "PRODUCT_ID"
+        fun startActivity(
+            context: Context,
+            productId: Int
+        ) {
+            val intent = Intent(context, ProductDetailActivity::class.java).apply {
+                putExtra(ID, ProductDetailActivityArgs(id = productId))
+            }
+            context.startActivity(intent)
+        }
+    }
 
     private val viewModel: ProductDetailsViewModel by viewModels()
 

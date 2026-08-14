@@ -2,6 +2,7 @@ package com.example.xml_app.adapters.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.adapters.HeroViewPagerAdapter
 import com.example.xml_app.databinding.ItemHomeHeaderBinding
@@ -9,9 +10,10 @@ import com.example.xml_app.models.Hero
 import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeHeadAdapter(
-    private val userName: String,
+    private val userName: String = "Pranish ,",
     private val heroes: List<Hero>,
-    private val onFilterClick: () -> Unit
+    private val onFilterClick: () -> Unit,
+    private val onToolbarReady: (Toolbar) -> Unit
 
 ) : RecyclerView.Adapter<HomeHeadAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
@@ -40,6 +42,8 @@ class HomeHeadAdapter(
             searchBox.setEndIconOnClickListener {
                 onFilterClick()
             }
+
+            onToolbarReady(toolbar)
         }
     }
 
