@@ -58,6 +58,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import coil3.compose.AsyncImage
 import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentFavouriteBinding
@@ -68,6 +69,7 @@ import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.ActionIcon
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.viewModel.FavouriteViewModel
+import kotlinx.coroutines.launch
 
 class Favourite : Fragment() {
     private var _binding: FragmentFavouriteBinding? = null
@@ -84,6 +86,10 @@ class Favourite : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.initializeUser()
+        }
 
         applyEdgeToEdgeInsets()
         setupToolbar()
@@ -235,7 +241,9 @@ fun FavouriteList(
                 }
 
                 FilledIconButton(
-                    onClick = {},
+                    onClick = {
+
+                    },
                     modifier = Modifier
                         .visible(isChecked)
                         .wrapContentWidth()

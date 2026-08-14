@@ -92,6 +92,9 @@ class Home : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.initializeUser()
+
         applyEdgeToEdgeInsets()
         setUpToolbarAndMenu()
         setupHeroPage()
@@ -215,6 +218,8 @@ class Home : Fragment() {
             Toast.makeText(requireContext(), "Featured Products Clicked", Toast.LENGTH_SHORT).show()
         }
 
+        viewModel.getFeaturedProduct()
+
     }
 
     private fun setupHotDealsProducts() {
@@ -239,6 +244,8 @@ class Home : Fragment() {
         binding.rvHotDealsLayout.featuredProducts.ibHeaderButton.setOnClickListener {
             Toast.makeText(requireContext(), "Hot Deals Clicked", Toast.LENGTH_SHORT).show()
         }
+
+        viewModel.getHotDealsProducts()
     }
 
     private fun setupRecommendedProducts() {
@@ -264,6 +271,8 @@ class Home : Fragment() {
         binding.rvRecommendedProductsSectionLayout.featuredProducts.ibHeaderButton.setOnClickListener {
             Toast.makeText(requireContext(), "Recommended Products", Toast.LENGTH_SHORT).show()
         }
+
+        viewModel.getRecommendedProducts()
     }
 
     fun setupRecyclerView(
@@ -336,6 +345,7 @@ class Home : Fragment() {
                 viewModel.popularChips.collect { mostPopularChipsAdapter.item = it }
             }
         }
+        viewModel.getPopularChips()
     }
 
     private fun setupSearchBox() {

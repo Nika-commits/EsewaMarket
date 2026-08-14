@@ -34,9 +34,9 @@ class FavouriteViewModel(
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
 
 
-    init {
-        initializeUser()
-    }
+//    init {
+//        initializeUser()
+//    }
 
     fun setOptionsRevealed(
         productId: Int,
@@ -88,7 +88,7 @@ class FavouriteViewModel(
         }
     }
 
-    private fun initializeUser() {
+    fun initializeUser() {
         viewModelScope.launch {
             val firebaseUser = app.auth.currentUser ?: return@launch
             val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch

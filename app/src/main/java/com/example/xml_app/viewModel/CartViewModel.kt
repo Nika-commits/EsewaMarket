@@ -76,11 +76,7 @@ class CartViewModel(
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    init {
-        initializeUser()
-    }
-
-    private fun initializeUser() {
+    fun initializeUser() {
         viewModelScope.launch {
             val firebaseUser = app.auth.currentUser ?: return@launch
             val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch

@@ -105,15 +105,7 @@ class HomeViewModel(
         initialValue = emptyList()
     )
 
-    init {
-        initializeUser()
-        getFeaturedProduct()
-        getHotDealsProducts()
-        getRecommendedProducts()
-        getPopularChips()
-    }
-
-    private fun initializeUser() {
+    fun initializeUser() {
         viewModelScope.launch {
             val firebaseUser = app.auth.currentUser ?: return@launch
             val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
