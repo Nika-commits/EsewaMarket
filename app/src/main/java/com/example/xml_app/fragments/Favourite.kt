@@ -295,7 +295,15 @@ fun FavouriteScreen(
 
         when {
             products.isEmpty() -> {
-                Text("Items ${0}")
+                Text(
+                    text = "Items (0)",
+                    color = colorResource(R.color.textDark300),
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.25.sp,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
                 EmptyFavourites()
             }
 
