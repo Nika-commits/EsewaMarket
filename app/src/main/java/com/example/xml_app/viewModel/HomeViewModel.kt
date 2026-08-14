@@ -4,6 +4,9 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import com.example.xml_app.entities.CartItem
 import com.example.xml_app.entities.User
 import com.example.xml_app.models.Product
@@ -13,6 +16,7 @@ import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +30,6 @@ class HomeViewModel(
 ) : AndroidViewModel(application) {
     private val _featuredProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _hotDealsProducts = MutableStateFlow<List<Product>>(emptyList())
-    private val _recommendedProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _popularChips = MutableStateFlow<List<String>>(emptyList())
     val popularChips = _popularChips.asStateFlow()
     private val productRepository = ProductRepository()
@@ -85,25 +88,41 @@ class HomeViewModel(
         initialValue = emptyList()
     )
 
-    val recommendedProducts: StateFlow<List<ProductUiModel>> = combine(
-        _recommendedProducts,
+//    val recommendedProducts: StateFlow<List<ProductUiModel>> = combine(
+//        _recommendedProducts,
+//        _cartItems,
+//        _favouriteIds
+//    ) { products, cartItems, favouriteIds ->
+//
+//        val cartItemByProduct = cartItems.associateBy { it.productId }
+//        products.map { product ->
+//            ProductUiModel(
+//                product = product,
+//                isFavourite = product.id in favouriteIds,
+//                cartCount = cartItemByProduct[product.id]?.quantity ?: 0
+//            )
+//        }
+//    }.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(5_000),
+//        initialValue = emptyList()
+//    )
+
+    val recommendedProducts: Flow<PagingData<ProductUiModel>> = combine(
+        productRepository.getRecommendedProduct(),
         _cartItems,
         _favouriteIds
-    ) { products, cartItems, favouriteIds ->
+    ) { pagingData, cartItems, favouriteIds ->
+        val cartItemsByProduct = cartItems.associateBy { it.productId }
 
-        val cartItemByProduct = cartItems.associateBy { it.productId }
-        products.map { product ->
+        pagingData.map { product ->
             ProductUiModel(
                 product = product,
                 isFavourite = product.id in favouriteIds,
-                cartCount = cartItemByProduct[product.id]?.quantity ?: 0
+                cartCount = cartItemsByProduct[product.id]?.quantity ?: 0
             )
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
-    )
+    }.cachedIn(viewModelScope)
 
     fun initializeUser() {
         viewModelScope.launch {
@@ -192,18 +211,18 @@ class HomeViewModel(
         }
     }
 
-    fun getRecommendedProducts() {
-        viewModelScope.launch {
-            try {
-                val response = productRepository.getRecommendedProduct()
-                if (response.isSuccessful) {
-                    _recommendedProducts.value = response.body() ?: emptyList()
-                }
-            } catch (e: Exception) {
-                Log.d("API", "${e.message}")
-            }
-        }
-    }
+//    fun getRecommendedProducts() {
+//        viewModelScope.launch {
+//            try {
+//                val response = productRepository.getRecommendedProduct()
+//                if (response.isSuccessful) {
+//                    _recommendedProducts.value = response.body() ?: emptyList()
+//                }
+//            } catch (e: Exception) {
+//                Log.d("API", "${e.message}")
+//            }
+//        }
+//    }
 
     fun getPopularChips() {
         viewModelScope.launch {

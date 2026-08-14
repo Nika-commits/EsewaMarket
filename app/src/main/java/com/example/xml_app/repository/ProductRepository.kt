@@ -19,7 +19,7 @@ class ProductRepository {
                 RetrofitInstance.productApi
             )
         }
-    )
+    ).flow
 
     suspend fun getProduct(id: Int) = RetrofitInstance.productApi.getProduct(id)
     suspend fun getPopularChips() = RetrofitInstance.productApi.getPopularChips()
