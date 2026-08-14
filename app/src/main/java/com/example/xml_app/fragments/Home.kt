@@ -3,6 +3,7 @@ package com.example.xml_app.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -34,6 +35,7 @@ import com.example.xml_app.adapters.CategoryRecyclerViewAdapter
 import com.example.xml_app.adapters.HeroViewPagerAdapter
 import com.example.xml_app.adapters.PopularChipsAdapter
 import com.example.xml_app.adapters.ProductsAdapter
+import com.example.xml_app.adapters.RecommendedProductsAdapter
 import com.example.xml_app.databinding.FragmentHomeBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
@@ -46,6 +48,7 @@ import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.Serializable
 
@@ -77,7 +80,7 @@ class Home : Fragment() {
     private val userName = "Pranish" + ","
     private lateinit var featuredProductsAdapter: ProductsAdapter
     private lateinit var hotDealsAdapter: ProductsAdapter
-    private lateinit var recommendedAdapter: ProductsAdapter
+    private lateinit var recommendedAdapter: RecommendedProductsAdapter
     private lateinit var mostPopularChipsAdapter: PopularChipsAdapter
 
 
@@ -249,21 +252,46 @@ class Home : Fragment() {
     }
 
     private fun setupRecommendedProducts() {
+        Log.d("PAGING", "setupRecommendedCalled")
         val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
-        recommendedAdapter = setupRecyclerView(
-            binding.rvRecommendedProductsSectionLayout.rvFeaturedProducts,
-            GridLayoutManager(requireContext(), 2),
-            SpacingItemDecoration(spacing)
-        )
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.recommendedProducts.collect {
-                        recommendedAdapter.products = it
-                    }
+        recommendedAdapter = RecommendedProductsAdapter(
+            onProductClick = { p ->
+                Intent(requireContext(), ProductDetailActivity::class.java).also {
+                    it.putExtra("id", p.id)
+                    startActivity(it)
+                }
+            },
+
+            onFavouriteClick = { p ->
+                if (viewModel.isLoggedIn()) {
+                    viewModel.toggleFavourite(p.id)
+                } else {
+                    showLoginSnackBar("Log in to add to Favourites")
+                }
+            },
+
+            onCartIncrement = { p ->
+                if (viewModel.isLoggedIn()) {
+                    viewModel.cartIncrement(p.id)
+                } else {
+                    showLoginSnackBar("Log in to add to cart")
+                }
+            },
+
+            onCartDecrement = { p ->
+                if (viewModel.isLoggedIn()) {
+                    viewModel.decrementCart(p.id)
+                } else {
+                    showLoginSnackBar("Log in to add to cart")
                 }
             }
+        )
+        binding.rvRecommendedProductsSectionLayout.rvFeaturedProducts.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2)
+            adapter = recommendedAdapter
+            itemAnimator = null
+            addItemDecoration(SpacingItemDecoration(spacing))
         }
 
         binding.rvRecommendedProductsSectionLayout.featuredProducts.tvHeaderTitle.text =
@@ -272,7 +300,21 @@ class Home : Fragment() {
             Toast.makeText(requireContext(), "Recommended Products", Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.getRecommendedProducts()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recommendedProducts.collectLatest { pagingData ->
+                    recommendedAdapter.submitData(pagingData)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                recommendedAdapter.loadStateFlow.collectLatest { loadStates ->
+
+                }
+            }
+        }
     }
 
     fun setupRecyclerView(

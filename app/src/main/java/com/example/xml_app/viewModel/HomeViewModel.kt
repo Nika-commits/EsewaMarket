@@ -88,28 +88,8 @@ class HomeViewModel(
         initialValue = emptyList()
     )
 
-//    val recommendedProducts: StateFlow<List<ProductUiModel>> = combine(
-//        _recommendedProducts,
-//        _cartItems,
-//        _favouriteIds
-//    ) { products, cartItems, favouriteIds ->
-//
-//        val cartItemByProduct = cartItems.associateBy { it.productId }
-//        products.map { product ->
-//            ProductUiModel(
-//                product = product,
-//                isFavourite = product.id in favouriteIds,
-//                cartCount = cartItemByProduct[product.id]?.quantity ?: 0
-//            )
-//        }
-//    }.stateIn(
-//        scope = viewModelScope,
-//        started = SharingStarted.WhileSubscribed(5_000),
-//        initialValue = emptyList()
-//    )
-
     val recommendedProducts: Flow<PagingData<ProductUiModel>> = combine(
-        productRepository.getRecommendedProduct(),
+        productRepository.getRecommendedProduct().cachedIn(viewModelScope),
         _cartItems,
         _favouriteIds
     ) { pagingData, cartItems, favouriteIds ->
@@ -122,7 +102,7 @@ class HomeViewModel(
                 cartCount = cartItemsByProduct[product.id]?.quantity ?: 0
             )
         }
-    }.cachedIn(viewModelScope)
+    }
 
     fun initializeUser() {
         viewModelScope.launch {
@@ -210,19 +190,6 @@ class HomeViewModel(
             }
         }
     }
-
-//    fun getRecommendedProducts() {
-//        viewModelScope.launch {
-//            try {
-//                val response = productRepository.getRecommendedProduct()
-//                if (response.isSuccessful) {
-//                    _recommendedProducts.value = response.body() ?: emptyList()
-//                }
-//            } catch (e: Exception) {
-//                Log.d("API", "${e.message}")
-//            }
-//        }
-//    }
 
     fun getPopularChips() {
         viewModelScope.launch {
