@@ -37,7 +37,8 @@ import com.example.xml_app.adapters.home.HomeFeaturedAdapter
 import com.example.xml_app.adapters.home.HomeHeadAdapter
 import com.example.xml_app.adapters.home.HomeHotDealsAdapter
 import com.example.xml_app.adapters.home.HomeMostPopularAdapter
-import com.example.xml_app.adapters.home.HomeRecommendedAdapter
+import com.example.xml_app.adapters.home.HomeRecommendedHeaderAdapter
+import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentHomeConcatBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
@@ -61,8 +62,11 @@ class Home : Fragment() {
     private lateinit var homeBannerAdapter: HomeBannerAdapter
     private lateinit var homeMostPopularAdapter: HomeMostPopularAdapter
     private lateinit var mostPopularChipsAdapter: PopularChipsAdapter
-    private lateinit var homeRecommendedSectionAdapter: HomeRecommendedAdapter
+
+    //    private lateinit var homeRecommendedSectionAdapter: HomeRecommendedAdapter
     private lateinit var recommendedAdapter: RecommendedProductsAdapter
+    private lateinit var recommendedHeaderAdapter: HomeRecommendedHeaderAdapter
+    private lateinit var recommendedLoadingAdapter: HomeRecommendedLoadingAdapter
 
 
     override fun onCreateView(
@@ -149,7 +153,10 @@ class Home : Fragment() {
             homeHotDealsAdapter,
             homeBannerAdapter,
             homeMostPopularAdapter,
-            homeRecommendedSectionAdapter,
+//            homeRecommendedSectionAdapter,
+            recommendedHeaderAdapter,
+            recommendedAdapter,
+            recommendedLoadingAdapter
         )
         binding.rvHome.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -266,12 +273,17 @@ class Home : Fragment() {
             onCartIncrement = { incrementCart(it.id) },
             onCartDecrement = { decrementCart(it.id) }
         )
-
-
-        homeRecommendedSectionAdapter = HomeRecommendedAdapter(
-            onSeeAllClick = {},
-            recommendedAdapter = recommendedAdapter
+        recommendedHeaderAdapter = HomeRecommendedHeaderAdapter(
+            onSeeAllClick = {}
         )
+
+        recommendedLoadingAdapter = HomeRecommendedLoadingAdapter()
+
+//
+//        homeRecommendedSectionAdapter = HomeRecommendedAdapter(
+//            onSeeAllClick = {},
+//            recommendedAdapter = recommendedAdapter
+//        )
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -290,9 +302,10 @@ class Home : Fragment() {
                     val isLoadingMore =
                         loadStates.append is LoadState.Loading
 
-                    homeRecommendedSectionAdapter.setLoading(
-                        isInitialLoading || isLoadingMore
-                    )
+                    recommendedLoadingAdapter.setLoading(isInitialLoading || isLoadingMore)
+//                    homeRecommendedSectionAdapter.setLoading(
+//                        isInitialLoading || isLoadingMore
+//                    )
                 }
             }
         }
