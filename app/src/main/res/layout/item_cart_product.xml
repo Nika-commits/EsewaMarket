@@ -3,87 +3,89 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cartProductContainer"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginVertical="8dp"
-    android:background="@drawable/bg_surface_16"
-    android:layout_height="wrap_content">
+    android:background="@drawable/bg_surface_16">
 
 
     <FrameLayout
         android:id="@+id/ProductImageContainer"
         android:layout_width="77dp"
         android:layout_height="77dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivProductImage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedImage" />
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/tvProductName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/source_sans_semibold"
-        android:textSize="16sp"
-        android:letterSpacing="0.02"
-        android:textColor="@color/lightGrey"
-        android:paddingHorizontal="8dp"
-
-        app:layout_constraintStart_toEndOf="@id/ProductImageContainer"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvProductBrand" />
-
-    <TextView
-        android:id="@+id/tvProductBrand"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:paddingHorizontal="8dp"
-        android:fontFamily="@font/source_sans_regular"
-        android:textSize="10sp"
-        android:textColor="@color/textDark200"
-        android:letterSpacing="0.12"
-        app:layout_constraintTop_toBottomOf="@id/tvProductName"
-        app:layout_constraintStart_toEndOf="@id/ProductImageContainer"
-
-        app:layout_constraintBottom_toTopOf="@id/productPriceContainer"
-
-        />
-
     <LinearLayout
-        android:id="@+id/productPriceContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/ProductImageContainer"
+        app:layout_constraintEnd_toStartOf="@id/CartCountStepper"
         app:layout_constraintStart_toEndOf="@id/ProductImageContainer"
-        app:layout_constraintTop_toBottomOf="@id/tvProductBrand"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toTopOf="@id/ProductImageContainer">
+
 
         <TextView
-            android:id="@+id/tvRs"
+            android:id="@+id/tvProductName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="8dp"
-            android:fontFamily="@font/source_sans_regular"
-            android:textColor="@color/primaryGreen"
-            android:textSize="14sp"
-            android:text="Rs." />
-
-        <TextView
-            android:id="@+id/tvProductPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:fontFamily="@font/source_sans_semibold"
-            android:textColor="@color/primaryGreen"
-            android:textSize="20sp"
+            android:letterSpacing="0.02"
+            android:maxLines="1"
+            android:paddingHorizontal="8dp"
+            android:textColor="@color/lightGrey"
+            android:textSize="16sp" />
 
-            />
+        <TextView
+            android:id="@+id/tvProductBrand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:fontFamily="@font/source_sans_regular"
+            android:letterSpacing="0.12"
+            android:paddingHorizontal="8dp"
+            android:textColor="@color/textDark200"
+            android:textSize="10sp" />
+
+        <LinearLayout
+            android:id="@+id/productPriceContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvRs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/source_sans_regular"
+                android:paddingHorizontal="8dp"
+                android:text="Rs."
+                android:textColor="@color/primaryGreen"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvProductPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/source_sans_semibold"
+                android:textColor="@color/primaryGreen"
+                android:textSize="20sp"
+
+                />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -91,27 +93,27 @@
         android:layout_width="36dp"
         android:layout_height="110dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
             android:id="@+id/btnDecrementCart"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:src="@drawable/ic_minus"
             android:layout_weight="1"
-            android:background="@drawable/bg_cart_decrement_cart" />
+            android:background="@drawable/bg_cart_decrement_cart"
+            android:src="@drawable/ic_minus" />
 
         <TextView
             android:id="@+id/tvCartCount"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center"
             android:background="@color/primaryGreen"
-            android:textColor="@color/surface"
             android:fontFamily="@font/source_sans_semibold"
+            android:gravity="center"
+            android:textColor="@color/surface"
             android:textSize="14sp" />
 
         <ImageButton
@@ -119,9 +121,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@drawable/bg_cart_increment_cart"
             android:src="@drawable/ic_plus"
-            app:iconGravity="textStart"
-            android:background="@drawable/bg_cart_increment_cart" />
+            app:iconGravity="textStart" />
 
     </LinearLayout>
 

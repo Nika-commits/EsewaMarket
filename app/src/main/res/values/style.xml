@@ -179,6 +179,10 @@
         <item name="android:textSize">14sp</item>
         <item name="fontFamily">@font/source_sans_regular</item>
         <item name="android:letterSpacing">0</item>
+    </style>
 
+    <style name="RoundedImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
     </style>
 </resources>
