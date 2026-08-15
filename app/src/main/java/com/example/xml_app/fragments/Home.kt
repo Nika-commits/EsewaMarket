@@ -69,7 +69,6 @@ class Home : Fragment() {
     private lateinit var recommendedHeaderAdapter: HomeRecommendedHeaderAdapter
     private lateinit var recommendedLoadingAdapter: HomeRecommendedLoadingAdapter
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

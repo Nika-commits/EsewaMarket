@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
+import com.example.xml_app.R
 import com.example.xml_app.adapters.HeroViewPagerAdapter
 import com.example.xml_app.databinding.ItemHomeHeaderBinding
 import com.example.xml_app.models.Hero
@@ -22,7 +23,12 @@ class HomeHeadAdapter(
     ): ViewHolder {
         val binding =
             ItemHomeHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(
+            binding,
+            heroes,
+            onFilterClick,
+            onToolbarReady
+        )
     }
 
     override fun onBindViewHolder(
@@ -31,22 +37,28 @@ class HomeHeadAdapter(
     ) {
         with(holder.binding) {
             tvUsername.text = userName
-            heroViewPager.adapter = HeroViewPagerAdapter(heroes.toMutableList())
-            TabLayoutMediator(
-                heroIndicator,
-                heroViewPager
-            ) { tab, _ ->
-                tab.setCustomView(com.example.xml_app.R.layout.item_indicator)
-            }.attach()
-
-            searchBox.setEndIconOnClickListener {
-                onFilterClick()
-            }
-
-            onToolbarReady(toolbar)
         }
     }
 
     override fun getItemCount(): Int = 1
-    class ViewHolder(val binding: ItemHomeHeaderBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(
+        val binding: ItemHomeHeaderBinding,
+        heroes: List<Hero>,
+        onFilterClick: () -> Unit,
+        onToolbarReady: (Toolbar) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.heroViewPager.adapter = HeroViewPagerAdapter(heroes.toMutableList())
+            TabLayoutMediator(
+                binding.heroIndicator,
+                binding.heroViewPager
+            ) { tab, _ ->
+                tab.setCustomView(R.layout.item_indicator)
+            }.attach()
+
+            binding.searchBox.setEndIconOnClickListener { onFilterClick() }
+            onToolbarReady(binding.toolbar)
+        }
+
+    }
 }
