@@ -65,8 +65,6 @@ class Home : Fragment() {
     private lateinit var homeBannerAdapter: HomeBannerAdapter
     private lateinit var homeMostPopularAdapter: HomeMostPopularAdapter
     private lateinit var mostPopularChipsAdapter: PopularChipsAdapter
-
-    //    private lateinit var homeRecommendedSectionAdapter: HomeRecommendedAdapter
     private lateinit var recommendedAdapter: RecommendedProductsAdapter
     private lateinit var recommendedHeaderAdapter: HomeRecommendedHeaderAdapter
     private lateinit var recommendedLoadingAdapter: HomeRecommendedLoadingAdapter
@@ -161,6 +159,17 @@ class Home : Fragment() {
             recommendedAdapter,
             recommendedLoadingAdapter
         )
+        val recommendedStart =
+            homeHeadAdapter.itemCount +
+                    homeCategoriesAdapter.itemCount +
+                    homeFeaturedAdapter.itemCount +
+                    homeHotDealsAdapter.itemCount +
+                    homeBannerAdapter.itemCount +
+                    homeMostPopularAdapter.itemCount +
+                    recommendedHeaderAdapter.itemCount
+
+        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
+
         binding.rvHome.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = concatAdapter
@@ -171,19 +180,10 @@ class Home : Fragment() {
             )
         }
 
-        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
 
         gridLayoutManager.spanSizeLookup =
             object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    val recommendedStart =
-                        homeHeadAdapter.itemCount +
-                                homeCategoriesAdapter.itemCount +
-                                homeFeaturedAdapter.itemCount +
-                                homeHotDealsAdapter.itemCount +
-                                homeBannerAdapter.itemCount +
-                                homeMostPopularAdapter.itemCount + recommendedHeaderAdapter.itemCount
-
                     val recommendedEnd =
                         recommendedStart + recommendedAdapter.itemCount
 
@@ -194,41 +194,47 @@ class Home : Fragment() {
                     }
                 }
             }
+        val spacing =
+            resources.getDimensionPixelSize(R.dimen.spacing_medium)
 
-        binding.rvHome.layoutManager = gridLayoutManager
+        binding.rvHome.apply {
+            layoutManager = gridLayoutManager
+            adapter = concatAdapter
+            itemAnimator = null
+            addItemDecoration(HomeConcatAdapterSpacing(spacing))
 
-        binding.rvHome.addItemDecoration(
-            object : RecyclerView.ItemDecoration() {
+            addItemDecoration(
+                object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                    ) {
+                        val holder = parent.getChildViewHolder(view)
 
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
-                    val holder = parent.getChildViewHolder(view)
+                        if (holder.bindingAdapter !== recommendedAdapter) {
+                            return
+                        }
 
-                    if (holder.bindingAdapter !== recommendedAdapter) {
-                        return
+                        val position = holder.bindingAdapterPosition
+
+                        if (position == RecyclerView.NO_POSITION) {
+                            return
+                        }
+
+                        if (position % 2 == 0) {
+                            outRect.right = spacing / 2
+                        } else {
+                            outRect.left = spacing / 2
+                        }
+
+                        outRect.top = spacing / 2
+                        outRect.bottom = spacing / 2
                     }
-
-                    val position = holder.bindingAdapterPosition
-                    if (position == RecyclerView.NO_POSITION) return
-
-                    val spacing =
-                        resources.getDimensionPixelSize(R.dimen.spacing_medium)
-
-                    if (position % 2 == 0) {
-                        outRect.right = spacing / 2
-                    } else {
-                        outRect.left = spacing / 2
-                    }
-
-                    outRect.top = spacing / 2
-                    outRect.bottom = spacing / 2
                 }
-            }
-        )
+            )
+        }
     }
 
     private fun setupCategoriesRecyclerView() {
