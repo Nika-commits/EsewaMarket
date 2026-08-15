@@ -256,34 +256,6 @@ class Home : Fragment() {
         )
     }
 
-    private fun incrementCart(id: Int) {
-        if (viewModel.isLoggedIn()) {
-            viewModel.cartIncrement(id)
-        } else {
-            showLoginSnackBar("Log in to add to cart.")
-        }
-    }
-
-    private fun decrementCart(id: Int) {
-        if (viewModel.isLoggedIn()) {
-            viewModel.decrementCart(id)
-        } else {
-            showLoginSnackBar("Log in to decrement your cart.")
-        }
-    }
-
-    private fun toggleFavourite(id: Int) {
-        if (viewModel.isLoggedIn()) {
-            viewModel.toggleFavourite(id)
-        } else {
-            showLoginSnackBar("Log in to add to favourites.")
-        }
-    }
-
-    private fun goToDetails(id: Int) {
-        ProductDetailActivity.startActivity(requireContext(), id)
-    }
-
     private fun setupFeaturedProductsRecyclerview() {
         featuredProductsAdapter = ProductsAdapter(
             onProductClick = { goToDetails(it.id) },
@@ -333,6 +305,23 @@ class Home : Fragment() {
         )
     }
 
+    private fun setupMostPopularRecyclerView() {
+        mostPopularChipsAdapter = PopularChipsAdapter { category ->
+            Toast.makeText(requireContext(), category, Toast.LENGTH_SHORT).show()
+        }
+
+        homeMostPopularAdapter = HomeMostPopularAdapter(
+            onClick = {},
+            chipsAdapter = mostPopularChipsAdapter
+        )
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.popularChips.collect { mostPopularChipsAdapter.item = it }
+            }
+        }
+
+        viewModel.getPopularChips()
+    }
 
     private fun setupRecommendedProducts() {
         recommendedAdapter = RecommendedProductsAdapter(
@@ -346,12 +335,6 @@ class Home : Fragment() {
         )
 
         recommendedLoadingAdapter = HomeRecommendedLoadingAdapter()
-
-//
-//        homeRecommendedSectionAdapter = HomeRecommendedAdapter(
-//            onSeeAllClick = {},
-//            recommendedAdapter = recommendedAdapter
-//        )
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -379,24 +362,6 @@ class Home : Fragment() {
         }
     }
 
-    private fun setupMostPopularRecyclerView() {
-        mostPopularChipsAdapter = PopularChipsAdapter { category ->
-            Toast.makeText(requireContext(), category, Toast.LENGTH_SHORT).show()
-        }
-
-        homeMostPopularAdapter = HomeMostPopularAdapter(
-            onClick = {},
-            chipsAdapter = mostPopularChipsAdapter
-        )
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.popularChips.collect { mostPopularChipsAdapter.item = it }
-            }
-        }
-
-        viewModel.getPopularChips()
-    }
-
     private fun showLoginSnackBar(message: String) {
         val bottomNav = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
         CustomSnackbar.show(
@@ -414,6 +379,33 @@ class Home : Fragment() {
         )
     }
 
+    private fun incrementCart(id: Int) {
+        if (viewModel.isLoggedIn()) {
+            viewModel.cartIncrement(id)
+        } else {
+            showLoginSnackBar("Log in to add to cart.")
+        }
+    }
+
+    private fun decrementCart(id: Int) {
+        if (viewModel.isLoggedIn()) {
+            viewModel.decrementCart(id)
+        } else {
+            showLoginSnackBar("Log in to decrement your cart.")
+        }
+    }
+
+    private fun toggleFavourite(id: Int) {
+        if (viewModel.isLoggedIn()) {
+            viewModel.toggleFavourite(id)
+        } else {
+            showLoginSnackBar("Log in to add to favourites.")
+        }
+    }
+
+    private fun goToDetails(id: Int) {
+        ProductDetailActivity.startActivity(requireContext(), id)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

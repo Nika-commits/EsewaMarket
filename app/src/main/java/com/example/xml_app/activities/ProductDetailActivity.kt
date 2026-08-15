@@ -27,11 +27,6 @@ import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.viewModel.ProductDetailsViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
-import java.io.Serializable
-
-data class ProductDetailActivityArgs(
-    val id: Int
-) : Serializable
 
 class ProductDetailActivity : AppCompatActivity() {
     companion object {
@@ -41,14 +36,13 @@ class ProductDetailActivity : AppCompatActivity() {
             productId: Int
         ) {
             val intent = Intent(context, ProductDetailActivity::class.java).apply {
-                putExtra(ID, ProductDetailActivityArgs(id = productId))
+                putExtra(ID, productId)
             }
             context.startActivity(intent)
         }
     }
 
     private val viewModel: ProductDetailsViewModel by viewModels()
-
     private lateinit var binding: ActivityProductDetailBinding
     private lateinit var carouselAdapter: ProductCarouselAdapter
     private lateinit var colorAdapter: ColorSelectorAdapter
@@ -65,8 +59,7 @@ class ProductDetailActivity : AppCompatActivity() {
         setupListeners()
         observeViewModel()
 
-        val productId = intent.getIntExtra("id", -1)
-
+        val productId = intent.getIntExtra(ID, -1)
         if (productId == -1) {
             finish()
             return
