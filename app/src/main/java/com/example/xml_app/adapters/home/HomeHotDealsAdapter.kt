@@ -20,7 +20,7 @@ class HomeHotDealsAdapter(
     ): ViewHolder {
         val binding =
             SectionHomeProductsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(binding, productsAdapter)
     }
 
     override fun onBindViewHolder(
@@ -30,25 +30,30 @@ class HomeHotDealsAdapter(
         with(holder.binding) {
             featuredProducts.tvHeaderTitle.text = "Hot Deals of the day"
             featuredProducts.ibHeaderButton.setOnClickListener { onSeeAllClick() }
-            rvFeaturedProducts.apply {
-                layoutManager = GridLayoutManager(context, 2)
-                adapter = productsAdapter
-                itemAnimator = null
-
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        SpacingItemDecoration(
-                            2,
-                            context.resources.getDimensionPixelSize(R.dimen.spacing_medium)
-                        )
-                    )
-                }
-            }
         }
     }
 
     override fun getItemCount(): Int = 1
 
-    class ViewHolder(val binding: SectionHomeProductsBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(
+        val binding: SectionHomeProductsBinding,
+        productsAdapter: ProductsAdapter
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.rvFeaturedProducts.apply {
+                layoutManager = GridLayoutManager(
+                    context,
+                    2
+                )
+                adapter = productsAdapter
+                itemAnimator = null
+                addItemDecoration(
+                    SpacingItemDecoration(
+                        2,
+                        context.resources.getDimensionPixelSize(R.dimen.spacing_medium)
+                    )
+                )
+            }
+        }
+    }
 }

@@ -109,18 +109,6 @@ class RecommendedProductsAdapter(
             ibCartDecrement.setOnClickListener {
                 onCartDecrement(product)
             }
-
-//        binding.rvRecommendedProductsSectionLayout.rvFeaturedProducts.apply {
-//            layoutManager = GridLayoutManager(requireContext(), 2)
-//            adapter = recommendedAdapter
-//            itemAnimator = null
-//            addItemDecoration(SpacingItemDecoration(spacing))
-//            layoutParams = layoutParams.apply {
-//                height = resources.getDimensionPixelSize(R.dimen.recommended_list_height)
-//            }
-//            isNestedScrollingEnabled = true
-//        }
-//
         }
     }
 

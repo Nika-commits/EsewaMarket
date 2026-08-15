@@ -1,6 +1,7 @@
 package com.example.xml_app.fragments
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -23,7 +24,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.NotificationActivity
@@ -167,6 +170,65 @@ class Home : Fragment() {
                 )
             )
         }
+
+        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
+
+        gridLayoutManager.spanSizeLookup =
+            object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    val recommendedStart =
+                        homeHeadAdapter.itemCount +
+                                homeCategoriesAdapter.itemCount +
+                                homeFeaturedAdapter.itemCount +
+                                homeHotDealsAdapter.itemCount +
+                                homeBannerAdapter.itemCount +
+                                homeMostPopularAdapter.itemCount + recommendedHeaderAdapter.itemCount
+
+                    val recommendedEnd =
+                        recommendedStart + recommendedAdapter.itemCount
+
+                    return if (position in recommendedStart until recommendedEnd) {
+                        1
+                    } else {
+                        2
+                    }
+                }
+            }
+
+        binding.rvHome.layoutManager = gridLayoutManager
+
+        binding.rvHome.addItemDecoration(
+            object : RecyclerView.ItemDecoration() {
+
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    val holder = parent.getChildViewHolder(view)
+
+                    if (holder.bindingAdapter !== recommendedAdapter) {
+                        return
+                    }
+
+                    val position = holder.bindingAdapterPosition
+                    if (position == RecyclerView.NO_POSITION) return
+
+                    val spacing =
+                        resources.getDimensionPixelSize(R.dimen.spacing_medium)
+
+                    if (position % 2 == 0) {
+                        outRect.right = spacing / 2
+                    } else {
+                        outRect.left = spacing / 2
+                    }
+
+                    outRect.top = spacing / 2
+                    outRect.bottom = spacing / 2
+                }
+            }
+        )
     }
 
     private fun setupCategoriesRecyclerView() {

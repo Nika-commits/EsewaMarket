@@ -16,13 +16,14 @@ class HomeCategoriesAdapter(
     private val onSeeAllClick: () -> Unit
 
 ) : RecyclerView.Adapter<HomeCategoriesAdapter.ViewHolder>() {
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
         val binding =
             SectionCategoriesBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(binding, categories, onCategoryClick)
     }
 
     override fun onBindViewHolder(
@@ -32,26 +33,34 @@ class HomeCategoriesAdapter(
         with(holder.binding) {
             categorySection.tvHeaderTitle.text = "Categories"
             categorySection.ibHeaderButton.setOnClickListener { onSeeAllClick() }
-
-            rvCategoryOptions.apply {
-                layoutManager = LinearLayoutManager(
-                    context,
-                    LinearLayoutManager.HORIZONTAL,
-                    false
-                )
-                adapter = CategoryRecyclerViewAdapter(categories) { category ->
-                    onCategoryClick(category)
-                }
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        HorizontalItemDecoration(context.resources.getDimensionPixelSize(R.dimen.spacing_low))
-                    )
-                }
-            }
         }
     }
 
     override fun getItemCount(): Int = 1
 
-    class ViewHolder(val binding: SectionCategoriesBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(
+        val binding: SectionCategoriesBinding,
+        categories: List<Category>,
+        onCategoryClick: (Category) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.rvCategoryOptions.apply {
+                layoutManager = LinearLayoutManager(
+                    context,
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
+                adapter = CategoryRecyclerViewAdapter(categories) {
+                    onCategoryClick(it)
+                }
+
+                addItemDecoration(
+                    HorizontalItemDecoration(
+                        context.resources.getDimensionPixelSize(R.dimen.spacing_low)
+
+                    )
+                )
+            }
+        }
+    }
 }

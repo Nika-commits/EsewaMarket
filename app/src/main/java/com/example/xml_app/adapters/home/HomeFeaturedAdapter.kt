@@ -20,7 +20,7 @@ class HomeFeaturedAdapter(
     ): ViewHolder {
         val binding =
             SectionHomeProductsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(binding, productsAdapter)
     }
 
     override fun onBindViewHolder(
@@ -30,28 +30,29 @@ class HomeFeaturedAdapter(
         with(holder.binding) {
             featuredProducts.tvHeaderTitle.text = "Featured Products"
             featuredProducts.ibHeaderButton.setOnClickListener { onSeeAllClick() }
-            rvFeaturedProducts.apply {
+        }
+    }
+
+    override fun getItemCount(): Int = 1
+
+    class ViewHolder(
+        val binding: SectionHomeProductsBinding,
+        productsAdapter: ProductsAdapter
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.rvFeaturedProducts.apply {
                 layoutManager = LinearLayoutManager(
                     context,
                     LinearLayoutManager.HORIZONTAL,
                     false
                 )
                 adapter = productsAdapter
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        HorizontalItemDecoration(
-                            context.resources.getDimensionPixelSize(
-                                R.dimen.spacing_medium
-                            )
-                        )
+                addItemDecoration(
+                    HorizontalItemDecoration(
+                        context.resources.getDimensionPixelSize(R.dimen.spacing_medium)
                     )
-                }
+                )
             }
         }
     }
-
-    override fun getItemCount(): Int = 1
-
-    class ViewHolder(val binding: SectionHomeProductsBinding) :
-        RecyclerView.ViewHolder(binding.root)
 }
