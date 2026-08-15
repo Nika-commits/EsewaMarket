@@ -17,8 +17,8 @@ import com.example.xml_app.models.ProductUiModel
 class ProductsAdapter(
     val onProductClick: (Product) -> Unit,
     val onFavouriteClick: (Product) -> Unit,
-    val onCartIncrement: (Product) -> Unit,
-    val onCartDecrement: (Product) -> Unit
+    val onCartIncrement: (Product, Int?) -> Unit,
+    val onCartDecrement: (Product, Int) -> Unit
 ) : RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -50,13 +50,10 @@ class ProductsAdapter(
         return ViewHolder(binding)
     }
 
-    private var bindCount = 0
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int
     ) {
-        bindCount++
-
         val item = products[position]
         val product = item.product
 
@@ -99,15 +96,15 @@ class ProductsAdapter(
             }
 
             ibAddToCart.setOnClickListener {
-                onCartIncrement(product)
+                onCartIncrement(product, item.cartCount)
             }
 
             ibCartIncrement.setOnClickListener {
-                onCartIncrement(product)
+                onCartIncrement(product, null)
             }
 
             ibCartDecrement.setOnClickListener {
-                onCartDecrement(product)
+                onCartDecrement(product, item.cartCount)
             }
 
             Glide.with(root)

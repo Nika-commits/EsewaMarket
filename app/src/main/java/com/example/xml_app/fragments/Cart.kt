@@ -1,6 +1,5 @@
 package com.example.xml_app.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +21,6 @@ import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.viewModel.CartViewModel
 import kotlinx.coroutines.launch
-
 
 class Cart : Fragment() {
     private var _binding: FragmentCartBinding? = null
@@ -78,12 +76,7 @@ class Cart : Fragment() {
 
     private fun setupRecyclerView() {
         cartAdapter = CartAdapter(
-            onProductClick = { id ->
-                Intent(requireContext(), ProductDetailActivity::class.java).also {
-                    it.putExtra("id", id)
-                    startActivity(it)
-                }
-            },
+            onProductClick = { ProductDetailActivity.startActivity(requireContext(), it) },
 
             onCartIncrement = { id ->
                 viewModel.cartIncrement(id)
@@ -109,7 +102,6 @@ class Cart : Fragment() {
             adapter = cartAdapter
             layoutManager = LinearLayoutManager(requireContext())
             itemAnimator = null
-
         }
     }
 
@@ -152,6 +144,5 @@ class Cart : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 
 }

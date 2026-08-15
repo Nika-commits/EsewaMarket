@@ -144,7 +144,7 @@ class Favourite : Fragment() {
                                 findNavController().navigate(ApiRoute.Cart) {
                                     popUpTo<ApiRoute.Home> {
                                         saveState = true
-                                    }
+                                  }
                                     launchSingleTop = true
                                     restoreState = true
                                 }

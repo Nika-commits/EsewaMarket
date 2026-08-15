@@ -22,6 +22,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -45,6 +46,8 @@ import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentHomeConcatBinding
 import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
+import com.example.xml_app.navigation.ApiRoute
+import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.utils.HomeConcatAdapterSpacing
 import com.example.xml_app.viewModel.HomeViewModel
@@ -258,8 +261,12 @@ class Home : Fragment() {
     private fun setupFeaturedProductsRecyclerview() {
         featuredProductsAdapter = ProductsAdapter(
             onProductClick = { goToDetails(it.id) },
-            onCartIncrement = { incrementCart(it.id) },
-            onCartDecrement = { decrementCart(it.id) },
+            onCartIncrement = { p, count ->
+                incrementCart(p.id, count)
+            },
+            onCartDecrement = { p, count ->
+                decrementCart(p.id, count)
+            },
             onFavouriteClick = { toggleFavourite(it.id) }
         )
 
@@ -279,8 +286,12 @@ class Home : Fragment() {
     private fun setupHotDealsProductsRecyclerview() {
         hotDealsAdapter = ProductsAdapter(
             onProductClick = { goToDetails(it.id) },
-            onCartIncrement = { incrementCart(it.id) },
-            onCartDecrement = { decrementCart(it.id) },
+            onCartIncrement = { p, count ->
+                incrementCart(p.id, count)
+            },
+            onCartDecrement = { p, count ->
+                decrementCart(p.id, count)
+            },
             onFavouriteClick = { toggleFavourite(it.id) }
         )
 
@@ -326,8 +337,12 @@ class Home : Fragment() {
         recommendedAdapter = RecommendedProductsAdapter(
             onProductClick = { goToDetails(it.id) },
             onFavouriteClick = { toggleFavourite(it.id) },
-            onCartIncrement = { incrementCart(it.id) },
-            onCartDecrement = { decrementCart(it.id) }
+            onCartIncrement = { p, count ->
+                incrementCart(p.id, count)
+            },
+            onCartDecrement = { p, count ->
+                decrementCart(p.id, count)
+            }
         )
         recommendedHeaderAdapter = HomeRecommendedHeaderAdapter(
             onSeeAllClick = {}
@@ -378,17 +393,31 @@ class Home : Fragment() {
         )
     }
 
-    private fun incrementCart(id: Int) {
+    private fun incrementCart(id: Int, count: Int?) {
         if (viewModel.isLoggedIn()) {
+            if (count != null) {
+                showAddToCartSnackBar()
+            }
             viewModel.cartIncrement(id)
         } else {
             showLoginSnackBar("Log in to add to cart.")
         }
     }
 
-    private fun decrementCart(id: Int) {
+    private fun decrementCart(id: Int, count: Int) {
         if (viewModel.isLoggedIn()) {
-            viewModel.decrementCart(id)
+            if (count == 1) {
+                DeleteCartBottomSheet(
+                    onDelete = {
+                        viewModel.decrementCart(id)
+                    }
+                ).show(
+                    childFragmentManager,
+                    "DeleteCartBottomSheet"
+                )
+            } else {
+                viewModel.decrementCart(id)
+            }
         } else {
             showLoginSnackBar("Log in to decrement your cart.")
         }
@@ -404,6 +433,26 @@ class Home : Fragment() {
 
     private fun goToDetails(id: Int) {
         ProductDetailActivity.startActivity(requireContext(), id)
+    }
+
+    private fun showAddToCartSnackBar() {
+        val bottomNavigation = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
+        CustomSnackbar.show(
+            binding.root,
+            requireContext(),
+            "Added to cart successfully",
+            bottomNavigation,
+            "GOTO CART",
+            action = {
+                findNavController().navigate(ApiRoute.Cart) {
+                    popUpTo<ApiRoute.Home> {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {

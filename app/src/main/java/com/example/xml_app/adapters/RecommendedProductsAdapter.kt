@@ -18,8 +18,8 @@ import com.example.xml_app.models.ProductUiModel
 class RecommendedProductsAdapter(
     private val onProductClick: (Product) -> Unit,
     private val onFavouriteClick: (Product) -> Unit,
-    private val onCartIncrement: (Product) -> Unit,
-    private val onCartDecrement: (Product) -> Unit
+    private val onCartIncrement: (Product, Int?) -> Unit,
+    private val onCartDecrement: (Product, Int) -> Unit
 ) : PagingDataAdapter<ProductUiModel, RecommendedProductsAdapter.ViewHolder>(ProductDiffCallback) {
     companion object {
         private val ProductDiffCallback = object : DiffUtil.ItemCallback<ProductUiModel>() {
@@ -99,15 +99,15 @@ class RecommendedProductsAdapter(
             }
 
             ibAddToCart.setOnClickListener {
-                onCartIncrement(product)
+                onCartIncrement(product, item.cartCount)
             }
 
             ibCartIncrement.setOnClickListener {
-                onCartIncrement(product)
+                onCartIncrement(product, null)
             }
 
             ibCartDecrement.setOnClickListener {
-                onCartDecrement(product)
+                onCartDecrement(product, item.cartCount)
             }
         }
     }

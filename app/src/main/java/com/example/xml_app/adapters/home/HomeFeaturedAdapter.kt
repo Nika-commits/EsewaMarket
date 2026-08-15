@@ -46,6 +46,7 @@ class HomeFeaturedAdapter(
                     LinearLayoutManager.HORIZONTAL,
                     false
                 )
+                itemAnimator = null
                 adapter = productsAdapter
                 addItemDecoration(
                     HorizontalItemDecoration(
