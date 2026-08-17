@@ -1,5 +1,6 @@
 package com.example.xml_app.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
+import com.example.xml_app.activities.CheckoutActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
@@ -136,6 +138,12 @@ class Cart : Fragment() {
                         binding.tvTotalPrice.text = it.toString()
                     }
                 }
+            }
+        }
+
+        binding.btnCheckout.setOnClickListener {
+            Intent(requireContext(), CheckoutActivity::class.java).also {
+                startActivity(it)
             }
         }
     }
