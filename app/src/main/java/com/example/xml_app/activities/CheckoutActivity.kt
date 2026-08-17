@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,6 +65,7 @@ class CheckoutActivity : AppCompatActivity() {
         setContent {
             val address by viewModel.address.collectAsStateWithLifecycle()
             val products by viewModel.products.collectAsStateWithLifecycle()
+            val totalPrice = products.sumOf { it.price }
             Scaffold(
                 modifier = Modifier
                     .styleable(null, activityStyle),
@@ -69,6 +73,9 @@ class CheckoutActivity : AppCompatActivity() {
                     AppTopBar(
                         "Checkout"
                     )
+                },
+                bottomBar = {
+                    BottomBar(totalPrice.toFloat())
                 }
             ) { innerPadding ->
                 LazyColumn(
@@ -88,7 +95,7 @@ class CheckoutActivity : AppCompatActivity() {
                         Text(
                             "Order Summary",
                             modifier = Modifier
-                                .padding(vertical = 12.dp),
+                                .padding(top = 12.dp, bottom = 8.dp),
                             fontFamily = SourceSansPro,
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp,
@@ -107,7 +114,21 @@ class CheckoutActivity : AppCompatActivity() {
                             onClick = {}
                         )
                     }
+
+                    item {
+                        Text(
+                            "Choose Your Payment Options",
+                            modifier = Modifier
+                                .padding(top = 12.dp, bottom = 8.dp),
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            letterSpacing = 0.25.sp
+                        )
+                    }
                 }
+
+
             }
         }
     }
@@ -234,6 +255,68 @@ fun OrderSummaryItem(
                 )
             }
         }
-
     }
+}
+
+@Composable
+fun BottomBar(total: Float) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Surface)
+            .heightIn(min = 100.dp)
+            .padding(horizontal = 16.dp, vertical = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                "Grand Total",
+                color = TextDark400,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                letterSpacing = 0.25.sp,
+            )
+            Text(
+                "*included TAX",
+                color = TextDark200,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Normal,
+                fontSize = 10.sp,
+                letterSpacing = 0.4.sp
+            )
+        }
+
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                "Rs.",
+                color = PrimaryGreen,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                letterSpacing = 0.25.sp
+            )
+            Text(
+                text = total.toString(),
+                color = PrimaryGreen,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
+                letterSpacing = 0.15.sp
+            )
+        }
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Prev() {
+    BottomBar(19500.00f)
 }
