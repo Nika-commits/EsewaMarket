@@ -67,7 +67,9 @@ class CheckoutActivity : AppCompatActivity() {
             val address by viewModel.address.collectAsStateWithLifecycle()
             val products by viewModel.products.collectAsStateWithLifecycle()
             val productQuantityMap by viewModel.productQuantityMap.collectAsStateWithLifecycle()
-            val totalPrice = products.sumOf { it.price }
+            val totalPrice = products.sumOf { product ->
+                product.price * (productQuantityMap[product.id] ?: 1)
+            }
             Scaffold(
                 modifier = Modifier
                     .styleable(null, activityStyle),
@@ -336,15 +338,15 @@ fun BottomBar(total: Float) {
                 )
             }
         }
-            AppButton(
-                modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.TopCenter)
-                    .offset(y = (-24).dp),
-                variant = ButtonVariant.ROUNDED,
-                icon = R.drawable.ic_top_arrow,
-                onClick = {}
-            )
+        AppButton(
+            modifier = Modifier
+                .size(48.dp)
+                .align(Alignment.TopCenter)
+                .offset(y = (-24).dp),
+            variant = ButtonVariant.ROUNDED,
+            icon = R.drawable.ic_top_arrow,
+            onClick = {}
+        )
     }
 
 }
