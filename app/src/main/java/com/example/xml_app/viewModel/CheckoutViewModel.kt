@@ -11,6 +11,7 @@ import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okio.IOException
 import retrofit2.HttpException
@@ -27,6 +28,9 @@ class CheckoutViewModel(
     private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(database.userDao())
     private val productRepository = ProductRepository()
+
+    private val _address = MutableStateFlow("Pulchowk, Lalitpur-20")
+    val address = _address.asStateFlow()
 
     private fun initializeUser() {
         viewModelScope.launch {
