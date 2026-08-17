@@ -264,7 +264,9 @@ fun OrderSummaryItem(
         }
 
         Row(
-
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
                 text = "x"
