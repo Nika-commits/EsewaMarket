@@ -6,13 +6,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -260,57 +261,69 @@ fun OrderSummaryItem(
 
 @Composable
 fun BottomBar(total: Float) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Surface)
-            .heightIn(min = 100.dp)
-            .padding(horizontal = 16.dp, vertical = 24.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+    Box {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Surface)
+                .heightIn(min = 100.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                "Grand Total",
-                color = TextDark400,
-                fontFamily = SourceSansPro,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                letterSpacing = 0.25.sp,
-            )
-            Text(
-                "*included TAX",
-                color = TextDark200,
-                fontFamily = SourceSansPro,
-                fontWeight = FontWeight.Normal,
-                fontSize = 10.sp,
-                letterSpacing = 0.4.sp
-            )
-        }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    "Grand Total",
+                    color = TextDark400,
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.25.sp,
+                )
+                Text(
+                    "*included TAX",
+                    color = TextDark200,
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 10.sp,
+                    letterSpacing = 0.4.sp
+                )
+            }
 
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                "Rs.",
-                color = PrimaryGreen,
-                fontFamily = SourceSansPro,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                letterSpacing = 0.25.sp
-            )
-            Text(
-                text = total.toString(),
-                color = PrimaryGreen,
-                fontFamily = SourceSansPro,
-                fontWeight = FontWeight.Medium,
-                fontSize = 20.sp,
-                letterSpacing = 0.15.sp
-            )
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    "Rs.",
+                    color = PrimaryGreen,
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.25.sp
+                )
+                Text(
+                    text = total.toString(),
+                    color = PrimaryGreen,
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 20.sp,
+                    letterSpacing = 0.15.sp
+                )
+            }
         }
+            AppButton(
+                modifier = Modifier
+                    .size(48.dp)
+                    .align(Alignment.TopCenter)
+                    .offset(y = (-24).dp),
+                variant = ButtonVariant.ROUNDED,
+                icon = R.drawable.ic_top_arrow,
+                onClick = {}
+            )
     }
 
 }

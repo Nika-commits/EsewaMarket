@@ -1,20 +1,25 @@
 package com.example.xml_app.utils.styles.components
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
 import androidx.compose.foundation.style.Style
+import androidx.compose.foundation.style.pressed
+import androidx.compose.foundation.style.rememberUpdatedStyleState
 import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +35,7 @@ import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark300
 
 enum class ButtonVariant {
-    PRIMARY, SECONDARY, DESTRUCTIVE, OUTLINE, ICON
+    PRIMARY, SECONDARY, DESTRUCTIVE, OUTLINE, ICON, ROUNDED
 }
 
 @OptIn(ExperimentalFoundationStyleApi::class)
@@ -42,40 +47,67 @@ fun AppButton(
     icon: Int? = null,
     onClick: () -> Unit,
 ) {
+
+    val density = LocalDensity.current
     val style = Style {
         background(
             when (variant) {
-                ButtonVariant.PRIMARY -> PrimaryGreen
+                ButtonVariant.PRIMARY, ButtonVariant.ROUNDED -> PrimaryGreen
                 ButtonVariant.SECONDARY -> TextDark300
                 ButtonVariant.DESTRUCTIVE -> EsewaRed
                 ButtonVariant.ICON -> PrimaryGreenTransparent
                 ButtonVariant.OUTLINE -> OffWhiteBackground
             }
         )
-        shape(RoundedCornerShape(16.dp))
-        contentPadding(horizontal = 16.dp, vertical = 8.dp)
+        shape(
+            when (variant) {
+                ButtonVariant.ROUNDED -> CircleShape
+                else -> RoundedCornerShape(16.dp)
+            }
+        )
+        contentPadding(
+            horizontal = 16.dp,
+            vertical = 8.dp
+        )
         border(
             width = when (variant) {
                 ButtonVariant.OUTLINE -> 1.dp
                 else -> 0.dp
             },
-            color = when (variant){
+            color = when (variant) {
                 ButtonVariant.OUTLINE -> PrimaryGreen
                 else -> Color.Transparent
             }
         )
+        pressed {
+            animate(
+                spring(
+                    dampingRatio = Spring.DampingRatioHighBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            ) {
+                alpha(0.85f)
+                scale(0.96f)
+            }
+        }
+
+
     }
 
     val interactionSource = remember { MutableInteractionSource() }
+    val styeState = rememberUpdatedStyleState(interactionSource) {
+        it.isEnabled = true
+    }
     Box(
         modifier = modifier
             .clickable(
                 enabled = true,
                 interactionSource = interactionSource,
-                indication = ripple(),
+                indication = null,
+
                 onClick = onClick
             )
-            .styleable(null, style),
+            .styleable(styeState, style),
         contentAlignment = Alignment.Center
     ) {
         if (text != null) {
@@ -83,7 +115,7 @@ fun AppButton(
                 text,
                 fontFamily = SourceSansPro,
                 fontWeight = FontWeight.Medium,
-                color = when(variant){
+                color = when (variant) {
                     ButtonVariant.OUTLINE -> PrimaryGreen
                     else -> Color.White
                 },
