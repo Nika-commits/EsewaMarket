@@ -14,6 +14,7 @@ val TextLighter = Color(0xFFEEEEEE)
 val PrimaryGreen = Color(0xFF2ABB00)
 val PrimaryGreenDark = Color(0xFF1FAC00)
 val SecondaryGreen = Color(0xFFC6F09E)
+val PrimaryGreenTransparent = Color(0xFFEAF9E6)
 val CategoryBackground = Color(0xFFE1FDD9)
 
 val TextLight = Color(0xFFE3E4EB)
@@ -35,3 +36,4 @@ val LightCharcoal = Color(0xFF182B3C)
 
 val InputBackground = Color(0xFFF8F8FA)
 val InputBorder = Color(0xFFE3E4EB)
+
