@@ -22,22 +22,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.xml_app.R
 import com.example.xml_app.utils.SourceSansPro
+import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.TextDark300
+
+enum class ButtonVariant {
+    PRIMARY, SECONDARY, DESTRUCTIVE
+}
 
 @OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
-fun PrimaryButton(
+fun AppButton(
     modifier: Modifier = Modifier,
+    variant: ButtonVariant,
     text: String? = null,
     icon: Int? = null,
     onClick: () -> Unit,
 ) {
     val style = Style {
-        background(PrimaryGreen)
+        background(
+            when (variant) {
+                ButtonVariant.PRIMARY -> PrimaryGreen
+                ButtonVariant.SECONDARY -> TextDark300
+                ButtonVariant.DESTRUCTIVE -> EsewaRed
+            }
+        )
         shape(RoundedCornerShape(16.dp))
         contentPadding(horizontal = 16.dp, vertical = 8.dp)
     }
+
     val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
@@ -69,12 +83,13 @@ fun PrimaryButton(
     }
 }
 
+
 @Preview
 @Composable
 fun Preview() {
-    PrimaryButton(
-//        icon = R.drawable.ic_add_cart,
-        text = "Pranish",
+    AppButton(
+        icon = R.drawable.ic_add_cart,
+        variant = ButtonVariant.DESTRUCTIVE,
         onClick = {}
     )
 }
