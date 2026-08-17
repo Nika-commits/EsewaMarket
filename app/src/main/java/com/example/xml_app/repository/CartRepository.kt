@@ -65,4 +65,8 @@ class CartRepository(
     fun observeCartItem(cartId: Int, productId: Int): Flow<CartItem?> {
         return cartDao.observeCartItem(cartId, productId)
     }
+
+    suspend fun getProductIdsInCart(cartId: Int): List<Int> {
+        return cartDao.getAllProductsIdsInCart(cartId)
+    }
 }

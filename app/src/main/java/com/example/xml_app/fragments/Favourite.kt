@@ -144,7 +144,7 @@ class Favourite : Fragment() {
                                 findNavController().navigate(ApiRoute.Cart) {
                                     popUpTo<ApiRoute.Home> {
                                         saveState = true
-                                  }
+                                    }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
@@ -358,7 +358,7 @@ fun FavouriteScreen(
 
                     )
                     Text(
-                        text = "Items ${products.size}",
+                        text = "Items (${products.size})",
                         color = colorResource(R.color.textDark300),
                         fontFamily = SourceSansPro,
                         fontWeight = FontWeight.Normal,
@@ -393,6 +393,7 @@ fun FavouriteScreen(
                             selectedSet.forEach {
                                 viewModel.toggleFavourite(it)
                             }
+                            selectedSet.clear()
                             CustomSnackbar.show(
                                 view = rootView,
                                 context = context,

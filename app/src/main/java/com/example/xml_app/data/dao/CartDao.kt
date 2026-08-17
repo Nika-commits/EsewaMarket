@@ -39,4 +39,7 @@ interface CartDao {
 
     @Query("""delete from cart_items where cart_id = :cartId""")
     suspend fun clearCart(cartId: Int)
+
+    @Query("""select product_id from cart_items where cart_id = :cartId""")
+    suspend fun getAllProductsIdsInCart(cartId: Int): List<Int>
 }
