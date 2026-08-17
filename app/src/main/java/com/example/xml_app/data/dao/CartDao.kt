@@ -19,6 +19,9 @@ interface CartDao {
     @Query("""select * from cart_items where cart_id = :cartId""")
     fun observeCartItems(cartId: Int): Flow<List<CartItem>>
 
+    @Query("""select product_id, quantity from cart_items where cart_id = :cartId""")
+    suspend fun getCartProductWithQuantity(cartId: Int): Map<Int, Int>
+
     @Query("""select * from cart_items where cart_id = :cartId and product_id = :productId LIMIT 1""")
     fun observeCartItem(cartId: Int, productId: Int): Flow<CartItem?>
 

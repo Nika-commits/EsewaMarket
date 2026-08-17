@@ -22,6 +22,10 @@ class CartRepository(
         )
     }
 
+    suspend fun getCartProductWithQuantity(cartId: Int): Map<Int, Int> {
+        return cartDao.getCartProductWithQuantity(cartId)
+    }
+
     suspend fun increment(userId: Int, productId: Int) {
         val cart = getOrCreateCart(userId)
         val existing = cartDao.getCartItem(cartId = cart.uid, productId = productId)

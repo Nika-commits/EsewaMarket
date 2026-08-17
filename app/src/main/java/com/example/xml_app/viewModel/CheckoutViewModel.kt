@@ -28,12 +28,10 @@ class CheckoutViewModel(
     private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(database.userDao())
     private val productRepository = ProductRepository()
-
     private val _address = MutableStateFlow("Pulchowk, Lalitpur-20")
     val address = _address.asStateFlow()
 
     fun initializeUser() {
-        Log.d("Checkout", "Initializing User")
         viewModelScope.launch {
             val firebase = app.auth.currentUser ?: return@launch
             val localUser = userRepository.getLocalUser(firebase.uid) ?: return@launch
@@ -43,19 +41,14 @@ class CheckoutViewModel(
     }
 
     private suspend fun getCartIds(userId: Int) {
-        Log.d("Checkout", "Getting Cart Ids")
         val cart = cartRepository.getOrCreateCart(userId)
         _cartIds.value = cartRepository.getProductIdsInCart(cart.uid)
-        Log.d("Checkout", "CartIds: ${_cartIds.value}")
         getCartProducts()
     }
 
     suspend fun getCartProducts() {
-        Log.d("Checkout", "Getting Cart Products")
-        if (_cartIds.value.isEmpty()) {
-            Log.d("Checkout", "Carts are Empty")
-            return
-        }
+        if (_cartIds.value.isEmpty()) return
+
         try {
             val products = _cartIds.value.map { productId ->
                 val response = productRepository.getProduct(productId)
