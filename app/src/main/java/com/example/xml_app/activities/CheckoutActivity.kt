@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -72,6 +73,7 @@ class CheckoutActivity : AppCompatActivity() {
             ) { innerPadding ->
                 LazyColumn(
                     modifier = Modifier
+                        .fillMaxSize()
                         .background(OffWhiteBackground)
                         .padding(innerPadding)
                         .padding(horizontal = 16.dp)
@@ -91,10 +93,19 @@ class CheckoutActivity : AppCompatActivity() {
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp,
                             letterSpacing = 0.25.sp
-                            )
+                        )
                     }
                     items(products) { product ->
                         OrderSummaryItem(product = product)
+                    }
+
+                    item {
+                        AppButton(
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            variant = ButtonVariant.OUTLINE,
+                            text = "HAVE A PROMOCODE?",
+                            onClick = {}
+                        )
                     }
                 }
             }

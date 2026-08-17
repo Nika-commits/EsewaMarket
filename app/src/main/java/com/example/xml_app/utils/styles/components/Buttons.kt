@@ -23,13 +23,14 @@ import androidx.compose.ui.unit.sp
 import com.example.xml_app.R
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.styles.EsewaRed
+import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark300
 
 enum class ButtonVariant {
-    PRIMARY, SECONDARY, DESTRUCTIVE, ICON
+    PRIMARY, SECONDARY, DESTRUCTIVE, OUTLINE, ICON
 }
 
 @OptIn(ExperimentalFoundationStyleApi::class)
@@ -48,10 +49,21 @@ fun AppButton(
                 ButtonVariant.SECONDARY -> TextDark300
                 ButtonVariant.DESTRUCTIVE -> EsewaRed
                 ButtonVariant.ICON -> PrimaryGreenTransparent
+                ButtonVariant.OUTLINE -> OffWhiteBackground
             }
         )
         shape(RoundedCornerShape(16.dp))
         contentPadding(horizontal = 16.dp, vertical = 8.dp)
+        border(
+            width = when (variant) {
+                ButtonVariant.OUTLINE -> 1.dp
+                else -> 0.dp
+            },
+            color = when (variant){
+                ButtonVariant.OUTLINE -> PrimaryGreen
+                else -> Color.Transparent
+            }
+        )
     }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -71,7 +83,10 @@ fun AppButton(
                 text,
                 fontFamily = SourceSansPro,
                 fontWeight = FontWeight.Medium,
-                color = Color.White,
+                color = when(variant){
+                    ButtonVariant.OUTLINE -> PrimaryGreen
+                    else -> Color.White
+                },
                 letterSpacing = 1.sp
             )
         }
