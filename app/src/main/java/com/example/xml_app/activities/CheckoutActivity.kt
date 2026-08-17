@@ -66,6 +66,7 @@ class CheckoutActivity : AppCompatActivity() {
         setContent {
             val address by viewModel.address.collectAsStateWithLifecycle()
             val products by viewModel.products.collectAsStateWithLifecycle()
+            val productQuantityMap by viewModel.productQuantityMap.collectAsStateWithLifecycle()
             val totalPrice = products.sumOf { it.price }
             Scaffold(
                 modifier = Modifier
@@ -104,7 +105,11 @@ class CheckoutActivity : AppCompatActivity() {
                         )
                     }
                     items(products) { product ->
-                        OrderSummaryItem(product = product)
+                        val count = productQuantityMap[product.id] ?: return@items
+                        OrderSummaryItem(
+                            product = product,
+                            count = count
+                        )
                     }
 
                     item {
@@ -193,7 +198,8 @@ fun DeliveryAddress(
 @Composable
 fun OrderSummaryItem(
     modifier: Modifier = Modifier,
-    product: Product
+    product: Product,
+    count: Int
 ) {
     Row(
         modifier = modifier
@@ -256,7 +262,20 @@ fun OrderSummaryItem(
                 )
             }
         }
+
+        Row(
+
+        ) {
+            Text(
+                text = "x"
+            )
+
+            Text(
+                text = count.toString()
+            )
+        }
     }
+
 }
 
 @Composable

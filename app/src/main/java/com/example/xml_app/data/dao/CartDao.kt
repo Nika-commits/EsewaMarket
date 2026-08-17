@@ -2,6 +2,7 @@ package com.example.xml_app.data.dao
 
 import androidx.room3.Dao
 import androidx.room3.Insert
+import androidx.room3.MapColumn
 import androidx.room3.Query
 import androidx.room3.Update
 import com.example.xml_app.entities.Cart
@@ -20,7 +21,10 @@ interface CartDao {
     fun observeCartItems(cartId: Int): Flow<List<CartItem>>
 
     @Query("""select product_id, quantity from cart_items where cart_id = :cartId""")
-    suspend fun getCartProductWithQuantity(cartId: Int): Map<Int, Int>
+    suspend fun getCartProductWithQuantity(cartId: Int): Map<
+            @MapColumn(columnName = "product_id") Int,
+            @MapColumn(columnName = "quantity") Int
+            >
 
     @Query("""select * from cart_items where cart_id = :cartId and product_id = :productId LIMIT 1""")
     fun observeCartItem(cartId: Int, productId: Int): Flow<CartItem?>

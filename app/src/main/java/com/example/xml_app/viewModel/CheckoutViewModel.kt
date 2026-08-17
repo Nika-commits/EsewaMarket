@@ -23,6 +23,8 @@ class CheckoutViewModel(
     private val database = app.database
     private val _user = MutableStateFlow<User?>(null)
     private val _cartIds = MutableStateFlow<List<Int>>(emptyList())
+    private val _productQuantityMap = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    val productQuantityMap = _productQuantityMap.asStateFlow()
     private val _productsInCart = MutableStateFlow<List<Product>>(emptyList())
     val products = _productsInCart.asStateFlow()
     private val cartRepository = CartRepository(database.cartDao())
@@ -44,6 +46,7 @@ class CheckoutViewModel(
         val cart = cartRepository.getOrCreateCart(userId)
         _cartIds.value = cartRepository.getProductIdsInCart(cart.uid)
         getCartProducts()
+        getProductQuantityMap(cart.uid)
     }
 
     suspend fun getCartProducts() {
@@ -68,5 +71,9 @@ class CheckoutViewModel(
         } catch (e: Exception) {
             Log.e("Checkout", e.message ?: "Exception occurred")
         }
+    }
+
+    suspend fun getProductQuantityMap(cartId: Int){
+        _productQuantityMap.value = cartRepository.getCartProductWithQuantity(cartId)
     }
 }
