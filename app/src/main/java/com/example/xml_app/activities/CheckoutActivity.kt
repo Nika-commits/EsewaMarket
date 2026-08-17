@@ -8,10 +8,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
 import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.style.styleable
@@ -22,15 +27,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.example.xml_app.R
+import com.example.xml_app.models.Product
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.styles.LightCharcoal
 import com.example.xml_app.utils.styles.OffWhiteBackground
+import com.example.xml_app.utils.styles.PrimaryGreen
+import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.TextDark200
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppTopBar
@@ -43,11 +54,13 @@ class CheckoutActivity : AppCompatActivity() {
     @OptIn(ExperimentalFoundationStyleApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.initializeUser()
         val activityStyle = Style {
             background(OffWhiteBackground)
         }
         setContent {
             val address by viewModel.address.collectAsStateWithLifecycle()
+            val products by viewModel.products.collectAsStateWithLifecycle()
             Scaffold(
                 modifier = Modifier
                     .styleable(null, activityStyle),
@@ -61,12 +74,27 @@ class CheckoutActivity : AppCompatActivity() {
                     modifier = Modifier
                         .background(OffWhiteBackground)
                         .padding(innerPadding)
-                        .padding(vertical = 16.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
                     item {
-                    DeliveryAddress(
-                        address = address
-                    )
+                        DeliveryAddress(
+                            address = address
+                        )
+                    }
+
+                    item {
+                        Text(
+                            "Order Summary",
+                            modifier = Modifier
+                                .padding(vertical = 12.dp),
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            letterSpacing = 0.25.sp
+                            )
+                    }
+                    items(products) { product ->
+                        OrderSummaryItem(product = product)
                     }
                 }
             }
@@ -127,15 +155,74 @@ fun DeliveryAddress(
             onClick = {}
         )
     }
-
 }
 
-@Preview(showBackground = true)
 @Composable
-fun Prev() {
-    val address = "Pulchowk, Lalitpur-20"
+fun OrderSummaryItem(
+    modifier: Modifier = Modifier,
+    product: Product
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Surface)
+    ) {
+        AsyncImage(
+            model = product.imageUrls.firstOrNull(),
+            contentDescription = product.name,
+            modifier = Modifier
+                .padding(16.dp)
+                .size(77.dp)
+                .clip(RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop
+        )
 
-    DeliveryAddress(
-        address = address
-    )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 8.dp, horizontal = 8.dp)
+        ) {
+            Text(
+                text = product.name,
+                fontSize = 16.sp,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.15.sp,
+                color = TextDark400
+            )
+
+            Text(
+                text = product.brand,
+                fontSize = 10.sp,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Normal,
+                color = TextDark200,
+                letterSpacing = 1.5.sp
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Rs.",
+                    fontSize = 14.sp,
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    color = PrimaryGreen
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = product.price.toFloat().toString(),
+                    fontSize = 20.sp,
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Medium,
+                    color = PrimaryGreen
+                )
+            }
+        }
+
+    }
 }

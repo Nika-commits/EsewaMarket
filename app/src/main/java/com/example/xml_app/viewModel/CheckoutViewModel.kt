@@ -23,8 +23,8 @@ class CheckoutViewModel(
     private val database = app.database
     private val _user = MutableStateFlow<User?>(null)
     private val _cartIds = MutableStateFlow<List<Int>>(emptyList())
-    private val productsInCart = MutableStateFlow<List<Product>>(emptyList())
-    private val cartCount = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    private val _productsInCart = MutableStateFlow<List<Product>>(emptyList())
+    val products = _productsInCart.asStateFlow()
     private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(database.userDao())
     private val productRepository = ProductRepository()
@@ -32,42 +32,48 @@ class CheckoutViewModel(
     private val _address = MutableStateFlow("Pulchowk, Lalitpur-20")
     val address = _address.asStateFlow()
 
-    private fun initializeUser() {
+    fun initializeUser() {
+        Log.d("Checkout", "Initializing User")
         viewModelScope.launch {
             val firebase = app.auth.currentUser ?: return@launch
-            val localUser = userRepository.getLocalUser(firebase.uid)
+            val localUser = userRepository.getLocalUser(firebase.uid) ?: return@launch
             _user.value = localUser
+            getCartIds(localUser.uid)
         }
     }
 
-    private fun getCartIds() {
-        val userId = _user.value?.uid ?: return
-        viewModelScope.launch {
-            val cart = cartRepository.getOrCreateCart(userId)
-            _cartIds.value = cartRepository.getProductIdsInCart(cart.uid)
-        }
+    private suspend fun getCartIds(userId: Int) {
+        Log.d("Checkout", "Getting Cart Ids")
+        val cart = cartRepository.getOrCreateCart(userId)
+        _cartIds.value = cartRepository.getProductIdsInCart(cart.uid)
+        Log.d("Checkout", "CartIds: ${_cartIds.value}")
+        getCartProducts()
     }
 
-    private fun getCartProducts() {
-        if (_cartIds.value.isEmpty()) return
-        viewModelScope.launch {
-            try {
-                val products = _cartIds.value.map { productId ->
-                    val response = productRepository.getProduct(productId)
-                    if (!response.isSuccessful) {
-                        throw HttpException(response)
-                    }
-                    response.body()
-                        ?: throw Exception("Product $productId body is null")
+    suspend fun getCartProducts() {
+        Log.d("Checkout", "Getting Cart Products")
+        if (_cartIds.value.isEmpty()) {
+            Log.d("Checkout", "Carts are Empty")
+            return
+        }
+        try {
+            val products = _cartIds.value.map { productId ->
+                val response = productRepository.getProduct(productId)
+                if (!response.isSuccessful) {
+                    Log.d("Checkout", "HTTP Errors")
+                    throw HttpException(response)
                 }
-                productsInCart.value = products
-            } catch (e: HttpException) {
-                Log.e("Checkout", e.message())
-            } catch (e: IOException) {
-                Log.e("Checkout", e.message ?: "Network error")
-            } catch (e: Exception) {
-                Log.e("Checkout", e.message ?: "Exception occurred")
+                response.body()
+                    ?: throw Exception("Product $productId body is null")
             }
+            _productsInCart.value = products
+            Log.d("Checkout", "Products Fetched")
+        } catch (e: HttpException) {
+            Log.e("Checkout", e.message())
+        } catch (e: IOException) {
+            Log.e("Checkout", e.message ?: "Network error")
+        } catch (e: Exception) {
+            Log.e("Checkout", e.message ?: "Exception occurred")
         }
     }
 }

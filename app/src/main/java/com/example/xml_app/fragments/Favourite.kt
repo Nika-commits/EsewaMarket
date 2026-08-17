@@ -226,7 +226,6 @@ fun FavouriteList(
                         fontFamily = SourceSansPro,
                         fontWeight = FontWeight.Normal,
                         color = colorResource(R.color.textDark400)
-
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
