@@ -132,8 +132,7 @@ class ProductDetailsViewModel(
             try {
                 val response = repository.getProduct(id)
                 if (!response.isSuccessful) {
-                    Log.e("Product", "${re    @Query("""select * """)
-                    suspend fun getCartItemsIds(cartId: Int)sponse.body()}")
+                    Log.e("Product", "Unsuccessful Response")
                 }
 
                 val fetchedProduct = response.body() ?: return@launch

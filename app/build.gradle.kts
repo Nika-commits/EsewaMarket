@@ -130,6 +130,8 @@ dependencies {
 
 
     // UI
+
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation(libs.flexbox)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.activity.ktx)

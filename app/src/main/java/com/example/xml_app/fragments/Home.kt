@@ -13,6 +13,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.util.component1
+import androidx.core.util.component2
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -26,7 +28,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
@@ -156,44 +157,18 @@ class Home : Fragment() {
             homeHotDealsAdapter,
             homeBannerAdapter,
             homeMostPopularAdapter,
-//            homeRecommendedSectionAdapter,
             recommendedHeaderAdapter,
             recommendedAdapter,
             recommendedLoadingAdapter
         )
-        val recommendedStart =
-            homeHeadAdapter.itemCount +
-                    homeCategoriesAdapter.itemCount +
-                    homeFeaturedAdapter.itemCount +
-                    homeHotDealsAdapter.itemCount +
-                    homeBannerAdapter.itemCount +
-                    homeMostPopularAdapter.itemCount +
-                    recommendedHeaderAdapter.itemCount
 
         val gridLayoutManager = GridLayoutManager(requireContext(), 2)
-
-        binding.rvHome.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = concatAdapter
-            addItemDecoration(
-                HomeConcatAdapterSpacing(
-                    resources.getDimensionPixelSize(R.dimen.spacing_medium)
-                )
-            )
-        }
-
 
         gridLayoutManager.spanSizeLookup =
             object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    val recommendedEnd =
-                        recommendedStart + recommendedAdapter.itemCount
-
-                    return if (position in recommendedStart until recommendedEnd) {
-                        1
-                    } else {
-                        2
-                    }
+                    val (adapter, _) = concatAdapter.getWrappedAdapterAndPosition((position))
+                    return if (adapter === recommendedAdapter) 1 else 2
                 }
             }
         val spacing =
@@ -214,16 +189,11 @@ class Home : Fragment() {
                         state: RecyclerView.State
                     ) {
                         val holder = parent.getChildViewHolder(view)
-
-                        if (holder.bindingAdapter !== recommendedAdapter) {
-                            return
-                        }
+                        if (holder.bindingAdapter !== recommendedAdapter) return
 
                         val position = holder.bindingAdapterPosition
 
-                        if (position == RecyclerView.NO_POSITION) {
-                            return
-                        }
+                        if (position == RecyclerView.NO_POSITION) return
 
                         if (position % 2 == 0) {
                             outRect.right = spacing / 2
