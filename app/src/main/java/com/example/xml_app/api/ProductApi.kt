@@ -24,4 +24,9 @@ interface ProductApi {
 
     @GET("/api/product/popular")
     suspend fun getPopularChips(): Response<List<String>>
+
+    @POST("/api/product/check-promocode")
+    suspend fun checkPromoCode(
+        @Body promoCode: String
+    ): Response<Unit>
 }

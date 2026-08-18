@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -63,6 +62,7 @@ import com.example.xml_app.utils.styles.components.AppTextField
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.CheckoutViewModel
+import kotlinx.coroutines.launch
 
 class CheckoutActivity : AppCompatActivity() {
     private val viewModel: CheckoutViewModel by viewModels()
@@ -81,7 +81,9 @@ class CheckoutActivity : AppCompatActivity() {
             val totalPrice = products.sumOf { product ->
                 product.price * (productQuantityMap[product.id] ?: 1)
             }
-            val sheetState = rememberModalBottomSheetState()
+            val sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = true
+            )
             var showBottomSheet by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
             val promoCode by viewModel.promoCode.collectAsStateWithLifecycle()
@@ -168,7 +170,7 @@ class CheckoutActivity : AppCompatActivity() {
                         },
                         sheetState = sheetState,
                         containerColor = Surface,
-                        dragHandle = null
+                        dragHandle = null,
                     ) {
                         Column(
                             modifier = Modifier
@@ -182,7 +184,7 @@ class CheckoutActivity : AppCompatActivity() {
                                 fontSize = 16.sp,
                                 letterSpacing = 0.15.sp,
                                 color = TextDark400
-                                )
+                            )
 
                             Column(
                                 modifier = Modifier.padding(vertical = 8.dp),
@@ -212,9 +214,15 @@ class CheckoutActivity : AppCompatActivity() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .weight(1f),
-                                    text = "Cancel",
+                                    text = "CANCEL",
                                     variant = ButtonVariant.SECONDARY,
-                                    onClick = {},
+                                    onClick = {
+                                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                            if(!sheetState.isVisible){
+                                                showBottomSheet = false
+                                            }
+                                        }
+                                    },
                                 )
 
                                 AppButton(
