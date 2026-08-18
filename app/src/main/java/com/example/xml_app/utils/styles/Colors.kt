@@ -22,6 +22,8 @@ val TextLight300 = Color(0xFFF2F2F5)
 
 val TextDark = Color(0xFF263238)
 val TextDarkSecondary = Color(0xFF8E90A6)
+
+val TextDark100 = Color(0xFFC7C8D9)
 val TextDark200 = Color(0xFF8E90A6)
 val TextDark300 = Color(0xFF555770)
 val TextDark400 = Color(0xFF28293D)
@@ -36,4 +38,6 @@ val LightCharcoal = Color(0xFF182B3C)
 
 val InputBackground = Color(0xFFF8F8FA)
 val InputBorder = Color(0xFFE3E4EB)
+
+val InputBackgroundCompose = Color(0x5CE9E9E9)
 

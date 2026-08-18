@@ -33,6 +33,13 @@ class CheckoutViewModel(
     private val _address = MutableStateFlow("Pulchowk, Lalitpur-20")
     val address = _address.asStateFlow()
 
+    private val _promoCode = MutableStateFlow("")
+    val promoCode = _promoCode.asStateFlow()
+
+    fun onPromoCodeChange(newPromoCode: String) {
+        _promoCode.value = newPromoCode
+    }
+
     fun initializeUser() {
         viewModelScope.launch {
             val firebase = app.auth.currentUser ?: return@launch
@@ -73,7 +80,7 @@ class CheckoutViewModel(
         }
     }
 
-    suspend fun getProductQuantityMap(cartId: Int){
+    suspend fun getProductQuantityMap(cartId: Int) {
         _productQuantityMap.value = cartRepository.getCartProductWithQuantity(cartId)
     }
 }

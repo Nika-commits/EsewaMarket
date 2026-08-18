@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,10 +27,16 @@ import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
 import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +59,7 @@ import com.example.xml_app.utils.styles.TextDark200
 import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.components.AppButton
+import com.example.xml_app.utils.styles.components.AppTextField
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.CheckoutViewModel
@@ -73,12 +81,20 @@ class CheckoutActivity : AppCompatActivity() {
             val totalPrice = products.sumOf { product ->
                 product.price * (productQuantityMap[product.id] ?: 1)
             }
+            val sheetState = rememberModalBottomSheetState()
+            var showBottomSheet by remember { mutableStateOf(false) }
+            val scope = rememberCoroutineScope()
+            val promoCode by viewModel.promoCode.collectAsStateWithLifecycle()
+
             Scaffold(
                 modifier = Modifier
                     .styleable(null, activityStyle),
                 topBar = {
                     AppTopBar(
-                        "Checkout"
+                        "Checkout",
+                        onBackClick = {
+                            onBackPressedDispatcher.onBackPressed()
+                        }
                     )
                 },
                 bottomBar = {
@@ -100,7 +116,7 @@ class CheckoutActivity : AppCompatActivity() {
 
                     item {
                         Text(
-                            "Order Summary",
+                            "Order Summary  (${products.size})",
                             modifier = Modifier
                                 .padding(top = 12.dp, bottom = 8.dp),
                             fontFamily = SourceSansPro,
@@ -122,7 +138,9 @@ class CheckoutActivity : AppCompatActivity() {
                             modifier = Modifier.padding(vertical = 16.dp),
                             variant = ButtonVariant.OUTLINE,
                             text = "HAVE A PROMOCODE?",
-                            onClick = {}
+                            onClick = {
+                                showBottomSheet = true
+                            }
                         )
                     }
 
@@ -143,7 +161,74 @@ class CheckoutActivity : AppCompatActivity() {
                     }
                 }
 
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            showBottomSheet = false
+                        },
+                        sheetState = sheetState,
+                        containerColor = Surface,
+                        dragHandle = null
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            Text(
+                                "Promocode",
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp,
+                                letterSpacing = 0.15.sp,
+                                color = TextDark400
+                                )
 
+                            Column(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+
+                                Text(
+                                    "Enter Promocode",
+                                    fontFamily = SourceSansPro,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp,
+                                    letterSpacing = 0.4.sp,
+                                    color = TextDark300
+                                )
+
+                                AppTextField(
+                                    value = promoCode,
+                                    onValueChange = { viewModel.onPromoCodeChange(it) },
+                                    placeholder = "Promocode"
+                                )
+
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                AppButton(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f),
+                                    text = "Cancel",
+                                    variant = ButtonVariant.SECONDARY,
+                                    onClick = {},
+                                )
+
+                                AppButton(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f),
+                                    text = "APPLY",
+                                    variant = ButtonVariant.PRIMARY,
+                                    onClick = {}
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
