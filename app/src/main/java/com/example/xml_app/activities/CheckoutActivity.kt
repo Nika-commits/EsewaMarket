@@ -390,7 +390,13 @@ fun PaymentOptionsList() {
                     onClick = {}
                 )
                 Text(
-                    "Cash on Delivery",
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = "Cash on Delivery",
+                    fontFamily = SourceSansPro,
+                    color = TextDark300,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.1.sp
                 )
             }
             AppButton(
@@ -421,6 +427,12 @@ fun PaymentOptionsList() {
                 )
                 Text(
                     "Pay with eSewa",
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    fontFamily = SourceSansPro,
+                    color = TextDark300,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.1.sp
                 )
             }
             AppButton(
