@@ -5,6 +5,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
@@ -12,6 +13,7 @@ import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.style.pressed
 import androidx.compose.foundation.style.rememberUpdatedStyleState
 import androidx.compose.foundation.style.styleable
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.xml_app.R
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.styles.EsewaRed
+import com.example.xml_app.utils.styles.Light
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
@@ -47,6 +50,7 @@ fun AppButton(
     text: String? = null,
     icon: Int? = null,
     onClick: () -> Unit,
+    isLoading: Boolean = false
 ) {
 
     val density = LocalDensity.current
@@ -103,7 +107,7 @@ fun AppButton(
     Box(
         modifier = modifier
             .clickable(
-                enabled = true,
+                enabled = !isLoading,
                 interactionSource = interactionSource,
                 indication = null,
 
@@ -112,6 +116,14 @@ fun AppButton(
             .styleable(styeState, style),
         contentAlignment = Alignment.Center
     ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                color = Light,
+                trackColor = Surface
+            )
+            return@Box
+        }
         if (text != null) {
             Text(
                 text,
@@ -145,6 +157,7 @@ fun Preview() {
     AppButton(
         icon = R.drawable.ic_add_cart,
         variant = ButtonVariant.ICON,
-        onClick = {}
+        onClick = {},
+        isLoading = true
     )
 }

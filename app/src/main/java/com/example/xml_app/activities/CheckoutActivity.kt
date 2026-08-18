@@ -87,6 +87,8 @@ class CheckoutActivity : AppCompatActivity() {
             var showBottomSheet by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
             val promoCode by viewModel.promoCode.collectAsStateWithLifecycle()
+            val promoCodeResult by viewModel.promoCodeResult.collectAsStateWithLifecycle()
+            val isPromoCodeChecking by viewModel.isCheckingPromoCode.collectAsStateWithLifecycle()
 
             Scaffold(
                 modifier = Modifier
@@ -203,7 +205,9 @@ class CheckoutActivity : AppCompatActivity() {
                                 AppTextField(
                                     value = promoCode,
                                     onValueChange = { viewModel.onPromoCodeChange(it) },
-                                    placeholder = "Promocode"
+                                    placeholder = "Promocode",
+                                    isError = promoCodeResult == false,
+                                    errorMessage = "Invalid Promo code. Please try again."
                                 )
 
                             }
@@ -218,7 +222,7 @@ class CheckoutActivity : AppCompatActivity() {
                                     variant = ButtonVariant.SECONDARY,
                                     onClick = {
                                         scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                            if(!sheetState.isVisible){
+                                            if (!sheetState.isVisible) {
                                                 showBottomSheet = false
                                             }
                                         }
@@ -231,7 +235,8 @@ class CheckoutActivity : AppCompatActivity() {
                                         .weight(1f),
                                     text = "APPLY",
                                     variant = ButtonVariant.PRIMARY,
-                                    onClick = {}
+                                    onClick = { viewModel.checkPromoCodeValidity() },
+                                    isLoading = isPromoCodeChecking
                                 )
                             }
                         }

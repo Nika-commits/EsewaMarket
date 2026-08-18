@@ -24,4 +24,5 @@ class ProductRepository {
 
     suspend fun getProduct(id: Int) = RetrofitInstance.productApi.getProduct(id)
     suspend fun getPopularChips() = RetrofitInstance.productApi.getPopularChips()
+    suspend fun checkPromoCode(promoCode: String) = RetrofitInstance.productApi.checkPromoCode(promoCode)
 }

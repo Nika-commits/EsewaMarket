@@ -32,9 +32,12 @@ class CheckoutViewModel(
     private val productRepository = ProductRepository()
     private val _address = MutableStateFlow("Pulchowk, Lalitpur-20")
     val address = _address.asStateFlow()
-
+    private val _promoCodeResult = MutableStateFlow<Boolean?>(null)
+    val promoCodeResult = _promoCodeResult.asStateFlow()
     private val _promoCode = MutableStateFlow("")
     val promoCode = _promoCode.asStateFlow()
+    private val _isCheckingPromoCode = MutableStateFlow(false)
+    val isCheckingPromoCode = _isCheckingPromoCode.asStateFlow()
 
     fun onPromoCodeChange(newPromoCode: String) {
         _promoCode.value = newPromoCode
@@ -82,5 +85,19 @@ class CheckoutViewModel(
 
     suspend fun getProductQuantityMap(cartId: Int) {
         _productQuantityMap.value = cartRepository.getCartProductWithQuantity(cartId)
+    }
+
+    fun checkPromoCodeValidity() {
+        viewModelScope.launch {
+            _isCheckingPromoCode.value = true
+            try {
+                val response = productRepository.checkPromoCode(_promoCode.value)
+                _promoCodeResult.value = response.isSuccessful
+            } catch (e: Exception) {
+                Log.e("Checkout", e.message ?: "Error Occurred Checking PromoCode")
+            } finally {
+                _isCheckingPromoCode.value = false
+            }
+        }
     }
 }
