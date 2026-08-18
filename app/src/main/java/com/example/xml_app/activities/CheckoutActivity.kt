@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +49,7 @@ import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark200
+import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppTopBar
@@ -133,6 +136,10 @@ class CheckoutActivity : AppCompatActivity() {
                             fontSize = 14.sp,
                             letterSpacing = 0.25.sp
                         )
+                    }
+
+                    item {
+                        PaymentOptionsList()
                     }
                 }
 
@@ -351,8 +358,85 @@ fun BottomBar(total: Float) {
 
 }
 
+@Composable
+fun PaymentOptionsList() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Surface),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = true,
+                    onClick = {
+
+                    }
+                )
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+
+            ) {
+                AppButton(
+                    variant = ButtonVariant.GHOST,
+                    icon = R.drawable.ic_dailybuybonus,
+                    onClick = {}
+                )
+                Text(
+                    "Cash on Delivery",
+                )
+            }
+            AppButton(
+                variant = ButtonVariant.GHOST,
+                icon = R.drawable.ic_right_arrow,
+                onClick = {}
+            )
+
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = true,
+                    onClick = {}
+                )
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+
+            ) {
+                AppButton(
+                    variant = ButtonVariant.GHOST,
+                    icon = R.drawable.ic_esewa_grey,
+                    tint = Color.Unspecified,
+                    onClick = {}
+                )
+                Text(
+                    "Pay with eSewa",
+                )
+            }
+            AppButton(
+                variant = ButtonVariant.GHOST,
+                icon = R.drawable.ic_right_arrow,
+                tint = TextDark300,
+                onClick = {}
+            )
+
+        }
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun Prev() {
-    BottomBar(19500.00f)
+    PaymentOptionsList()
 }

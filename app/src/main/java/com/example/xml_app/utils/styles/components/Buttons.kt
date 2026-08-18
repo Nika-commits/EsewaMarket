@@ -35,7 +35,7 @@ import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark300
 
 enum class ButtonVariant {
-    PRIMARY, SECONDARY, DESTRUCTIVE, OUTLINE, ICON, ROUNDED
+    PRIMARY, SECONDARY, DESTRUCTIVE, OUTLINE, ICON, ROUNDED, GHOST
 }
 
 @OptIn(ExperimentalFoundationStyleApi::class)
@@ -43,6 +43,7 @@ enum class ButtonVariant {
 fun AppButton(
     modifier: Modifier = Modifier,
     variant: ButtonVariant,
+    tint: Color? = null,
     text: String? = null,
     icon: Int? = null,
     onClick: () -> Unit,
@@ -57,6 +58,7 @@ fun AppButton(
                 ButtonVariant.DESTRUCTIVE -> EsewaRed
                 ButtonVariant.ICON -> PrimaryGreenTransparent
                 ButtonVariant.OUTLINE -> OffWhiteBackground
+                ButtonVariant.GHOST -> Color.Transparent
             }
         )
         shape(
@@ -126,8 +128,9 @@ fun AppButton(
             Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
-                tint = when (variant) {
+                tint = tint ?: when (variant) {
                     ButtonVariant.ICON -> PrimaryGreen
+                    ButtonVariant.GHOST -> Color.Unspecified
                     else -> Surface
                 }
             )
