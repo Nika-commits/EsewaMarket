@@ -11,6 +11,7 @@ import com.example.xml_app.utils.dto.CreateUserRequest
 import com.example.xml_app.utils.firebase.AuthRepository
 import com.example.xml_app.utils.formstates.RegisterFormState
 import com.example.xml_app.utils.validation.RegisterValidation
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ class RegisterViewModel(
 ) : AndroidViewModel(application) {
     private val validate: RegisterValidation = RegisterValidation()
     private val app = getApplication<CustomApplicationContext>()
+    private val db = FirebaseFirestore.getInstance()
     private val auth = app.auth
     private val repository = UserRepository(app.database.userDao())
     private val _formState = MutableStateFlow(RegisterFormState())
@@ -30,24 +32,28 @@ class RegisterViewModel(
     private val _result = MutableStateFlow<Boolean?>(null)
     val result = _result.asStateFlow()
     fun register(
+        fullName: String,
         username: String,
         email: String,
-        password: String
+        password: String,
     ) {
+        val fullNameResult = validate.validateFullName(fullName)
         val usernameResult = validate.validateUsername(username)
         val emailResult = validate.validateEmail(email)
         val passwordResult = validate.validatePassword(password)
 
         _formState.value = RegisterFormState(
+            fullName = fullName,
             username = username,
             email = email,
             password = password,
+            fullNameError = fullNameResult.errorMessage,
             usernameError = usernameResult.errorMessage,
             emailError = emailResult.errorMessage,
             passwordError = passwordResult.errorMessage
         )
 
-        if (!usernameResult.successful || !emailResult.successful || !passwordResult.successful) return
+        if (!usernameResult.successful || !emailResult.successful || !passwordResult.successful || !fullNameResult.successful) return
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
@@ -70,6 +76,10 @@ class RegisterViewModel(
                     fullName = "",
                     address = null,
                     phone = null
+                )
+                val FireStoreUser = hashMapOf(
+                    "username" to username,
+                    "full_name" to ""
                 )
                 repository.createUser(token, request)
                 _result.value = true

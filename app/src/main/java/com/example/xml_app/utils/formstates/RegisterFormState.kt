@@ -4,6 +4,9 @@ data class RegisterFormState(
     val username: String = "",
     val usernameError: String? = null,
 
+    val fullName: String = "",
+    val fullNameError: String? = null,
+
     val email: String = "",
     val emailError: String? = null,
 

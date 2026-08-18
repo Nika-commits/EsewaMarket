@@ -5,6 +5,16 @@ import com.example.xml_app.utils.dto.ValidationResult
 
 class RegisterValidation {
 
+    fun validateFullName(fullname: String): ValidationResult {
+        if (fullname.isBlank() || fullname.length < 3) {
+            return ValidationResult(
+                successful = false,
+                errorMessage = "Enter a longer name"
+            )
+        }
+        return ValidationResult(true)
+    }
+
     fun validateUsername(username: String): ValidationResult {
         if (username.isBlank()) {
             return ValidationResult(

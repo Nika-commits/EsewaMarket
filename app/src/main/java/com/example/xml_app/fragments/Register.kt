@@ -51,6 +51,7 @@ class Register : Fragment() {
 
     private fun setupRegisterButton() {
         binding.btnSignup.setOnClickListener {
+            val fullname = binding.etFullName.text?.toString().orEmpty()
             val username = binding.etUsername.text?.toString().orEmpty()
             val email = binding.etEmail.text?.toString().orEmpty()
             val password = binding.etPassword.text?.toString().orEmpty()
@@ -96,6 +97,7 @@ class Register : Fragment() {
                 Lifecycle.State.STARTED
             ) {
                 viewModel.formState.collect { state ->
+                    binding.tilFullName.error = state.fullNameError
                     binding.tilUsername.error = state.usernameError
                     binding.tilEmail.error = state.emailError
                     binding.tilPassword.error = state.passwordError

@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/offWhiteBackground">
+    android:background="@color/offWhiteBackground"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,11 +17,11 @@
             android:id="@+id/ivEsewaLogo"
             android:layout_width="200dp"
             android:layout_height="50dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="36dp"
             android:src="@drawable/ic_esewa"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <!-- Welcome section -->
@@ -30,11 +30,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:orientation="vertical"
             android:gravity="center_horizontal"
-            app:layout_constraintTop_toBottomOf="@id/ivEsewaLogo"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/ivEsewaLogo">
 
             <TextView
                 android:id="@+id/message"
@@ -43,7 +43,7 @@
                 android:fontFamily="@font/source_sans_semibold"
                 android:text="Create your account"
                 android:textColor="@color/lightGrey"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -64,20 +64,51 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="24dp"
+            android:background="@drawable/bg_surface_16"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/welcomeMessage"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/welcomeMessage">
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/source_sans_semibold"
+                android:text="FULL NAME"
+                android:textColor="@color/lightGrey"
+                android:textSize="12sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFullName"
+                style="@style/App.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:hintEnabled="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter your full name"
+                    android:inputType="text"
+                    android:textColor="@color/lightGrey"
+                    android:textColorHint="@color/textLight" />
+
+
+            </com.google.android.material.textfield.TextInputLayout>
             <!-- Username -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:fontFamily="@font/source_sans_semibold"
                 android:text="USERNAME"
                 android:textColor="@color/lightGrey"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilUsername"
@@ -107,7 +138,7 @@
                 android:fontFamily="@font/source_sans_semibold"
                 android:text="EMAIL"
                 android:textColor="@color/lightGrey"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilEmail"
@@ -137,7 +168,7 @@
                 android:fontFamily="@font/source_sans_semibold"
                 android:text="PASSWORD"
                 android:textColor="@color/lightGrey"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPassword"
@@ -145,9 +176,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                app:hintEnabled="false"
                 app:endIconMode="password_toggle"
-                app:endIconTint="@color/c8E90A6">
+                app:endIconTint="@color/c8E90A6"
+                app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
@@ -159,6 +190,39 @@
                     android:textColorHint="@color/textLight" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cbTermsAndCondition"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/source_sans_regular"
+                    android:text="I agree to eSewa Market "
+                    android:textColor="@color/textDark300"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/source_sans_semibold"
+                    android:text="Terms and Conditions"
+                    android:textColor="@color/primaryGreen"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
 
 
             <!-- Signup button / loader -->
@@ -196,9 +260,9 @@
             android:layout_marginTop="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/formContainer"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/formContainer">
 
             <View
                 android:layout_width="0dp"
@@ -235,10 +299,10 @@
             android:layout_marginBottom="24dp"
             android:text="Continue With Google"
             app:icon="@drawable/ic_google"
-            app:layout_constraintTop_toBottomOf="@id/separator"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separator" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
