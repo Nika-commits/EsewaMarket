@@ -73,15 +73,24 @@ class RegisterViewModel(
 
                 val request = CreateUserRequest(
                     username = username,
-                    fullName = "",
+                    fullName = fullName,
                     address = null,
                     phone = null
                 )
-                val FireStoreUser = hashMapOf(
+                val fireStoreUser = hashMapOf(
                     "username" to username,
-                    "full_name" to ""
+                    "full_name" to fullName,
+                    "address" to "",
+                    "phone" to ""
                 )
                 repository.createUser(token, request)
+                db.collection("users")
+                    .add(fireStoreUser)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d("Auth", "Id: ${documentReference.id}")
+                    }.addOnFailureListener { e ->
+                        Log.d("Auth", e.message ?: "Firestore Failed")
+                    }
                 _result.value = true
                 return@launch
             } catch (e: Exception) {

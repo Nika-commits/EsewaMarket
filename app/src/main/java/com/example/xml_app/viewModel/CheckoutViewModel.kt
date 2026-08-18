@@ -4,15 +4,16 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.xml_app.entities.User
 import com.example.xml_app.models.Product
 import com.example.xml_app.repository.CartRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
+import com.example.xml_app.utils.CheckoutAuthState
 import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import okio.IOException
 import retrofit2.HttpException
 
@@ -21,7 +22,8 @@ class CheckoutViewModel(
 ) : AndroidViewModel(application) {
     private val app = getApplication<CustomApplicationContext>()
     private val database = app.database
-    private val _user = MutableStateFlow<User?>(null)
+    private val _authState = MutableStateFlow<CheckoutAuthState>(CheckoutAuthState.Loading)
+    val authState = _authState.asStateFlow()
     private val _cartIds = MutableStateFlow<List<Int>>(emptyList())
     private val _productQuantityMap = MutableStateFlow<Map<Int, Int>>(emptyMap())
     val productQuantityMap = _productQuantityMap.asStateFlow()
@@ -45,10 +47,29 @@ class CheckoutViewModel(
 
     fun initializeUser() {
         viewModelScope.launch {
-            val firebase = app.auth.currentUser ?: return@launch
-            val localUser = userRepository.getLocalUser(firebase.uid) ?: return@launch
-            _user.value = localUser
-            getCartIds(localUser.uid)
+            val firebase = app.auth.currentUser
+            if (firebase == null) {
+                _authState.value = CheckoutAuthState.Unauthorized
+                return@launch
+            }
+            try {
+                val idToken = firebase.getIdToken(false).await().token
+                if (idToken == null) {
+                    _authState.value = CheckoutAuthState.Unauthorized
+                    return@launch
+                }
+
+                val serverUser = userRepository.getCurrentUser(idToken)
+                if (serverUser == null) {
+                    _authState.value = CheckoutAuthState.Unauthorized
+                    return@launch
+                }
+                _authState.value = CheckoutAuthState.Authorized(serverUser)
+                getCartIds(serverUser.id)
+            } catch (e: Exception) {
+                Log.e("Checkout", e.message ?: "Error Occurred during Getting User")
+                _authState.value = CheckoutAuthState.Unauthorized
+            }
         }
     }
 
@@ -100,4 +121,5 @@ class CheckoutViewModel(
             }
         }
     }
+
 }

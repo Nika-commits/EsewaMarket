@@ -22,15 +22,13 @@ class UserRepository(
         return remoteUser
     }
 
-    suspend fun getCurrentUser(token: String): UserResponse {
+    suspend fun getCurrentUser(token: String): UserResponse? {
         val response = RetrofitInstance.userApi.getCurrentUser(authorization = "Bearer $token")
-        if (!response.isSuccessful) {
-            throw Exception("${response.code()}")
+        return if (!response.isSuccessful) {
+            null
+        } else {
+            response.body()
         }
-
-        val remoteUser = response.body() ?: throw Exception("Empty Response")
-        saveUserLocally(remoteUser)
-        return remoteUser
     }
 
     private suspend fun saveUserLocally(user: UserResponse) {
