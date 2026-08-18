@@ -56,8 +56,12 @@ class Register : Fragment() {
             val email = binding.etEmail.text?.toString().orEmpty()
             val password = binding.etPassword.text?.toString().orEmpty()
 
-            viewModel.register(username, email, password)
-
+            viewModel.register(
+                fullname,
+                username,
+                email,
+                password
+            )
         }
     }
 

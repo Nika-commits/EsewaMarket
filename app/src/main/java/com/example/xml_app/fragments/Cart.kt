@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -16,11 +17,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
+import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.CheckoutActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
+import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.viewModel.CartViewModel
 import kotlinx.coroutines.launch
 
@@ -142,6 +145,25 @@ class Cart : Fragment() {
         }
 
         binding.btnCheckout.setOnClickListener {
+            val bottomNavigation =
+                requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
+            if (viewModel.user.value == null) {
+                CustomSnackbar.show(
+                    view = binding.root,
+                    context = requireContext(),
+                    text = "Log in to Checkout",
+                    anchorView = bottomNavigation,
+                    actionText = "LOGIN",
+                    action = {
+                        Intent(requireContext(), AuthActivity::class.java).apply {
+                            putExtra(AuthActivity.DESTINATION, AuthActivity.LOGIN)
+                        }.also {
+                            startActivity(it)
+                        }
+                    }
+                )
+                return@setOnClickListener
+            }
             Intent(requireContext(), CheckoutActivity::class.java).also {
                 startActivity(it)
             }
