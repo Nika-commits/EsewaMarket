@@ -26,6 +26,7 @@ import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
 import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,7 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,6 +111,11 @@ class CheckoutActivity : AppCompatActivity() {
                     val promoCode by viewModel.promoCode.collectAsStateWithLifecycle()
                     val promoCodeResult by viewModel.promoCodeResult.collectAsStateWithLifecycle()
                     val isPromoCodeChecking by viewModel.isCheckingPromoCode.collectAsStateWithLifecycle()
+
+                    var showNoAddressBottomSheet by remember { mutableStateOf(false) }
+                    val noAddressSheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = true
+                    )
 
                     Scaffold(
                         modifier = Modifier
@@ -180,7 +188,18 @@ class CheckoutActivity : AppCompatActivity() {
                             }
 
                             item {
-                                PaymentOptionsList()
+                                PaymentOptionsList(
+                                    onCashOnDelivery = {
+                                        if(user.address == null){
+                                            showNoAddressBottomSheet = true
+                                        }
+                                    },
+                                    onPayWithEsewa = {
+                                        if(user.address== null){
+                                            showNoAddressBottomSheet = true
+                                        }
+                                    }
+                                )
                             }
                         }
 
@@ -193,6 +212,7 @@ class CheckoutActivity : AppCompatActivity() {
                                 containerColor = Surface,
                                 dragHandle = null,
                             ) {
+
                                 Column(
                                     modifier = Modifier
                                         .padding(16.dp),
@@ -260,6 +280,29 @@ class CheckoutActivity : AppCompatActivity() {
                                         )
                                     }
                                 }
+                            }
+                        }
+
+                        if (showNoAddressBottomSheet) {
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    showNoAddressBottomSheet = false
+                                },
+                                sheetState = noAddressSheetState,
+                                containerColor = Surface,
+                                dragHandle = null
+                            ) {
+                                SetAddressSheet(
+                                    onSetAddress = {},
+                                    onCancel = {
+                                        scope.launch { noAddressSheetState.hide() }
+                                            .invokeOnCompletion {
+                                                if (!noAddressSheetState.isVisible) {
+                                                    showNoAddressBottomSheet = false
+                                                }
+                                            }
+                                    }
+                                )
                             }
                         }
                     }
@@ -479,7 +522,10 @@ fun BottomBar(total: Float) {
 }
 
 @Composable
-fun PaymentOptionsList() {
+fun PaymentOptionsList(
+    onCashOnDelivery: () -> Unit,
+    onPayWithEsewa: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -495,7 +541,7 @@ fun PaymentOptionsList() {
                 .clickable(
                     enabled = true,
                     onClick = {
-
+                        onCashOnDelivery()
                     }
                 )
         ) {
@@ -531,11 +577,14 @@ fun PaymentOptionsList() {
                 .fillMaxWidth()
                 .clickable(
                     enabled = true,
-                    onClick = {}
+                    onClick = {
+                        onPayWithEsewa()
+                    }
                 )
         ) {
             Row(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f),
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
@@ -566,9 +615,92 @@ fun PaymentOptionsList() {
     }
 }
 
+@Composable
+fun SafetyBadge() {
+    Row(
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_check_shield),
+            contentDescription = null
+        )
+
+    }
+}
+
+@Composable
+fun SetAddressSheet(
+    onSetAddress: () -> Unit,
+    onCancel: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.img_location_wrapper),
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.CenterHorizontally),
+        )
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "No address added yet !",
+                textAlign = TextAlign.Center,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
+                letterSpacing = 0.15.sp,
+                color = TextDark400
+            )
+            Text(
+                "You have not added any Shopping Address.",
+                textAlign = TextAlign.Center,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Normal,
+                letterSpacing = 0.25.sp,
+                color = TextDark300
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            AppButton(
+                modifier = Modifier.fillMaxWidth(),
+                variant = ButtonVariant.PRIMARY,
+                text = "SET ADDRESS",
+                onClick = {
+                    onSetAddress()
+                }
+            )
+            AppButton(
+                modifier = Modifier.fillMaxWidth(),
+                variant = ButtonVariant.GHOST,
+                text = "CANCEL",
+                onClick = {
+                    onCancel()
+                }
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
-fun Prev() {
-    PaymentOptionsList()
+fun AddressSheetPreview() {
+    SetAddressSheet(
+        onSetAddress = {},
+        onCancel = {}
+    )
 }

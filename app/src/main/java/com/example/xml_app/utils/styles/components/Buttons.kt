@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,7 +52,6 @@ fun AppButton(
     isLoading: Boolean = false
 ) {
 
-    val density = LocalDensity.current
     val style = Style {
         background(
             when (variant) {
@@ -101,7 +99,7 @@ fun AppButton(
     }
 
     val interactionSource = remember { MutableInteractionSource() }
-    val styeState = rememberUpdatedStyleState(interactionSource) {
+    val styleState = rememberUpdatedStyleState(interactionSource) {
         it.isEnabled = true
     }
     Box(
@@ -113,7 +111,7 @@ fun AppButton(
 
                 onClick = onClick
             )
-            .styleable(styeState, style),
+            .styleable(styleState, style),
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
@@ -131,6 +129,7 @@ fun AppButton(
                 fontWeight = FontWeight.Medium,
                 color = when (variant) {
                     ButtonVariant.OUTLINE -> PrimaryGreen
+                    ButtonVariant.GHOST -> TextDark300
                     else -> Color.White
                 },
                 letterSpacing = 1.sp
@@ -151,13 +150,12 @@ fun AppButton(
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun Preview() {
+fun Previews() {
     AppButton(
-        icon = R.drawable.ic_add_cart,
-        variant = ButtonVariant.ICON,
+        variant = ButtonVariant.GHOST,
         onClick = {},
-        isLoading = true
+        text="CANCEL",
     )
 }

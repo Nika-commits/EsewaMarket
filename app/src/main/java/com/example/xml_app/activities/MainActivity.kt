@@ -177,7 +177,6 @@ class MainActivity : AppCompatActivity() {
 
             if (isSelected) {
                 tab.rootLayout.setBackgroundResource(R.drawable.bg_selected_tab)
-//                animateSelectedTab(tab.root)
             } else {
                 tab.rootLayout.setBackgroundColor(getColor(android.R.color.transparent))
                 tab.root.animate().cancel()
@@ -188,22 +187,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun animateSelectedTab(view: View) {
-        view.animate().cancel()
-        view.scaleY = 0.95f
-        view.scaleX = 0.95f
-//        view.alpha = 0.75f
-
-        view.animate()
-            .scaleX(1f)
-            .scaleY(1f)
-            .alpha(1f)
-            .setDuration(300)
-//            .setInterpolator(
-//                android.view.animation.OvershootInterpolator(1.4f)
-//            )
-            .start()
-    }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (ev?.action == MotionEvent.ACTION_DOWN) {

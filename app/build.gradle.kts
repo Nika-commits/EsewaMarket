@@ -129,6 +129,10 @@ dependencies {
     ksp("androidx.room3:room3-compiler:$roomVersion")
 
 
+    // Google Maps SDK
+
+    implementation("com.google.maps.android:maps-compose:8.4.0")
+
     // UI
 
     implementation("androidx.recyclerview:recyclerview:1.4.0")
