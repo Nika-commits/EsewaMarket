@@ -26,8 +26,10 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.Marker
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import kotlinx.coroutines.tasks.await
 
@@ -51,6 +53,7 @@ class MapsActivity : AppCompatActivity() {
     }
 
 
+    @OptIn(MapboxExperimental::class)
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,8 +117,13 @@ class MapsActivity : AppCompatActivity() {
             ) { innerPadding ->
                 MapboxMap(
                     modifier = Modifier.padding(innerPadding),
-                    mapViewportState = mapViewPortState
+                    mapViewportState = mapViewPortState,
                 ) {
+                    userPoint?.let {
+                        Marker(
+                            point = it
+                        )
+                    }
 
                 }
 
