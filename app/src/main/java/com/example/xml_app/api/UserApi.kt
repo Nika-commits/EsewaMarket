@@ -9,7 +9,6 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface UserApi {
-
     @POST("api/user")
     suspend fun createUser(
         @Header("Authorization") authorization: String,

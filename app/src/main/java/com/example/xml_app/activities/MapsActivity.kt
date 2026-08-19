@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.example.xml_app.utils.styles.PrimaryGreen
+import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.viewModel.MapsViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -29,7 +31,7 @@ import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
-import com.mapbox.maps.extension.compose.annotation.Marker
+import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import kotlinx.coroutines.tasks.await
 
@@ -119,10 +121,14 @@ class MapsActivity : AppCompatActivity() {
                     modifier = Modifier.padding(innerPadding),
                     mapViewportState = mapViewPortState,
                 ) {
+                    var isMarkerSelected by remember { mutableStateOf(false) }
                     userPoint?.let {
-                        Marker(
-                            point = it
-                        )
+                        CircleAnnotation(it) {
+                            circleRadius = 8.0
+                            circleColor = PrimaryGreen
+                            circleStrokeWidth = 6.0
+                            circleStrokeColor = PrimaryGreenTransparent
+                        }
                     }
 
                 }

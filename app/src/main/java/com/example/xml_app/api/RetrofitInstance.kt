@@ -21,4 +21,8 @@ object RetrofitInstance {
     val userApi: UserApi by lazy {
         retrofit.create(UserApi::class.java)
     }
+
+    val addressApi: MapboxApi by lazy {
+        retrofit.create(MapboxApi::class.java)
+    }
 }
