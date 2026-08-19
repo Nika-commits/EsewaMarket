@@ -14,6 +14,13 @@ object RetrofitInstance {
             .build()
     }
 
+    private val mapboxRetrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://api.mapbox.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
     val productApi: ProductApi by lazy {
         retrofit.create(ProductApi::class.java)
     }
@@ -23,6 +30,6 @@ object RetrofitInstance {
     }
 
     val addressApi: MapboxApi by lazy {
-        retrofit.create(MapboxApi::class.java)
+        mapboxRetrofit.create(MapboxApi::class.java)
     }
 }
