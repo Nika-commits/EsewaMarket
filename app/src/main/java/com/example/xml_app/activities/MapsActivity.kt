@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -106,7 +107,6 @@ class MapsActivity : AppCompatActivity() {
                             .bearing(0.0)
                             .build(),
                         animationOptions = MapAnimationOptions.Builder()
-                            .startDelay(100)
                             .duration(3000)
                             .build()
                     )
@@ -120,6 +120,20 @@ class MapsActivity : AppCompatActivity() {
                 MapboxMap(
                     modifier = Modifier.padding(innerPadding),
                     mapViewportState = mapViewPortState,
+                    scaleBar = {
+                        ScaleBar(
+                            modifier = Modifier.statusBarsPadding()
+                        )
+                    },
+                    compass = {
+                        Compass(
+                            modifier = Modifier.statusBarsPadding()
+                        )
+                    },
+                    onMapClickListener = { point ->
+                        userPoint = point
+                        true
+                    }
                 ) {
                     var isMarkerSelected by remember { mutableStateOf(false) }
                     userPoint?.let {
