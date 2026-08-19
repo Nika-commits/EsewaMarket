@@ -9,6 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
@@ -17,13 +19,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import com.example.xml_app.viewModel.MapsViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import kotlinx.coroutines.tasks.await
 
 class MapsActivity : AppCompatActivity() {
@@ -50,6 +55,8 @@ class MapsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
+            true
 
         val permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -86,15 +93,24 @@ class MapsActivity : AppCompatActivity() {
 
             LaunchedEffect(userPoint) {
                 userPoint?.let { point ->
-                    mapViewPortState.setCameraOptions {
-                        center(point)
-                        zoom(16.0)
-                        pitch(0.0)
-                        bearing(0.0)
-                    }
+                    mapViewPortState.flyTo(
+                        cameraOptions = CameraOptions.Builder()
+                            .center(point)
+                            .zoom(16.0)
+                            .pitch(0.0)
+                            .bearing(0.0)
+                            .build(),
+                        animationOptions = MapAnimationOptions.Builder()
+                            .startDelay(100)
+                            .duration(3000)
+                            .build()
+                    )
                 }
             }
             Scaffold(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentWindowInsets = WindowInsets(0, 0, 0, 0)
             ) { innerPadding ->
                 MapboxMap(
                     modifier = Modifier.padding(innerPadding),
