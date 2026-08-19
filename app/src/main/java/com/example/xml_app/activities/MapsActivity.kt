@@ -9,6 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,11 +21,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.example.xml_app.R
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
+import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.components.AppButton
+import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.MapsViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -34,6 +44,7 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class MapsActivity : AppCompatActivity() {
@@ -77,6 +88,7 @@ class MapsActivity : AppCompatActivity() {
             }
             var userPoint by remember { mutableStateOf<Point?>(null) }
             val mapViewPortState = rememberMapViewportState()
+            val scope = rememberCoroutineScope()
 
             LaunchedEffect(locationPermissionsGranted) {
                 if (locationPermissionsGranted) {
@@ -107,7 +119,7 @@ class MapsActivity : AppCompatActivity() {
                             .bearing(0.0)
                             .build(),
                         animationOptions = MapAnimationOptions.Builder()
-                            .duration(3000)
+                            .duration(2000)
                             .build()
                     )
                 }
@@ -117,36 +129,73 @@ class MapsActivity : AppCompatActivity() {
                     .fillMaxSize(),
                 contentWindowInsets = WindowInsets(0, 0, 0, 0)
             ) { innerPadding ->
-                MapboxMap(
-                    modifier = Modifier.padding(innerPadding),
-                    mapViewportState = mapViewPortState,
-                    scaleBar = {
-                        ScaleBar(
-                            modifier = Modifier.statusBarsPadding()
-                        )
-                    },
-                    compass = {
-                        Compass(
-                            modifier = Modifier.statusBarsPadding()
-                        )
-                    },
-                    onMapClickListener = { point ->
-                        userPoint = point
-                        true
-                    }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
                 ) {
-                    var isMarkerSelected by remember { mutableStateOf(false) }
-                    userPoint?.let {
-                        CircleAnnotation(it) {
-                            circleRadius = 8.0
-                            circleColor = PrimaryGreen
-                            circleStrokeWidth = 6.0
-                            circleStrokeColor = PrimaryGreenTransparent
+
+                    MapboxMap(
+                        modifier = Modifier.fillMaxSize(),
+                        mapViewportState = mapViewPortState,
+                        scaleBar = {
+                            ScaleBar(
+                                modifier = Modifier.statusBarsPadding()
+                            )
+                        },
+                        compass = {
+                            Compass(
+                                modifier = Modifier.statusBarsPadding()
+                            )
+                        },
+                        onMapClickListener = { point ->
+                            userPoint = point
+                            Log.d("MAP", "$userPoint")
+                            true
                         }
+                    ) {
+                        userPoint?.let {
+                            CircleAnnotation(it) {
+                                circleRadius = 8.0
+                                circleColor = PrimaryGreen
+                                circleStrokeWidth = 6.0
+                                circleStrokeColor = PrimaryGreenTransparent
+                            }
+
+                        }
+
                     }
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(horizontal = 24.dp, vertical = 48.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        AppButton(
+                            variant = ButtonVariant.PRIMARY,
+                            icon = R.drawable.ic_gps,
+                            tint = Surface,
+                            onClick = {
+                                scope.launch {
+                                    if (locationPermissionsGranted) {
+                                        val result = location.getCurrentLocation(
+                                            Priority.PRIORITY_HIGH_ACCURACY,
+                                            CancellationTokenSource().token
+                                        ).await()
 
+                                        result?.let {
+                                            userPoint = Point.fromLngLat(
+                                                it.longitude,
+                                                it.latitude
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
-
             }
         }
     }
