@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".utils.CustomApplicationContext"
@@ -40,6 +42,10 @@
 
         <activity
             android:name=".activities.CheckoutActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activities.MapsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>

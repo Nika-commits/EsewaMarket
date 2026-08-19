@@ -1,5 +1,6 @@
 package com.example.xml_app.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -46,7 +47,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,6 +55,7 @@ import com.example.xml_app.R
 import com.example.xml_app.models.Product
 import com.example.xml_app.utils.CheckoutAuthState
 import com.example.xml_app.utils.SourceSansPro
+import com.example.xml_app.utils.dto.UserResponse
 import com.example.xml_app.utils.styles.LightCharcoal
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
@@ -76,9 +77,7 @@ class CheckoutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.initializeUser()
-        val activityStyle = Style {
-            background(OffWhiteBackground)
-        }
+
         setContent {
             val authState by viewModel.authState.collectAsStateWithLifecycle()
             when (authState) {
@@ -98,218 +97,246 @@ class CheckoutActivity : AppCompatActivity() {
 
                 is CheckoutAuthState.Authorized -> {
                     val user = (authState as CheckoutAuthState.Authorized).user
-                    val products by viewModel.products.collectAsStateWithLifecycle()
-                    val productQuantityMap by viewModel.productQuantityMap.collectAsStateWithLifecycle()
-                    val totalPrice = products.sumOf { product ->
-                        product.price * (productQuantityMap[product.id] ?: 1)
-                    }
-                    val sheetState = rememberModalBottomSheetState(
-                        skipPartiallyExpanded = true
-                    )
-                    var showBottomSheet by remember { mutableStateOf(false) }
-                    val scope = rememberCoroutineScope()
-                    val promoCode by viewModel.promoCode.collectAsStateWithLifecycle()
-                    val promoCodeResult by viewModel.promoCodeResult.collectAsStateWithLifecycle()
-                    val isPromoCodeChecking by viewModel.isCheckingPromoCode.collectAsStateWithLifecycle()
-
-                    var showNoAddressBottomSheet by remember { mutableStateOf(false) }
-                    val noAddressSheetState = rememberModalBottomSheetState(
-                        skipPartiallyExpanded = true
-                    )
-
-                    Scaffold(
-                        modifier = Modifier
-                            .styleable(null, activityStyle),
-                        topBar = {
-                            AppTopBar(
-                                "Checkout",
-                                onBackClick = {
-                                    onBackPressedDispatcher.onBackPressed()
-                                }
-                            )
+                    CheckoutScreen(
+                        viewModel = viewModel,
+                        user = user,
+                        onBackClick = {
+                            onBackPressedDispatcher.onBackPressed()
                         },
-                        bottomBar = {
-                            BottomBar(totalPrice.toFloat())
-                        }
-                    ) { innerPadding ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(OffWhiteBackground)
-                                .padding(innerPadding)
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            item {
-                                DeliveryAddress(
-                                    address = user.address
-                                )
-                            }
-
-                            item {
-                                Text(
-                                    "Order Summary  (${products.size})",
-                                    modifier = Modifier
-                                        .padding(top = 12.dp, bottom = 8.dp),
-                                    fontFamily = SourceSansPro,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
-                                    letterSpacing = 0.25.sp
-                                )
-                            }
-                            items(products) { product ->
-                                val count = productQuantityMap[product.id] ?: return@items
-                                OrderSummaryItem(
-                                    product = product,
-                                    count = count
-                                )
-                            }
-
-                            item {
-                                AppButton(
-                                    modifier = Modifier.padding(vertical = 16.dp),
-                                    variant = ButtonVariant.OUTLINE,
-                                    text = "HAVE A PROMOCODE?",
-                                    onClick = {
-                                        showBottomSheet = true
-                                    }
-                                )
-                            }
-
-                            item {
-                                Text(
-                                    "Choose Your Payment Options",
-                                    modifier = Modifier
-                                        .padding(top = 12.dp, bottom = 8.dp),
-                                    fontFamily = SourceSansPro,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
-                                    letterSpacing = 0.25.sp
-                                )
-                            }
-
-                            item {
-                                PaymentOptionsList(
-                                    onCashOnDelivery = {
-                                        if(user.address == null){
-                                            showNoAddressBottomSheet = true
-                                        }
-                                    },
-                                    onPayWithEsewa = {
-                                        if(user.address== null){
-                                            showNoAddressBottomSheet = true
-                                        }
-                                    }
-                                )
+                        onSetAddress = {
+                            Intent(this, MapsActivity::class.java).also {
+                                startActivity(it)
                             }
                         }
-
-                        if (showBottomSheet) {
-                            ModalBottomSheet(
-                                onDismissRequest = {
-                                    showBottomSheet = false
-                                },
-                                sheetState = sheetState,
-                                containerColor = Surface,
-                                dragHandle = null,
-                            ) {
-
-                                Column(
-                                    modifier = Modifier
-                                        .padding(16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                                ) {
-                                    Text(
-                                        "Promocode",
-                                        fontFamily = SourceSansPro,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 16.sp,
-                                        letterSpacing = 0.15.sp,
-                                        color = TextDark400
-                                    )
-
-                                    Column(
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-
-                                        Text(
-                                            "Enter Promocode",
-                                            fontFamily = SourceSansPro,
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 12.sp,
-                                            letterSpacing = 0.4.sp,
-                                            color = TextDark300
-                                        )
-
-                                        AppTextField(
-                                            value = promoCode,
-                                            onValueChange = { viewModel.onPromoCodeChange(it) },
-                                            placeholder = "Promocode",
-                                            isError = promoCodeResult == false,
-                                            errorMessage = "Invalid Promo code. Please try again."
-                                        )
-
-                                    }
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                                    ) {
-                                        AppButton(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(1f),
-                                            text = "CANCEL",
-                                            variant = ButtonVariant.SECONDARY,
-                                            onClick = {
-                                                scope.launch { sheetState.hide() }
-                                                    .invokeOnCompletion {
-                                                        if (!sheetState.isVisible) {
-                                                            showBottomSheet = false
-                                                        }
-                                                    }
-                                            },
-                                        )
-
-                                        AppButton(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(1f),
-                                            text = "APPLY",
-                                            variant = ButtonVariant.PRIMARY,
-                                            onClick = { viewModel.checkPromoCodeValidity() },
-                                            isLoading = isPromoCodeChecking
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        if (showNoAddressBottomSheet) {
-                            ModalBottomSheet(
-                                onDismissRequest = {
-                                    showNoAddressBottomSheet = false
-                                },
-                                sheetState = noAddressSheetState,
-                                containerColor = Surface,
-                                dragHandle = null
-                            ) {
-                                SetAddressSheet(
-                                    onSetAddress = {},
-                                    onCancel = {
-                                        scope.launch { noAddressSheetState.hide() }
-                                            .invokeOnCompletion {
-                                                if (!noAddressSheetState.isVisible) {
-                                                    showNoAddressBottomSheet = false
-                                                }
-                                            }
-                                    }
-                                )
-                            }
-                        }
-                    }
+                    )
                 }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationStyleApi::class)
+@Composable
+fun CheckoutScreen(
+    viewModel: CheckoutViewModel,
+    user: UserResponse,
+    onBackClick: () -> Unit,
+    onSetAddress: () -> Unit
+) {
+    val activityStyle = Style {
+        background(OffWhiteBackground)
+    }
+    val products by viewModel.products.collectAsStateWithLifecycle()
+    val productQuantityMap by viewModel.productQuantityMap.collectAsStateWithLifecycle()
+    val totalPrice = products.sumOf { product ->
+        product.price * (productQuantityMap[product.id] ?: 1)
+    }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val promoCode by viewModel.promoCode.collectAsStateWithLifecycle()
+    val promoCodeResult by viewModel.promoCodeResult.collectAsStateWithLifecycle()
+    val isPromoCodeChecking by viewModel.isCheckingPromoCode.collectAsStateWithLifecycle()
+
+    var showNoAddressBottomSheet by remember { mutableStateOf(false) }
+    val noAddressSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
+    Scaffold(
+        modifier = Modifier
+            .styleable(null, activityStyle),
+        topBar = {
+            AppTopBar(
+                "Checkout",
+                onBackClick = {
+                    onBackClick()
+                }
+            )
+        },
+        bottomBar = {
+            BottomBar(totalPrice.toFloat())
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(OffWhiteBackground)
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+        ) {
+            item {
+                DeliveryAddress(
+                    address = user.address
+                )
+            }
+
+            item {
+                Text(
+                    "Order Summary  (${products.size})",
+                    modifier = Modifier
+                        .padding(top = 12.dp, bottom = 8.dp),
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.25.sp
+                )
+            }
+            items(products) { product ->
+                val count = productQuantityMap[product.id] ?: return@items
+                OrderSummaryItem(
+                    product = product,
+                    count = count
+                )
+            }
+
+            item {
+                AppButton(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    variant = ButtonVariant.OUTLINE,
+                    text = "HAVE A PROMOCODE?",
+                    onClick = {
+                        showBottomSheet = true
+                    }
+                )
+            }
+
+            item {
+                Text(
+                    "Choose Your Payment Options",
+                    modifier = Modifier
+                        .padding(top = 12.dp, bottom = 8.dp),
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.25.sp
+                )
+            }
+
+            item {
+                PaymentOptionsList(
+                    onCashOnDelivery = {
+                        if (user.address == null) {
+                            showNoAddressBottomSheet = true
+                        }
+                    },
+                    onPayWithEsewa = {
+                        if (user.address == null) {
+                            showNoAddressBottomSheet = true
+                        }
+                    }
+                )
+            }
+        }
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                sheetState = sheetState,
+                containerColor = Surface,
+                dragHandle = null,
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Text(
+                        "Promocode",
+                        fontFamily = SourceSansPro,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        letterSpacing = 0.15.sp,
+                        color = TextDark400
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+
+                        Text(
+                            "Enter Promocode",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 12.sp,
+                            letterSpacing = 0.4.sp,
+                            color = TextDark300
+                        )
+
+                        AppTextField(
+                            value = promoCode,
+                            onValueChange = { viewModel.onPromoCodeChange(it) },
+                            placeholder = "Promocode",
+                            isError = promoCodeResult == false,
+                            errorMessage = "Invalid Promo code. Please try again."
+                        )
+
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        AppButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            text = "CANCEL",
+                            variant = ButtonVariant.SECONDARY,
+                            onClick = {
+                                scope.launch { sheetState.hide() }
+                                    .invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            showBottomSheet = false
+                                        }
+                                    }
+                            },
+                        )
+
+                        AppButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            text = "APPLY",
+                            variant = ButtonVariant.PRIMARY,
+                            onClick = { viewModel.checkPromoCodeValidity() },
+                            isLoading = isPromoCodeChecking
+                        )
+                    }
+                }
+            }
+        }
+
+        if (showNoAddressBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showNoAddressBottomSheet = false
+                },
+                sheetState = noAddressSheetState,
+                containerColor = Surface,
+                dragHandle = null
+            ) {
+                SetAddressSheet(
+                    onSetAddress = {
+                        onSetAddress()
+                    },
+                    onCancel = {
+                        scope.launch { noAddressSheetState.hide() }
+                            .invokeOnCompletion {
+                                if (!noAddressSheetState.isVisible) {
+                                    showNoAddressBottomSheet = false
+                                }
+                            }
+                    }
+                )
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -694,13 +721,4 @@ fun SetAddressSheet(
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AddressSheetPreview() {
-    SetAddressSheet(
-        onSetAddress = {},
-        onCancel = {}
-    )
 }

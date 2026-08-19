@@ -132,7 +132,14 @@ dependencies {
     // Google Maps SDK
 
     implementation("com.google.maps.android:maps-compose:8.4.0")
+    implementation("com.mapbox.extension:maps-compose-ndk27:11.28.3")
 
+    //Mapbox
+    implementation("com.mapbox.maps:android-ndk27:11.28.3")
+    implementation("com.mapbox.extension:maps-compose-ndk27:11.28.3")
+
+    //Google Play Services
+    implementation("com.google.android.gms:play-services-location:21.4.0")
     // UI
 
     implementation("androidx.recyclerview:recyclerview:1.4.0")
