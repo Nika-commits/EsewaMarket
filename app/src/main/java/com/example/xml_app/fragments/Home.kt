@@ -407,6 +407,24 @@ class Home : Fragment() {
     private fun toggleFavourite(id: Int) {
         if (viewModel.isLoggedIn()) {
             viewModel.toggleFavourite(id)
+            val bottomNavigation =
+                requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
+            CustomSnackbar.show(
+                binding.root,
+                context = requireContext(),
+                anchorView = bottomNavigation,
+                text = "Added to favourites",
+                actionText = "GOTO FAVOURITES",
+                action = {
+                    findNavController().navigate(ApiRoute.Favourite) {
+                        popUpTo<ApiRoute.Home> {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         } else {
             showLoginSnackBar("Log in to add to favourites.")
         }

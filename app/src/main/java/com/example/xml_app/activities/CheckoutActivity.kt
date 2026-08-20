@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -167,7 +169,7 @@ fun CheckoutScreen(
             )
         },
         bottomBar = {
-            BottomBar(totalPrice.toFloat())
+            BottomBar(totalPrice.toFloat(), 50.0f, 13.0f, 0.0f)
         }
     ) { innerPadding ->
         LazyColumn(
@@ -509,59 +511,90 @@ fun OrderSummaryItem(
 }
 
 @Composable
-fun BottomBar(total: Float) {
+fun BottomBar(
+    subTotal: Float,
+    shippingCharge: Float,
+    tax: Float,
+    discount: Float = 0f
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val grandTotal = subTotal + shippingCharge + tax - discount
     Box {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Surface)
-                .heightIn(min = 100.dp)
-                .padding(horizontal = 16.dp, vertical = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .animateContentSize()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                )
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    "Grand Total",
-                    color = TextDark400,
-                    fontFamily = SourceSansPro,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    letterSpacing = 0.25.sp,
-                )
-                Text(
-                    "*included TAX",
-                    color = TextDark200,
-                    fontFamily = SourceSansPro,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 10.sp,
-                    letterSpacing = 0.4.sp
-                )
+            AnimatedVisibility(visible = expanded) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    PriceBreakdownRow("Subtotal", subTotal)
+                    PriceBreakdownRow("Tax", tax)
+                    PriceBreakdownRow("Shipping Charge", shippingCharge)
+                    PriceBreakdownRow("Discount", discount)
+                }
             }
-
             Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Surface)
+                    .heightIn(min = 80.dp)
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "Rs.",
-                    color = PrimaryGreen,
-                    fontFamily = SourceSansPro,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    letterSpacing = 0.25.sp
-                )
-                Text(
-                    text = total.toString(),
-                    color = PrimaryGreen,
-                    fontFamily = SourceSansPro,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 20.sp,
-                    letterSpacing = 0.15.sp
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        "Grand Total",
+                        color = TextDark400,
+                        fontFamily = SourceSansPro,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        letterSpacing = 0.25.sp,
+                    )
+                    Text(
+                        "*included TAX",
+                        color = TextDark200,
+                        fontFamily = SourceSansPro,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 10.sp,
+                        letterSpacing = 0.4.sp
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        "Rs.",
+                        color = PrimaryGreen,
+                        fontFamily = SourceSansPro,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        letterSpacing = 0.25.sp
+                    )
+                    Text(
+                        text = subTotal.toString(),
+                        color = PrimaryGreen,
+                        fontFamily = SourceSansPro,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 20.sp,
+                        letterSpacing = 0.15.sp
+                    )
+                }
             }
         }
         AppButton(
@@ -570,11 +603,42 @@ fun BottomBar(total: Float) {
                 .align(Alignment.TopCenter)
                 .offset(y = (-24).dp),
             variant = ButtonVariant.ROUNDED,
-            icon = R.drawable.ic_top_arrow,
-            onClick = {}
+            icon = if (expanded) R.drawable.ic_arrow_down else R.drawable.ic_top_arrow,
+            onClick = {
+                expanded = !expanded
+            }
         )
     }
+}
 
+@Composable
+fun PriceBreakdownRow(
+    label: String,
+    amount: Float
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            letterSpacing = 0.25.sp,
+            color = TextDark300
+        )
+
+        Text(
+            text = amount.toString(),
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            letterSpacing = 0.5.sp,
+            color = TextDark400
+        )
+    }
 }
 
 @Composable

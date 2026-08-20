@@ -20,7 +20,6 @@ import com.example.xml_app.utils.firebase.AuthRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 
-private const val ARG_PARAM1 = "param1"
 
 class More : Fragment() {
     private var _binding: FragmentMoreBinding? = null
@@ -110,6 +109,18 @@ class More : Fragment() {
         val myCancellation = binding.authLayout.myCancellation
         myCancellation.ivIcon.setImageResource(R.drawable.ic_mycancellation)
         myCancellation.tvName.text = "My Cancellation"
+
+        val myRewardsPoints = binding.authLayout.myRewardsAndPoints
+        myRewardsPoints.ivIcon.setImageResource(R.drawable.ic_reward_points_grn)
+        myRewardsPoints.tvName.text = "Rewards Points"
+
+        val myApplyPromocode = binding.authLayout.myApplyPromocode
+        myApplyPromocode.ivIcon.setImageResource(R.drawable.ic_promocode)
+        myApplyPromocode.tvName.text = "Apply Promocode"
+
+        val myDailyBonus = binding.authLayout.myDailyDayBonus
+        myDailyBonus.ivIcon.setImageResource(R.drawable.ic_dailybuybonus)
+        myDailyBonus.tvName.text = "Daily Buy Bonus"
 
 
         binding.authLayout.btnLogout.setOnClickListener {
