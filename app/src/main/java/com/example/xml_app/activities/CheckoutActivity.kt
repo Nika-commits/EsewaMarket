@@ -76,7 +76,6 @@ class CheckoutActivity : AppCompatActivity() {
     @OptIn(ExperimentalFoundationStyleApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.initializeUser()
 
         setContent {
             val authState by viewModel.authState.collectAsStateWithLifecycle()
@@ -107,11 +106,21 @@ class CheckoutActivity : AppCompatActivity() {
                             Intent(this, MapsActivity::class.java).also {
                                 startActivity(it)
                             }
+                        },
+                        onEditAddressClick = {
+                            Intent(this, MapsActivity::class.java).also {
+                                startActivity(it)
+                            }
                         }
                     )
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.initializeUser()
     }
 }
 
@@ -121,7 +130,8 @@ fun CheckoutScreen(
     viewModel: CheckoutViewModel,
     user: UserResponse,
     onBackClick: () -> Unit,
-    onSetAddress: () -> Unit
+    onSetAddress: () -> Unit,
+    onEditAddressClick: () -> Unit
 ) {
     val activityStyle = Style {
         background(OffWhiteBackground)
@@ -169,7 +179,10 @@ fun CheckoutScreen(
         ) {
             item {
                 DeliveryAddress(
-                    address = user.address
+                    address = user.address,
+                    onEditAddressClick = {
+                        onEditAddressClick()
+                    }
                 )
             }
 
@@ -342,7 +355,8 @@ fun CheckoutScreen(
 @Composable
 fun DeliveryAddress(
     modifier: Modifier = Modifier,
-    address: String?
+    address: String?,
+    onEditAddressClick: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -350,7 +364,8 @@ fun DeliveryAddress(
             .background(OffWhiteBackground)
             .wrapContentHeight()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
 
     ) {
 
@@ -366,6 +381,7 @@ fun DeliveryAddress(
             )
 
             Column(
+                modifier = Modifier.padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
@@ -389,7 +405,9 @@ fun DeliveryAddress(
         AppButton(
             variant = ButtonVariant.PRIMARY,
             icon = R.drawable.ic_edit,
-            onClick = {}
+            onClick = {
+                onEditAddressClick()
+            }
         )
     }
 }

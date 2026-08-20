@@ -242,12 +242,13 @@ class MapsActivity : AppCompatActivity() {
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(horizontal = 24.dp, vertical = 48.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.End
                     ) {
                         AppButton(
-                            variant = ButtonVariant.PRIMARY,
+                            variant = ButtonVariant.OUTLINE,
                             icon = R.drawable.ic_gps,
-                            tint = Surface,
+                            tint = PrimaryGreen,
                             onClick = {
                                 scope.launch {
                                     if (locationPermissionsGranted) {
@@ -265,6 +266,14 @@ class MapsActivity : AppCompatActivity() {
                                         }
                                     }
                                 }
+                            }
+                        )
+
+                        AppButton(
+                            variant = ButtonVariant.PRIMARY,
+                            text = "DONE",
+                            onClick = {
+                                finish()
                             }
                         )
                     }
