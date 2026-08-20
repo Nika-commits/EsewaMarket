@@ -19,4 +19,10 @@ interface UserApi {
     suspend fun getCurrentUser(
         @Header("Authorization") authorization: String
     ): Response<UserResponse>
+
+    @POST("/api/user/update-profile")
+    suspend fun updateUserProfile(
+        @Header("Authorization") authorization: String,
+        @Body request: CreateUserRequest
+    ): Response<UserResponse>
 }

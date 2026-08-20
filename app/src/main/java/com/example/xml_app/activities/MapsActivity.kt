@@ -53,10 +53,15 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
+import com.mapbox.maps.ViewAnnotationAnchor
+import com.mapbox.maps.ViewAnnotationOptions
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.viewannotation.annotationAnchor
+import com.mapbox.maps.viewannotation.geometry
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -102,6 +107,7 @@ class MapsActivity : AppCompatActivity() {
             val userPoint by viewModel.userPoint.collectAsStateWithLifecycle()
             val currentAddress by viewModel.address.collectAsStateWithLifecycle()
             val isAddressLoading by viewModel.isAddressLoading.collectAsStateWithLifecycle()
+            val isPointSelected by viewModel.isPointSelected.collectAsStateWithLifecycle()
             val mapViewPortState = rememberMapViewportState()
             val scope = rememberCoroutineScope()
 
@@ -163,6 +169,7 @@ class MapsActivity : AppCompatActivity() {
                         },
                         onMapClickListener = { point ->
                             viewModel.updateUserPoint(point)
+                            viewModel.toggleIsPointSelected(false)
                             true
                         }
                     ) {
@@ -173,10 +180,26 @@ class MapsActivity : AppCompatActivity() {
                                 circleStrokeWidth = 6.0
                                 circleStrokeColor = PrimaryGreenTransparent
                             }
-
+                            ViewAnnotation(
+                                options = ViewAnnotationOptions
+                                    .Builder()
+                                    .geometry(it)
+                                    .annotationAnchor {
+                                        anchor(ViewAnnotationAnchor.BOTTOM)
+                                        offsetY(40.0)
+                                    }
+                                    .build()
+                            ) {
+                                AppButton(
+                                    variant = if (isPointSelected) ButtonVariant.PRIMARY else ButtonVariant.SECONDARY,
+                                    text = if (isPointSelected) "Selected" else "Select",
+                                    onClick = { viewModel.toggleIsPointSelected(true) }
+                                )
+                            }
                         }
 
                     }
+
                     Row(
                         modifier = Modifier
                             .align(Alignment.TopStart)
@@ -211,7 +234,6 @@ class MapsActivity : AppCompatActivity() {
                                 fontWeight = FontWeight.Normal,
                                 letterSpacing = 0.5.sp
                             )
-
                         }
                     }
                     Column(

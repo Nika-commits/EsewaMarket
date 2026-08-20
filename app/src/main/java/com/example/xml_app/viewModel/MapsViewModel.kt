@@ -21,12 +21,18 @@ class MapsViewModel(
     private val _address = MutableStateFlow<String?>(null)
     val address = _address.asStateFlow()
 
+    private val _isPointSelected = MutableStateFlow(false)
+    val isPointSelected = _isPointSelected.asStateFlow()
     private val _isAddressLoading = MutableStateFlow(false)
     val isAddressLoading = _isAddressLoading.asStateFlow()
 
     fun updateUserPoint(point: Point) {
         _userPoint.value = point
         getAddress(point)
+    }
+
+    fun toggleIsPointSelected(value: Boolean) {
+        _isPointSelected.value = value
     }
 
     private fun getAddress(point: Point) {

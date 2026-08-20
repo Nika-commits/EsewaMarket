@@ -1,10 +1,11 @@
 package com.example.xml_app.utils.dto
 
 data class CreateUserRequest(
-    val username: String,
-    val fullName: String,
+    val username: String?,
+    val fullName: String?,
     val address: String?,
-    val phone: String?
+    val phone: String?,
+    val profilePicture: String?
 )
 
 data class UserResponse(

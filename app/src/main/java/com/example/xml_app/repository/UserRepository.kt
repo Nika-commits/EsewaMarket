@@ -47,4 +47,9 @@ class UserRepository(
     suspend fun getLocalUser(firebaseUid: String): User? {
         return userDao.getFirebaseUserById(firebaseUid)
     }
+
+    suspend fun updateUserProfile(
+        request: CreateUserRequest,
+        token: String
+    ) = RetrofitInstance.userApi.updateUserProfile(authorization = token, request = request)
 }

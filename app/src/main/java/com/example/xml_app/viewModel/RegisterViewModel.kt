@@ -75,7 +75,8 @@ class RegisterViewModel(
                     username = username,
                     fullName = fullName,
                     address = null,
-                    phone = null
+                    phone = null,
+                    profilePicture = null
                 )
                 val fireStoreUser = hashMapOf(
                     "username" to username,
@@ -125,7 +126,8 @@ class RegisterViewModel(
                     ?: "user",
                     fullName = firebaseUser.displayName ?: "",
                     address = null,
-                    phone = firebaseUser.phoneNumber
+                    phone = firebaseUser.phoneNumber,
+                    profilePicture = null
                 )
 
                 repository.createUser(token, request)
