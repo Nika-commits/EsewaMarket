@@ -145,11 +145,22 @@ class Home : Fragment() {
             Hero("Sale 2", R.drawable.hero2),
             Hero("Sale 3", R.drawable.hero3)
         )
+
         homeHeadAdapter = HomeHeadAdapter(
             heroes = heroes,
             onFilterClick = {},
             onToolbarReady = { setUpToolbarAndMenu(it) }
         )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.user.collect { user ->
+                    homeHeadAdapter.setUsername(
+                        user?.fullName?.trim()?.substringBefore(" ") ?: "Guest"
+                    )
+                }
+            }
+        }
         concatAdapter = ConcatAdapter(
             homeHeadAdapter,
             homeCategoriesAdapter,

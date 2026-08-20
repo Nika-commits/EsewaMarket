@@ -11,12 +11,12 @@ import com.example.xml_app.models.Hero
 import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeHeadAdapter(
-    private val userName: String = "Pranish ,",
+    private var userName: String = "Pranish ,",
     private val heroes: List<Hero>,
     private val onFilterClick: () -> Unit,
-    private val onToolbarReady: (Toolbar) -> Unit
+    private val onToolbarReady: (Toolbar) -> Unit,
 
-) : RecyclerView.Adapter<HomeHeadAdapter.ViewHolder>() {
+    ) : RecyclerView.Adapter<HomeHeadAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -24,10 +24,12 @@ class HomeHeadAdapter(
         val binding =
             ItemHomeHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(
+
             binding,
             heroes,
             onFilterClick,
-            onToolbarReady
+            onToolbarReady,
+            userName
         )
     }
 
@@ -35,9 +37,13 @@ class HomeHeadAdapter(
         holder: ViewHolder,
         position: Int
     ) {
-        with(holder.binding) {
-            tvUsername.text = userName
-        }
+        holder.bind(userName)
+    }
+
+    fun setUsername(newUserName: String) {
+        if (userName == newUserName) return
+        userName = newUserName
+        notifyItemChanged(0)
     }
 
     override fun getItemCount(): Int = 1
@@ -45,9 +51,11 @@ class HomeHeadAdapter(
         val binding: ItemHomeHeaderBinding,
         heroes: List<Hero>,
         onFilterClick: () -> Unit,
-        onToolbarReady: (Toolbar) -> Unit
+        onToolbarReady: (Toolbar) -> Unit,
+        username: String
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
+            binding.tvUsername.text = username
             binding.heroViewPager.adapter = HeroViewPagerAdapter(heroes.toMutableList())
             TabLayoutMediator(
                 binding.heroIndicator,
@@ -58,6 +66,10 @@ class HomeHeadAdapter(
 
             binding.searchBox.setEndIconOnClickListener { onFilterClick() }
             onToolbarReady(binding.toolbar)
+        }
+
+        fun bind(username: String) {
+            binding.tvUsername.text = username
         }
 
     }
