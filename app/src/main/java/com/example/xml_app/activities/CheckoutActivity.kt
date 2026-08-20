@@ -290,6 +290,17 @@ fun CheckoutScreen(
                             errorMessage = "Invalid Promo code. Please try again."
                         )
 
+                        if (promoCodeResult == true) {
+                            Text(
+                                "Promocode Applied Successfully.",
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                                letterSpacing = 0.4.sp,
+                                color = PrimaryGreen
+                            )
+                        }
+
                     }
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
