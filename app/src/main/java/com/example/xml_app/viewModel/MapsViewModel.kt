@@ -6,15 +6,21 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.R
 import com.example.xml_app.repository.MapboxRepository
+import com.example.xml_app.repository.UserRepository
+import com.example.xml_app.utils.CustomApplicationContext
+import com.example.xml_app.utils.dto.CreateUserRequest
 import com.mapbox.geojson.Point
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class MapsViewModel(
     application: Application
 ) : AndroidViewModel(application) {
+    private val app = getApplication<CustomApplicationContext>()
     private val mapboxRepository = MapboxRepository()
+    private val userRepository = UserRepository(app.database.userDao())
     private val _userPoint = MutableStateFlow<Point?>(null)
     val userPoint = _userPoint.asStateFlow()
 
@@ -26,6 +32,9 @@ class MapsViewModel(
     private val _isAddressLoading = MutableStateFlow(false)
     val isAddressLoading = _isAddressLoading.asStateFlow()
 
+    private val _isUpdatingUser = MutableStateFlow(false)
+    val isUpdatingUser = _isUpdatingUser.asStateFlow()
+
     fun updateUserPoint(point: Point) {
         _userPoint.value = point
         getAddress(point)
@@ -33,6 +42,9 @@ class MapsViewModel(
 
     fun toggleIsPointSelected(value: Boolean) {
         _isPointSelected.value = value
+        if (_isPointSelected.value) {
+            updateUserAddress()
+        }
     }
 
     private fun getAddress(point: Point) {
@@ -51,6 +63,39 @@ class MapsViewModel(
             } catch (e: Exception) {
                 Log.e("MAPS", e.message ?: "Error occurred while fetching location")
                 _isAddressLoading.value = false
+            }
+        }
+    }
+
+    private fun updateUserAddress() {
+        viewModelScope.launch {
+            _isUpdatingUser.value = true
+            try {
+                val updateUserRequest = CreateUserRequest(
+                    username = null,
+                    fullName = null,
+                    address = _address.value,
+                    phone = null,
+                    profilePicture = null
+                )
+                val firebaseUser = app.auth.currentUser ?: throw Exception("User is not logged in.")
+                val token = firebaseUser.getIdToken(false).await().token
+                    ?: throw Exception("Failed to get Firebase Token")
+                val response = userRepository.updateUserProfile(
+                    token = token,
+                    request = updateUserRequest
+                )
+
+                if (!response.isSuccessful) {
+                    Log.e("MAPS", "Failed to update: ${response.code()}")
+                    throw Exception("Failed: ${response.code()}")
+                }
+
+                Log.d("MAPS", "Address : ${response.body()?.address}")
+                _isUpdatingUser.value = false
+            } catch (e: Exception) {
+                Log.e("MAPS", "Exception : ${e.message}")
+                _isUpdatingUser.value = false
             }
         }
     }

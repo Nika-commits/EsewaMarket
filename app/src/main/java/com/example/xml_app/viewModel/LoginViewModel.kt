@@ -43,7 +43,6 @@ class LoginViewModel(
 
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-
             try {
 
                 val firebaseUser = AuthRepository.login(email, password, auth)
@@ -53,8 +52,11 @@ class LoginViewModel(
                     return@launch
                 }
 
-                repository.getCurrentUser(token)
-
+                val user = repository.getCurrentUser(token)
+                if (user == null) {
+                    _result.value = false
+                    return@launch
+                }
                 _result.value = true
             } catch (e: Exception) {
                 _result.value = false
@@ -69,11 +71,28 @@ class LoginViewModel(
     fun loginWithGoogle(credential: Credential) {
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true)
-            val firebaseUser = AuthRepository.signInWithGoogle(credential, auth)
 
-            _result.value = firebaseUser != null
+            try {
+                val firebaseUser = AuthRepository.signInWithGoogle(credential, auth)
+                val token = firebaseUser?.getIdToken(false)?.await()?.token
+                    ?: run {
+                        _result.value = false
+                        return@launch
+                    }
+                val user = repository.getCurrentUser(token)
 
-            _formState.value = _formState.value.copy(isLoading = false)
+                if (user == null) {
+                    _result.value = false
+                    return@launch
+                }
+
+                _result.value = true
+            } catch (e: Exception) {
+                _result.value = false
+                Log.e("Login", "Google Login Failed", e)
+            } finally {
+                _formState.value = _formState.value.copy(isLoading = false)
+            }
         }
     }
 }

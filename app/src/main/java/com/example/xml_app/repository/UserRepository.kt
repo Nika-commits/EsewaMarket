@@ -51,5 +51,8 @@ class UserRepository(
     suspend fun updateUserProfile(
         request: CreateUserRequest,
         token: String
-    ) = RetrofitInstance.userApi.updateUserProfile(authorization = token, request = request)
+    ) = RetrofitInstance.userApi.updateUserProfile(
+        authorization = "Bearer $token",
+        request = request
+    )
 }

@@ -108,6 +108,7 @@ class MapsActivity : AppCompatActivity() {
             val currentAddress by viewModel.address.collectAsStateWithLifecycle()
             val isAddressLoading by viewModel.isAddressLoading.collectAsStateWithLifecycle()
             val isPointSelected by viewModel.isPointSelected.collectAsStateWithLifecycle()
+            val isUpdatingUser by viewModel.isUpdatingUser.collectAsStateWithLifecycle()
             val mapViewPortState = rememberMapViewportState()
             val scope = rememberCoroutineScope()
 
@@ -193,7 +194,8 @@ class MapsActivity : AppCompatActivity() {
                                 AppButton(
                                     variant = if (isPointSelected) ButtonVariant.PRIMARY else ButtonVariant.SECONDARY,
                                     text = if (isPointSelected) "Selected" else "Select",
-                                    onClick = { viewModel.toggleIsPointSelected(true) }
+                                    onClick = { viewModel.toggleIsPointSelected(true) },
+                                    isLoading = isUpdatingUser
                                 )
                             }
                         }
