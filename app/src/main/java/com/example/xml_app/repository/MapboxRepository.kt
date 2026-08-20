@@ -1,14 +1,19 @@
 package com.example.xml_app.repository
 
 import com.example.xml_app.api.RetrofitInstance
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 class MapboxRepository {
 
     suspend fun getAddressFromCoordinates(
         coordinates: String,
         accessToken: String
-    ) = RetrofitInstance.addressApi.getAddressFromCoordinates(
-        coordinates = coordinates,
-        accessToken = accessToken
-    )
+    ) = run {
+        delay(3000.milliseconds)
+        RetrofitInstance.addressApi.getAddressFromCoordinates(
+            coordinates = coordinates,
+            accessToken = accessToken
+        )
+    }
 }

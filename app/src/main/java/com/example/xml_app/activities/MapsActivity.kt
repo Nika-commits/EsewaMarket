@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.R
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.styles.PrimaryGreen
@@ -43,6 +44,7 @@ import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.components.AppButton
+import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.MapsViewModel
 import com.google.android.gms.location.LocationServices
@@ -97,7 +99,9 @@ class MapsActivity : AppCompatActivity() {
             val location = remember {
                 LocationServices.getFusedLocationProviderClient(this)
             }
-            var userPoint by remember { mutableStateOf<Point?>(null) }
+            val userPoint by viewModel.userPoint.collectAsStateWithLifecycle()
+            val currentAddress by viewModel.address.collectAsStateWithLifecycle()
+            val isAddressLoading by viewModel.isAddressLoading.collectAsStateWithLifecycle()
             val mapViewPortState = rememberMapViewportState()
             val scope = rememberCoroutineScope()
 
@@ -108,10 +112,11 @@ class MapsActivity : AppCompatActivity() {
                         CancellationTokenSource().token
                     ).await()
                     result?.let {
-                        userPoint = Point.fromLngLat(
+                        val newUserPoint = Point.fromLngLat(
                             it.longitude,
                             it.latitude
                         )
+                        viewModel.updateUserPoint(newUserPoint)
                         Log.d(
                             "MAPS",
                             "Longitude: ${result.longitude} \n Latitude: ${result.latitude}"
@@ -154,13 +159,10 @@ class MapsActivity : AppCompatActivity() {
 
                         },
                         compass = {
-                            Compass(
-                                modifier = Modifier.statusBarsPadding()
-                            )
+
                         },
                         onMapClickListener = { point ->
-                            userPoint = point
-                            Log.d("MAP", "$userPoint")
+                            viewModel.updateUserPoint(point)
                             true
                         }
                     ) {
@@ -186,23 +188,31 @@ class MapsActivity : AppCompatActivity() {
                             .background(Surface)
                             .padding(vertical = 6.dp, horizontal = 2.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = if (isAddressLoading) Arrangement.SpaceBetween else Arrangement.spacedBy(
+                            8.dp
+                        )
                     ) {
                         AppButton(
                             variant = ButtonVariant.GHOST,
                             icon = R.drawable.ic_cancel,
                             onClick = {}
                         )
+                        if (isAddressLoading) {
+                            AppLoadingIndicator(
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        } else {
+                            Text(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                text = currentAddress ?: "",
+                                fontFamily = SourceSansPro,
+                                color = TextDark300,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                letterSpacing = 0.5.sp
+                            )
 
-                        Text(
-                            "7th street, Ashok Nagar",
-                            fontFamily = SourceSansPro,
-                            color = TextDark300,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal,
-                            letterSpacing = 0.5.sp
-                        )
-
+                        }
                     }
                     Column(
                         modifier = Modifier
@@ -223,10 +233,11 @@ class MapsActivity : AppCompatActivity() {
                                         ).await()
 
                                         result?.let {
-                                            userPoint = Point.fromLngLat(
+                                            val newUserPoint = Point.fromLngLat(
                                                 it.longitude,
                                                 it.latitude
                                             )
+                                            viewModel.updateUserPoint(newUserPoint)
                                         }
                                     }
                                 }
