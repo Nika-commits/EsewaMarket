@@ -35,6 +35,9 @@ class FavouriteViewModel(
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
     private val cartRepository = CartRepository(database.cartDao())
 
+    private var _isFavouritesLoading = MutableStateFlow(true)
+    val isFavouritesLoading = _isFavouritesLoading.asStateFlow()
+
     fun setOptionsRevealed(
         productId: Int,
         isRevealed: Boolean
@@ -51,37 +54,39 @@ class FavouriteViewModel(
 
     }
 
-    private fun getFavouriteProducts() {
+    private suspend fun getFavouriteProducts() {
         if (_favouriteIds.value.isEmpty()) {
             _favouriteProducts.value = emptyList()
+            _isFavouritesLoading.value = false
             return
         }
-        viewModelScope.launch {
-            try {
-                val products = _favouriteIds.value.map {
-                    async {
-                        val response = productRepository.getProduct(it)
+        _isFavouritesLoading.value = true
+        try {
+            val products = _favouriteIds.value.map {
+                viewModelScope.async {
+                    val response = productRepository.getProduct(it)
 
-                        if (!response.isSuccessful) {
-                            Log.e(T, "$response")
-                            throw HttpException(response)
-                        }
-                        response.body() ?: throw Exception("Empty Response")
-
+                    if (!response.isSuccessful) {
+                        Log.e(T, "$response")
+                        throw HttpException(response)
                     }
-                }.awaitAll()
+                    response.body() ?: throw Exception("Empty Response")
 
-                _favouriteProducts.value = products.map {
-                    ProductUiFavourite(
-                        product = it,
-                        isOptionsRevealed = false
-                    )
                 }
+            }.awaitAll()
 
-                Log.d(T, "${_favouriteProducts.value}")
-            } catch (e: Exception) {
-                Log.e(T, "${e.message}")
+            _favouriteProducts.value = products.map {
+                ProductUiFavourite(
+                    product = it,
+                    isOptionsRevealed = false
+                )
             }
+
+            Log.d(T, "${_favouriteProducts.value}")
+        } catch (e: Exception) {
+            Log.e(T, "${e.message}")
+        } finally {
+            _isFavouritesLoading.value = false
         }
     }
 

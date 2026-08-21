@@ -43,7 +43,7 @@ class More : Fragment() {
         auth = app.auth
 
         setupToolbar()
-        applyEdgeToEdgeInsets()
+//        applyEdgeToEdgeInsets()
         setupSettingsOption()
     }
 

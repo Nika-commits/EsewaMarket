@@ -86,7 +86,7 @@ class Home : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.initializeUser()
 
-        applyEdgeToEdgeInsets()
+//        applyEdgeToEdgeInsets()
         setupCategoriesRecyclerView()
         setupFeaturedProductsRecyclerview()
         setupHotDealsProductsRecyclerview()
@@ -99,7 +99,7 @@ class Home : Fragment() {
     private fun applyEdgeToEdgeInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
     }

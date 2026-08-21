@@ -13,18 +13,20 @@ import com.example.xml_app.utils.styles.PrimaryGreen
 @Composable
 fun AppLoadingIndicator(
     modifier: Modifier = Modifier,
-    size: Dp = 20.dp
-){
+    size: Dp = 20.dp,
+    strokeWidth: Dp = 4.dp
+) {
     CircularProgressIndicator(
         modifier = modifier
             .padding(2.dp)
             .size(size),
         color = PrimaryGreen,
+        strokeWidth = strokeWidth
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LoadingPreview(){
+fun LoadingPreview() {
     AppLoadingIndicator()
 }

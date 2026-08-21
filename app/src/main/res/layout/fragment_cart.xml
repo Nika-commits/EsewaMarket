@@ -21,8 +21,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/source_sans_regular"
         android:letterSpacing="0.015"
-        android:padding="16dp"
-        android:text="Items (0)"
+        android:paddingHorizontal="16dp"
         android:textColor="@color/lightGrey"
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -36,6 +35,15 @@
         app:layout_constraintBottom_toTopOf="@id/checkoutLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvItemCount" />
+
+    <ProgressBar
+        android:id="@+id/cartLoading"
+        style="@style/ProgressBar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/rvCartContent"
+        app:layout_constraintEnd_toEndOf="@id/rvCartContent"
+        app:layout_constraintStart_toStartOf="@id/rvCartContent"
         app:layout_constraintTop_toBottomOf="@id/tvItemCount" />
 
     <LinearLayout
@@ -83,6 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_weight="1"
+            android:insetBottom="0dp"
             android:text="CHECKOUT" />
 
     </LinearLayout>

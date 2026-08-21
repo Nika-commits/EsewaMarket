@@ -1,6 +1,7 @@
 package com.example.xml_app.fragments
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -20,6 +22,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.CheckoutActivity
@@ -32,6 +35,7 @@ import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.utils.CustomSnackbar
+import com.example.xml_app.utils.HomeConcatAdapterSpacing
 import com.example.xml_app.viewModel.CartViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -60,7 +64,7 @@ class Cart : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initializeUser()
-        applyEdgeToEdgeInsets()
+//        applyEdgeToEdgeInsets()
         setupToolbar()
         setupRecyclerView()
         observerCartData()
@@ -130,8 +134,18 @@ class Cart : Fragment() {
             onCartIncrement = { product, _ ->
                 viewModel.cartIncrement(product.id)
             },
-            onCartDecrement = { product, i ->
-                viewModel.cartDecrement(product.id)
+            onCartDecrement = { product, count ->
+                if (count == 1) {
+                    DeleteCartBottomSheet(
+                        onDelete = { viewModel.cartDecrement(product.id) }
+                    ).show(
+                        childFragmentManager,
+                        "DeleteCartBottomSheet"
+                    )
+                } else {
+                    viewModel.cartDecrement(product.id)
+                }
+
             },
         )
         recommendedLoadingAdapter = HomeRecommendedLoadingAdapter()
@@ -153,17 +167,44 @@ class Cart : Fragment() {
                 return if (adapter == recommendedAdapter) 1 else 2
             }
         }
+
+        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_large)
         binding.rvCartContent.apply {
-            adapter = concatAdapter
             layoutManager = gridLayoutManager
+            adapter = concatAdapter
             itemAnimator = null
+            addItemDecoration(HomeConcatAdapterSpacing(spacing))
+
+            addItemDecoration(
+                object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                    ) {
+                        val holder = parent.getChildViewHolder(view)
+                        if (holder.bindingAdapter !== recommendedAdapter) return
+
+                        val position = holder.bindingAdapterPosition
+                        if (position == RecyclerView.NO_POSITION) return
+
+
+                        if (position % 2 == 0) {
+                            outRect.right = spacing / 2
+                        } else {
+                            outRect.left = spacing / 2
+                        }
+
+                        outRect.top = if (position == 0 || position == 1) {
+                            0
+                        } else {
+                            spacing / 2
+                        }
+                    }
+                }
+            )
         }
-//
-//        binding.rvCartProducts.apply {
-//            adapter = cartAdapter
-//            layoutManager = LinearLayoutManager(requireContext())
-//            itemAnimator = null
-//        }
     }
 
     private fun observerCartData() {
@@ -181,6 +222,13 @@ class Cart : Fragment() {
                 launch {
                     viewModel.totalPrice.collect {
                         binding.tvTotalPrice.text = it.toString()
+                    }
+                }
+
+                launch {
+                    viewModel.isCartLoading.collect { isLoading ->
+                        binding.cartLoading.isVisible = isLoading
+                        binding.rvCartContent.isVisible = !isLoading
                     }
                 }
             }

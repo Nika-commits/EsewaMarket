@@ -192,4 +192,11 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
     </style>
+
+    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:indeterminateTint">@color/primaryGreen</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
 </resources>

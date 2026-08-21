@@ -14,6 +14,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -70,6 +71,7 @@ import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.ActionIcon
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
+import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.viewModel.FavouriteViewModel
 
 class Favourite : Fragment() {
@@ -90,7 +92,7 @@ class Favourite : Fragment() {
 
         viewModel.initializeUser()
 
-        applyEdgeToEdgeInsets()
+//        applyEdgeToEdgeInsets()
         setupToolbar()
         setupFavourites()
     }
@@ -98,7 +100,7 @@ class Favourite : Fragment() {
     fun applyEdgeToEdgeInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
     }
@@ -130,28 +132,23 @@ class Favourite : Fragment() {
         composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    MaterialTheme {
-                        FavouriteScreen(
-                            viewModel,
-                            requireContext(),
-                            binding.root,
-                            bottomNavigation,
-                            onNavigateToCart = {
-                                findNavController().navigate(ApiRoute.Cart) {
-                                    popUpTo<ApiRoute.Home> {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        )
-                    }
 
+                MaterialTheme {
+                    FavouriteScreen(
+                        viewModel,
+                        requireContext(),
+                        binding.root,
+                        bottomNavigation,
+                        onNavigateToCart = {
+                            findNavController().navigate(ApiRoute.Cart) {
+                                popUpTo<ApiRoute.Home> {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -299,16 +296,30 @@ fun FavouriteScreen(
     onNavigateToCart: () -> Unit
 ) {
     val products by viewModel.favouriteProducts.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isFavouritesLoading.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.offWhiteBackground))
-            .padding(16.dp)
+            .padding(bottom = 24.dp)
     ) {
 
         Spacer(modifier = Modifier.size(8.dp))
 
         when {
+            isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    AppLoadingIndicator(
+                        size = 100.dp,
+                        strokeWidth = 8.dp
+                    )
+                }
+            }
+
             products.isEmpty() -> {
                 Text(
                     text = "Items (0)",
@@ -410,8 +421,10 @@ fun FavouriteScreen(
                 }
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(bottom = 64.dp)
                 ) {
                     itemsIndexed(
                         items = products,
