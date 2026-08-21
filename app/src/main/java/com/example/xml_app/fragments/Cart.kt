@@ -20,7 +20,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.CheckoutActivity
@@ -154,12 +153,17 @@ class Cart : Fragment() {
                 return if (adapter == recommendedAdapter) 1 else 2
             }
         }
-
-        binding.rvCartProducts.apply {
-            adapter = cartAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+        binding.rvCartContent.apply {
+            adapter = concatAdapter
+            layoutManager = gridLayoutManager
             itemAnimator = null
         }
+//
+//        binding.rvCartProducts.apply {
+//            adapter = cartAdapter
+//            layoutManager = LinearLayoutManager(requireContext())
+//            itemAnimator = null
+//        }
     }
 
     private fun observerCartData() {
@@ -175,21 +179,21 @@ class Cart : Fragment() {
                 }
 
                 launch {
-                    viewModel.user.collect { user ->
-                        if (user == null) {
-                            binding.emptyCart.root.visibility = View.VISIBLE
-                            binding.rvCartProducts.visibility = View.GONE
-                        }
-                    }
-                }
-
-                launch {
                     viewModel.totalPrice.collect {
                         binding.tvTotalPrice.text = it.toString()
                     }
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recommendedProducts.collectLatest { pagingData ->
+                    recommendedAdapter.submitData(pagingData)
+                }
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 recommendedAdapter.loadStateFlow.collectLatest { loadStates ->
