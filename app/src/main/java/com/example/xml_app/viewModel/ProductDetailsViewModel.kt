@@ -37,6 +37,9 @@ class ProductDetailsViewModel(
     private val cartRepository = CartRepository(database.cartDao())
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
 
+    private var _isProductLoading = MutableStateFlow(false)
+    val isProductLoading = _isProductLoading.asStateFlow()
+
     init {
         initializeUser()
     }
@@ -129,6 +132,7 @@ class ProductDetailsViewModel(
 
     fun getProduct(id: Int) {
         viewModelScope.launch {
+            _isProductLoading.value = true
             try {
                 val response = repository.getProduct(id)
                 if (!response.isSuccessful) {
@@ -140,6 +144,8 @@ class ProductDetailsViewModel(
                 observeProductState()
             } catch (e: Exception) {
                 Log.e("Product", "${e.message}")
+            } finally {
+                _isProductLoading.value = false
             }
         }
     }

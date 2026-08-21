@@ -218,6 +218,12 @@ class Cart : Fragment() {
                         )
                     }
                 }
+                launch {
+                    viewModel.productsInCart.collect { products ->
+                        val count = products.size.toString()
+                        binding.tvItemCount.text = "Items ($count)"
+                    }
+                }
 
                 launch {
                     viewModel.totalPrice.collect {

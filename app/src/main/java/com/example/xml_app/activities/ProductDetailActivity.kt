@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -189,11 +190,17 @@ class ProductDetailActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.isProductLoading.collect { loading ->
+                        binding.loading.isVisible = loading
+                        binding.productDetailScrollView.isVisible = !loading
+                        binding.addToCartContainer.root.isVisible = !loading
+                    }
+                }
 
                 launch {
                     viewModel.product.collect { productUiModel ->
                         productUiModel ?: return@collect
-
                         renderProduct(productUiModel)
                     }
                 }
