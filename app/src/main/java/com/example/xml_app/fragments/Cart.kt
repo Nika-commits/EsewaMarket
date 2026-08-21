@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,10 +29,12 @@ import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.adapters.RecommendedProductsAdapter
 import com.example.xml_app.adapters.cart.CartCartItemsAdapter
 import com.example.xml_app.adapters.home.HomeRecommendedHeaderAdapter
+import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.viewModel.CartViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class Cart : Fragment() {
@@ -42,7 +45,9 @@ class Cart : Fragment() {
     private lateinit var cartCartItemsAdapter: CartCartItemsAdapter
     private lateinit var recommendationHeaderAdapter: HomeRecommendedHeaderAdapter
     private lateinit var recommendedAdapter: RecommendedProductsAdapter
+    private lateinit var recommendedLoadingAdapter: HomeRecommendedLoadingAdapter
     private lateinit var concatAdapter: ConcatAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -130,11 +135,13 @@ class Cart : Fragment() {
                 viewModel.cartDecrement(product.id)
             },
         )
+        recommendedLoadingAdapter = HomeRecommendedLoadingAdapter()
 
         concatAdapter = ConcatAdapter(
             cartCartItemsAdapter,
             recommendationHeaderAdapter,
-            recommendedAdapter
+            recommendedAdapter,
+            recommendedLoadingAdapter
         )
 
         val gridLayoutManager = GridLayoutManager(
@@ -180,6 +187,16 @@ class Cart : Fragment() {
                     viewModel.totalPrice.collect {
                         binding.tvTotalPrice.text = it.toString()
                     }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                recommendedAdapter.loadStateFlow.collectLatest { loadStates ->
+                    val isInitialLoading = loadStates.refresh is LoadState.Loading
+                    val isLoadingMore = loadStates.append is LoadState.Loading
+
+                    recommendedLoadingAdapter.setLoading(isInitialLoading || isLoadingMore)
                 }
             }
         }

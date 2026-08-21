@@ -159,11 +159,15 @@ class CartViewModel(
         productRepository.getRecommendedProduct().cachedIn(viewModelScope),
         _cartItems,
         _favouriteIds
-    ){ pagingData, cartItems, favouriteIds ->
+    ) { pagingData, cartItems, favouriteIds ->
         pagingData.map { product ->
-            Product
+            val cartItemsByProduct = cartItems.associateBy { it.productId }
+            ProductUiModel(
+                product = product,
+                cartCount = cartItemsByProduct[product.id]?.quantity ?: 0,
+                isFavourite = product.id in favouriteIds
+            )
         }
-
     }
 
 
