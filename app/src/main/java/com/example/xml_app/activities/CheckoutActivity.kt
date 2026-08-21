@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -169,7 +170,7 @@ fun CheckoutScreen(
             )
         },
         bottomBar = {
-            BottomBar(totalPrice.toFloat(), 50.0f, 13.0f, 0.0f)
+            BottomBar(totalPrice.toFloat(), 50.0f, 0.0f, 0.0f)
         }
     ) { innerPadding ->
         LazyColumn(
@@ -530,7 +531,10 @@ fun BottomBar(
                     end = 16.dp,
                 )
         ) {
-            AnimatedVisibility(visible = expanded) {
+            AnimatedVisibility(
+                visible = expanded,
+                enter = slideInVertically(),
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -587,7 +591,7 @@ fun BottomBar(
                         letterSpacing = 0.25.sp
                     )
                     Text(
-                        text = subTotal.toString(),
+                        text = grandTotal.toString(),
                         color = PrimaryGreen,
                         fontFamily = SourceSansPro,
                         fontWeight = FontWeight.Medium,

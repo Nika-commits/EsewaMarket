@@ -15,12 +15,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.CheckoutActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CartAdapter
+import com.example.xml_app.adapters.RecommendedProductsAdapter
+import com.example.xml_app.adapters.home.HomeRecommendedHeaderAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.utils.CustomSnackbar
@@ -32,6 +35,9 @@ class Cart : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: CartViewModel by viewModels()
     private lateinit var cartAdapter: CartAdapter
+    private lateinit var recommendationHeaderAdapter: HomeRecommendedHeaderAdapter
+    private lateinit var recommendedAdapter: RecommendedProductsAdapter
+    private lateinit var concatAdapter: ConcatAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
