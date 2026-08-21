@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.util.component1
+import androidx.core.util.component2
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -16,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
@@ -23,6 +26,7 @@ import com.example.xml_app.activities.CheckoutActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.adapters.RecommendedProductsAdapter
+import com.example.xml_app.adapters.cart.CartCartItemsAdapter
 import com.example.xml_app.adapters.home.HomeRecommendedHeaderAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
@@ -35,6 +39,7 @@ class Cart : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: CartViewModel by viewModels()
     private lateinit var cartAdapter: CartAdapter
+    private lateinit var cartCartItemsAdapter: CartCartItemsAdapter
     private lateinit var recommendationHeaderAdapter: HomeRecommendedHeaderAdapter
     private lateinit var recommendedAdapter: RecommendedProductsAdapter
     private lateinit var concatAdapter: ConcatAdapter
@@ -88,11 +93,9 @@ class Cart : Fragment() {
     private fun setupRecyclerView() {
         cartAdapter = CartAdapter(
             onProductClick = { ProductDetailActivity.startActivity(requireContext(), it) },
-
             onCartIncrement = { id ->
                 viewModel.cartIncrement(id)
             },
-
             onCartDecrement = { id, count ->
                 if (count == 1) {
                     DeleteCartBottomSheet(
@@ -109,6 +112,42 @@ class Cart : Fragment() {
             }
         )
 
+        cartCartItemsAdapter = CartCartItemsAdapter(
+            cartAdapter = cartAdapter
+        )
+
+        recommendationHeaderAdapter = HomeRecommendedHeaderAdapter(
+            onSeeAllClick = {}
+        )
+
+        recommendedAdapter = RecommendedProductsAdapter(
+            onProductClick = {},
+            onFavouriteClick = {},
+            onCartIncrement = { product, _ ->
+                viewModel.cartIncrement(product.id)
+            },
+            onCartDecrement = { product, i ->
+                viewModel.cartDecrement(product.id)
+            },
+        )
+
+        concatAdapter = ConcatAdapter(
+            cartCartItemsAdapter,
+            recommendationHeaderAdapter,
+            recommendedAdapter
+        )
+
+        val gridLayoutManager = GridLayoutManager(
+            requireContext(), 2
+        )
+
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                val (adapter, _) = concatAdapter.getWrappedAdapterAndPosition(position)
+                return if (adapter == recommendedAdapter) 1 else 2
+            }
+        }
+
         binding.rvCartProducts.apply {
             adapter = cartAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -122,14 +161,9 @@ class Cart : Fragment() {
                 launch {
                     viewModel.productsInCart.collect { products ->
                         cartAdapter.products = products
-
-                        if (products.isEmpty()) {
-                            binding.emptyCart.root.visibility = View.VISIBLE
-                            binding.rvCartProducts.visibility = View.GONE
-                        } else {
-                            binding.emptyCart.root.visibility = View.GONE
-                            binding.rvCartProducts.visibility = View.VISIBLE
-                        }
+                        cartCartItemsAdapter.setEmpty(
+                            products.isEmpty()
+                        )
                     }
                 }
 

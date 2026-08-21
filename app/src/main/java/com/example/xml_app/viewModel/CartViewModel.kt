@@ -5,6 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import com.example.xml_app.entities.CartItem
 import com.example.xml_app.entities.User
 import com.example.xml_app.models.Product
@@ -16,6 +19,7 @@ import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -150,4 +154,17 @@ class CartViewModel(
             }
         }
     }
+
+    val recommendedProducts: Flow<PagingData<ProductUiModel>> = combine(
+        productRepository.getRecommendedProduct().cachedIn(viewModelScope),
+        _cartItems,
+        _favouriteIds
+    ){ pagingData, cartItems, favouriteIds ->
+        pagingData.map { product ->
+            Product
+        }
+
+    }
+
+
 }
