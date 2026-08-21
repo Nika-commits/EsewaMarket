@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.xml_app.R
+import com.example.xml_app.BuildConfig
 import com.example.xml_app.repository.MapboxRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
@@ -51,11 +51,11 @@ class MapsViewModel(
         viewModelScope.launch {
             try {
                 _isAddressLoading.value = true
-                val accessToken = getApplication<Application>()
-                    .getString(R.string.mapbox_access_token)
+//                val accessToken = getApplication<Application>()
+//                    .getString(R.string.mapbox_access_token)
                 val response = mapboxRepository.getAddressFromCoordinates(
                     coordinates = "${point.longitude()},${point.latitude()}",
-                    accessToken = accessToken
+                    accessToken = BuildConfig.MapboxAccessToken
                 )
                 Log.d("MAPS", "$response.")
                 _address.value = response.features.firstOrNull()?.place_name

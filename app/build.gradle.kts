@@ -29,11 +29,30 @@ android {
             "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        viewBinding = true
+        compose = true
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             optimization {
                 enable = false
             }
+
+            buildConfigField(
+                "String",
+                "MapboxAccessToken",
+                providers.gradleProperty("MAPBOX_ACCESS_TOKEN").get()
+            )
+        }
+        debug {
+            buildConfigField(
+                "String",
+                "MapboxAccessToken",
+                providers.gradleProperty("MAPBOX_ACCESS_TOKEN").get()
+            )
         }
     }
 
@@ -42,10 +61,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    buildFeatures {
-        viewBinding = true
-        compose = true
-    }
 }
 
 dependencies {
