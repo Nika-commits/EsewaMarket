@@ -67,6 +67,7 @@ import com.example.xml_app.utils.styles.TextDark200
 import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.components.AppButton
+import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.AppTextField
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
@@ -84,7 +85,15 @@ class CheckoutActivity : AppCompatActivity() {
             val authState by viewModel.authState.collectAsStateWithLifecycle()
             when (authState) {
                 CheckoutAuthState.Loading -> {
-                    Text("Loading")
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppLoadingIndicator(
+                            size = 100.dp,
+                            strokeWidth = 8.dp
+                        )
+                    }
                 }
 
                 CheckoutAuthState.Unauthorized -> {

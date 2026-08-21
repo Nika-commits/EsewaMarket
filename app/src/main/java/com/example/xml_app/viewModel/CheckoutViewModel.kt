@@ -14,8 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import okio.IOException
-import retrofit2.HttpException
 
 class CheckoutViewModel(
     application: Application
@@ -40,19 +38,20 @@ class CheckoutViewModel(
     val promoCode = _promoCode.asStateFlow()
     private val _isCheckingPromoCode = MutableStateFlow(false)
     val isCheckingPromoCode = _isCheckingPromoCode.asStateFlow()
-
     fun onPromoCodeChange(newPromoCode: String) {
         _promoCode.value = newPromoCode
     }
 
     fun initializeUser() {
         viewModelScope.launch {
-            val firebase = app.auth.currentUser
-            if (firebase == null) {
-                _authState.value = CheckoutAuthState.Unauthorized
-                return@launch
-            }
+            _authState.value = CheckoutAuthState.Loading
             try {
+                val firebase = app.auth.currentUser
+                if (firebase == null) {
+                    _authState.value = CheckoutAuthState.Unauthorized
+                    return@launch
+                }
+
                 val idToken = firebase.getIdToken(false).await().token
                 if (idToken == null) {
                     _authState.value = CheckoutAuthState.Unauthorized
@@ -64,8 +63,8 @@ class CheckoutViewModel(
                     _authState.value = CheckoutAuthState.Unauthorized
                     return@launch
                 }
+                loadCart(serverUser.id)
                 _authState.value = CheckoutAuthState.Authorized(serverUser)
-                getCartIds(serverUser.id)
             } catch (e: Exception) {
                 Log.e("Checkout", e.message ?: "Error Occurred during Getting User")
                 _authState.value = CheckoutAuthState.Unauthorized
@@ -73,39 +72,26 @@ class CheckoutViewModel(
         }
     }
 
-    private suspend fun getCartIds(userId: Int) {
+    private suspend fun loadCart(userId: Int) {
         val cart = cartRepository.getOrCreateCart(userId)
-        _cartIds.value = cartRepository.getProductIdsInCart(cart.uid)
-        getCartProducts()
-        getProductQuantityMap(cart.uid)
-    }
+        val cartIds = cartRepository.getProductIdsInCart(cart.uid)
+        _cartIds.value = cartIds
 
-    suspend fun getCartProducts() {
-        if (_cartIds.value.isEmpty()) return
+        _productQuantityMap.value = cartRepository.getCartProductWithQuantity(cart.uid)
 
-        try {
-            val products = _cartIds.value.map { productId ->
-                val response = productRepository.getProduct(productId)
-                if (!response.isSuccessful) {
-                    Log.d("Checkout", "HTTP Errors")
-                    throw HttpException(response)
-                }
-                response.body()
-                    ?: throw Exception("Product $productId body is null")
-            }
-            _productsInCart.value = products
-            Log.d("Checkout", "Products Fetched")
-        } catch (e: HttpException) {
-            Log.e("Checkout", e.message())
-        } catch (e: IOException) {
-            Log.e("Checkout", e.message ?: "Network error")
-        } catch (e: Exception) {
-            Log.e("Checkout", e.message ?: "Exception occurred")
+        if (cartIds.isEmpty()) {
+            _productsInCart.value = emptyList()
+            return
         }
-    }
 
-    suspend fun getProductQuantityMap(cartId: Int) {
-        _productQuantityMap.value = cartRepository.getCartProductWithQuantity(cartId)
+        val products = cartIds.map { productId ->
+            val response = productRepository.getProduct(productId)
+            if (!response.isSuccessful) {
+                throw Exception()
+            }
+            response.body() ?: throw IllegalStateException("Body is empty")
+        }
+        _productsInCart.value = products
     }
 
     fun checkPromoCodeValidity() {

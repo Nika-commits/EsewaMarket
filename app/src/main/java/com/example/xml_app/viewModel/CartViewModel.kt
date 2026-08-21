@@ -17,8 +17,6 @@ import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -133,6 +131,7 @@ class CartViewModel(
         val idsInCart = _cartItems.value.map { it.productId }
         if (idsInCart.isEmpty()) {
             _productsInCart.value = emptyList()
+            _isCartLoading.value = false
             return
         }
         viewModelScope.launch {
@@ -140,15 +139,15 @@ class CartViewModel(
             _error.value = null
             try {
                 val products: List<Product> = idsInCart.map { productId ->
-                    async {
-                        val response = productRepository.getProduct(productId)
 
-                        if (!response.isSuccessful) {
-                            throw Exception("${response.code()}")
-                        }
-                        response.body() ?: throw Exception("Empty Response")
+                    val response = productRepository.getProduct(productId)
+
+                    if (!response.isSuccessful) {
+                        throw Exception("${response.code()}")
                     }
-                }.awaitAll()
+                    response.body() ?: throw Exception("Empty Response")
+
+                }
                 _productsInCart.value = products
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to load products in cart"
