@@ -10,6 +10,7 @@ import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CheckoutAuthState
 import com.example.xml_app.utils.CustomApplicationContext
+import com.example.xml_app.utils.dto.request.CreateOrderItemRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -34,7 +35,7 @@ class CheckoutViewModel(
     val address = _address.asStateFlow()
     private val _promoCodeResult = MutableStateFlow<Boolean?>(null)
     val promoCodeResult = _promoCodeResult.asStateFlow()
-    private val _promoCode = MutableStateFlow("")
+    private val _promoCode = MutableStateFlow<String?>(null)
     val promoCode = _promoCode.asStateFlow()
     private val _isCheckingPromoCode = MutableStateFlow(false)
     val isCheckingPromoCode = _isCheckingPromoCode.asStateFlow()
@@ -96,15 +97,28 @@ class CheckoutViewModel(
 
     fun checkPromoCodeValidity() {
         viewModelScope.launch {
+            val promocode = _promoCode.value ?: return@launch
             _isCheckingPromoCode.value = true
             try {
-                val response = productRepository.checkPromoCode(_promoCode.value)
+                val response = productRepository.checkPromoCode(promocode)
                 _promoCodeResult.value = response.isSuccessful
             } catch (e: Exception) {
                 Log.e("Checkout", e.message ?: "Error Occurred Checking PromoCode")
             } finally {
                 _isCheckingPromoCode.value = false
             }
+        }
+    }
+
+    fun placeOrder(){
+        try {
+            val orderItems: List<CreateOrderItemRequest> = _productsInCart.value.map { product ->
+                CreateOrderItemRequest(
+                    productId = product.id,
+                    quantity = _productQuantityMap.value[product.id] ?: 1
+                )
+            }
+            
         }
     }
 

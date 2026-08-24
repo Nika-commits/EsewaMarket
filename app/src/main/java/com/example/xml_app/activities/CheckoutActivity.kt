@@ -295,7 +295,7 @@ fun CheckoutScreen(
                         )
 
                         AppTextField(
-                            value = promoCode,
+                            value = promoCode ?: "",
                             onValueChange = { viewModel.onPromoCodeChange(it) },
                             placeholder = "Promocode",
                             isError = promoCodeResult == false,
