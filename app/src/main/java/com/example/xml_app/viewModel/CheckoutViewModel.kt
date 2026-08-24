@@ -10,7 +10,7 @@ import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CheckoutAuthState
 import com.example.xml_app.utils.CustomApplicationContext
-import com.example.xml_app.utils.dto.request.CreateOrderItemRequest
+import com.example.xml_app.utils.dto.CreateUserRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -31,19 +31,38 @@ class CheckoutViewModel(
     private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(database.userDao())
     private val productRepository = ProductRepository()
-    private val _address = MutableStateFlow("Pulchowk, Lalitpur-20")
+    private val _address = MutableStateFlow<String?>(null)
     val address = _address.asStateFlow()
+
+    private val _phoneNumber = MutableStateFlow<String?>(null)
+    val phoneNumber = _phoneNumber.asStateFlow()
     private val _promoCodeResult = MutableStateFlow<Boolean?>(null)
     val promoCodeResult = _promoCodeResult.asStateFlow()
     private val _promoCode = MutableStateFlow<String?>(null)
     val promoCode = _promoCode.asStateFlow()
+    private val _paymentOption = MutableStateFlow<String?>(null)
+    val paymentOption = _paymentOption.asStateFlow()
     private val _isCheckingPromoCode = MutableStateFlow(false)
     val isCheckingPromoCode = _isCheckingPromoCode.asStateFlow()
+    private val _isOrdering = MutableStateFlow(false)
+    val isOrdering = _isOrdering.asStateFlow()
+
+    private val _isUpdatingUser = MutableStateFlow(false)
+    val isUpdatingUser = _isUpdatingUser.asStateFlow()
+
+    private val _phoneNumberResult = MutableStateFlow<Boolean?>(null)
+    val phoneNumberResult = _phoneNumberResult.asStateFlow()
+
     fun onPromoCodeChange(newPromoCode: String) {
         _promoCode.value = newPromoCode
     }
 
+    fun onPhoneNumberChange(newPhoneNumber: String) {
+        _phoneNumber.value = newPhoneNumber
+    }
+
     fun initializeUser() {
+        Log.d("Checkout", "Initializeing User")
         viewModelScope.launch {
             _authState.value = CheckoutAuthState.Loading
             try {
@@ -60,18 +79,22 @@ class CheckoutViewModel(
                 }
 
                 val serverUser = userRepository.getCurrentUser(idToken)
+                Log.d("Checkout", "$serverUser")
                 if (serverUser == null) {
                     _authState.value = CheckoutAuthState.Unauthorized
                     return@launch
                 }
-                loadCart(serverUser.id)
+                Log.e("Checkout", "$serverUser")
                 _authState.value = CheckoutAuthState.Authorized(serverUser)
+                _phoneNumber.value = serverUser.phoneNumber
+                loadCart(serverUser.id)
             } catch (e: Exception) {
                 Log.e("Checkout", e.message ?: "Error Occurred during Getting User")
                 _authState.value = CheckoutAuthState.Unauthorized
             }
         }
     }
+
 
     private suspend fun loadCart(userId: Int) {
         val cart = cartRepository.getOrCreateCart(userId)
@@ -110,16 +133,85 @@ class CheckoutViewModel(
         }
     }
 
-    fun placeOrder(){
-        try {
-            val orderItems: List<CreateOrderItemRequest> = _productsInCart.value.map { product ->
-                CreateOrderItemRequest(
-                    productId = product.id,
-                    quantity = _productQuantityMap.value[product.id] ?: 1
+    fun updatePhoneNumber() {
+        viewModelScope.launch {
+            _isUpdatingUser.value = true
+            try {
+                val updateUserRequest = CreateUserRequest(
+                    phone = _phoneNumber.value,
+                    username = null,
+                    address = null,
+                    fullName = null,
+                    profilePicture = null
                 )
+
+                val firebaseUser = app.auth.currentUser ?: throw Exception("User session timed out")
+                val token = firebaseUser.getIdToken(false).await().token
+                    ?: throw Exception("Failed to get token")
+                val response = userRepository.updateUserProfile(
+                    token = token,
+                    request = updateUserRequest
+                )
+
+                if (!response.isSuccessful) {
+                    _phoneNumberResult.value = false
+                    return@launch
+                }
+                val updatedUser = userRepository.getCurrentUser(token)
+                if (updatedUser == null) {
+                    _phoneNumberResult.value = false
+                    return@launch
+                }
+                initializeUser()
+            } catch (e: Exception) {
+                _phoneNumberResult.value = false
+            } finally {
+                _isUpdatingUser.value = false
             }
-            
         }
     }
+//
+//    fun placeOrder() {
+//        viewModelScope.launch {
+//            _isOrdering.value = true
+//            try {
+//                val firebaseUser = app.auth.currentUser
+//                if (firebaseUser == null) {
+//                    Log.e("Checkout", "User is not authenticated")
+//                    return@launch
+//                }
+//
+//                val idToken = firebaseUser.getIdToken(false).await().token
+//                if (idToken == null) {
+//                    Log.e("Checkout", "Unable to get Firebase Token")
+//                    return@launch
+//                }
+//
+//                val orderItems: List<CreateOrderItemRequest> =
+//                    _productsInCart.value.map { product ->
+//                        CreateOrderItemRequest(
+//                            productId = product.id,
+//                            quantity = _productQuantityMap.value[product.id] ?: 1
+//                        )
+//                    }
+//
+//                if (orderItems.isEmpty()) {
+//                    Log.e("Checkout", "Empty Cart")
+//                    return@launch
+//                }
+//                if(_address.value == null){
+//                    return@launch
+//                }
+//                val request = CreateOrderRequest(
+//                    address = _address.value,
+//                    phone = "1234567890",
+//                    paymentOptions =
+//                )
+//
+//            } catch (e: Exception) {
+//
+//            }
+//        }
+//    }
 
 }

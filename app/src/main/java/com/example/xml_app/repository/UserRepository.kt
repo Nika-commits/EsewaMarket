@@ -39,7 +39,7 @@ class UserRepository(
                 fullName = user.fullName,
                 username = user.username,
                 address = user.address,
-                phone = user.phone
+                phone = user.phoneNumber
             )
         )
     }

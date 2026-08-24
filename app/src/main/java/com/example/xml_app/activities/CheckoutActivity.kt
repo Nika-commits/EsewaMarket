@@ -2,6 +2,7 @@ package com.example.xml_app.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -132,6 +133,7 @@ class CheckoutActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        Log.d("Checkout", "On Resume Called")
         viewModel.initializeUser()
     }
 }
@@ -166,6 +168,16 @@ fun CheckoutScreen(
     val noAddressSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+
+    var showPhoneNumberSheet by remember { mutableStateOf(false) }
+    val phoneNumberSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
+    val phoneNumber by viewModel.phoneNumber.collectAsStateWithLifecycle()
+    val phoneNumberResult by viewModel.phoneNumberResult.collectAsStateWithLifecycle()
+    val isPhoneNumberUpdating by viewModel.isUpdatingUser.collectAsStateWithLifecycle()
+
 
     Scaffold(
         modifier = Modifier
@@ -245,11 +257,23 @@ fun CheckoutScreen(
                     onCashOnDelivery = {
                         if (user.address == null) {
                             showNoAddressBottomSheet = true
+                            return@PaymentOptionsList
+                        }
+
+                        if (user.phoneNumber == null) {
+                            showPhoneNumberSheet = true
+                            return@PaymentOptionsList
                         }
                     },
                     onPayWithEsewa = {
                         if (user.address == null) {
                             showNoAddressBottomSheet = true
+                            return@PaymentOptionsList
+                        }
+
+                        if (user.phoneNumber == null) {
+                            showPhoneNumberSheet = true
+                            return@PaymentOptionsList
                         }
                     }
                 )
@@ -371,8 +395,125 @@ fun CheckoutScreen(
                 )
             }
         }
-    }
 
+        if (showPhoneNumberSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showPhoneNumberSheet = false
+                },
+                sheetState = phoneNumberSheetState,
+                containerColor = Surface,
+                dragHandle = null
+            ) {
+                PhoneNumberBottomSheet(
+                    value = phoneNumber ?: "",
+                    onValueChange = { viewModel.onPhoneNumberChange(it) },
+                    onClose = {
+                        scope.launch { phoneNumberSheetState.hide() }
+                            .invokeOnCompletion {
+                                if (!phoneNumberSheetState.isVisible) {
+                                    showPhoneNumberSheet = false
+                                }
+                            }
+                    },
+                    onApply = {
+                        viewModel.updatePhoneNumber()
+                    },
+                    phoneNumberResult = phoneNumberResult == true,
+                    isPhoneNumberUpdating = isPhoneNumberUpdating
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun PhoneNumberBottomSheet(
+    value: String,
+    onValueChange: (String) -> Unit,
+    onClose: () -> Unit,
+    onApply: () -> Unit,
+    phoneNumberResult: Boolean,
+    isPhoneNumberUpdating: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            "Phone Number",
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            letterSpacing = 0.15.sp,
+            color = TextDark400
+        )
+
+        Column(
+            modifier = Modifier
+                .padding(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                "Enter Phone Number",
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                letterSpacing = 0.4.sp,
+                color = TextDark300
+            )
+            val phoneRegex = Regex("^\\d{10}$")
+            AppTextField(
+                value = value,
+                onValueChange = { newValue ->
+                    if (newValue.length <= 10 && newValue.all { it.isDigit() }) {
+                        onValueChange(newValue)
+                    }
+                },
+                placeholder = "Phone Number",
+                isError = value.isNotEmpty() && !phoneRegex.matches(value),
+                errorMessage = "Enter a valid 10 digit phone number"
+            )
+            if (phoneNumberResult) {
+                Text(
+                    "Phone Number Added Successfully.",
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 12.sp,
+                    letterSpacing = 0.4.sp,
+                    color = PrimaryGreen
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            AppButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                text = "CANCEL",
+                variant = ButtonVariant.SECONDARY,
+                onClick = { onClose() }
+            )
+
+            AppButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                text = "APPLY",
+                variant = ButtonVariant.PRIMARY,
+                onClick = { onApply() },
+                isLoading = isPhoneNumberUpdating
+            )
+
+        }
+
+    }
 }
 
 @Composable
