@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -147,6 +148,15 @@ class Favourite : Fragment() {
                                 launchSingleTop = true
                                 restoreState = true
                             }
+                        },
+                        onContinueShopping = {
+                            findNavController().navigate(ApiRoute.Home) {
+                                popUpTo<ApiRoute.Home> {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
@@ -200,6 +210,8 @@ fun FavouriteList(
             ) {
                 Text(
                     text = product.name,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     fontSize = 16.sp,
                     fontFamily = SourceSansPro,
                     fontWeight = FontWeight.Medium,
@@ -293,7 +305,8 @@ fun FavouriteScreen(
     context: Context,
     rootView: View,
     anchor: View,
-    onNavigateToCart: () -> Unit
+    onNavigateToCart: () -> Unit,
+    onContinueShopping: () -> Unit
 ) {
     val products by viewModel.favouriteProducts.collectAsStateWithLifecycle()
     val isLoading by viewModel.isFavouritesLoading.collectAsStateWithLifecycle()
@@ -330,7 +343,11 @@ fun FavouriteScreen(
                     letterSpacing = 0.25.sp,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                EmptyFavourites()
+                EmptyFavourites(
+                    onContinueShopping = {
+                        onContinueShopping()
+                    }
+                )
             }
 
             else -> {

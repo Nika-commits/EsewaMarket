@@ -18,43 +18,43 @@
 
     <style name="InputHintTextStyle">
         <item name="android:fontFamily">@font/source_sans_regular</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">10sp</item>
         <item name="android:letterSpacing">0.02</item>
         <item name="android:textColor">@color/c8E90A6</item>
     </style>
 
     <style name="App.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-        <!-- Corners -->
         <item name="boxCornerRadiusTopStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
         <item name="boxCornerRadiusBottomStart">12dp</item>
         <item name="boxCornerRadiusBottomEnd">12dp</item>
-
-        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_height">wrap_content</item>
 
         <item name="android:layout_marginVertical">8dp</item>
 
         <item name="boxBackgroundColor">@color/inputBackground</item>
 
-        <!-- Border -->
         <item name="boxStrokeColor">@color/text_input</item>
         <item name="boxStrokeWidth">1dp</item>
         <item name="boxStrokeWidthFocused">1dp</item>
 
         <item name="strokeColor">@color/inputBorder</item>
 
-        <!-- Hint -->
         <item name="hintTextAppearance">@style/InputHintTextStyle</item>
 
-        <!-- Icons -->
         <item name="startIconTint">@color/lightGrey</item>
 
-        <!-- Error -->
         <item name="errorTextColor">@color/error</item>
         <item name="errorIconTint">@color/error</item>
         <item name="errorTextAppearance">@style/App.TextInputError</item>
     </style>
-    >
+
+    <style name="App.TextInputEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/source_sans_regular</item>
+        <item name="android:textColor">@color/lightGrey</item>
+        <item name="android:textColorHint">@color/textLight</item>
+    </style>
 
     <style name="App.TextInputError" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textColor">@color/error</item>
@@ -86,12 +86,31 @@
         <item name="android:insetBottom">0dp</item>
 
         <item name="backgroundTint">@color/textDark300</item>
-        <item name="strokeWidth">2dp</item>
+        <item name="strokeWidth">1dp</item>
         <item name="strokeColor">@color/lightGrey</item>
         <item name="cornerRadius">16dp</item>
 
         <item name="android:fontFamily">@font/source_sans_semibold</item>
         <item name="android:textColor">@color/surface</item>
+        <item name="android:textSize">16sp</item>
+
+        <item name="iconSize">24dp</item>
+        <item name="iconTint">@null</item>
+    </style>
+
+    <style name="App.OutlineButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+
+        <item name="backgroundTint">@color/surface</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="strokeColor">@color/lightGrey</item>
+        <item name="cornerRadius">16dp</item>
+
+        <item name="android:fontFamily">@font/source_sans_semibold</item>
+        <item name="android:textColor">@color/lightGrey</item>
         <item name="android:textSize">16sp</item>
 
         <item name="iconSize">24dp</item>

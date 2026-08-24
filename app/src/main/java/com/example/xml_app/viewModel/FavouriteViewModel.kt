@@ -67,6 +67,7 @@ class FavouriteViewModel(
                     val response = productRepository.getProduct(it)
 
                     if (!response.isSuccessful) {
+                        _isFavouritesLoading.value = false
                         Log.e(T, "$response")
                         throw HttpException(response)
                     }
@@ -85,6 +86,7 @@ class FavouriteViewModel(
             Log.d(T, "${_favouriteProducts.value}")
         } catch (e: Exception) {
             Log.e(T, "${e.message}")
+            _isFavouritesLoading.value = false
         } finally {
             _isFavouritesLoading.value = false
         }
@@ -92,12 +94,25 @@ class FavouriteViewModel(
 
     fun initializeUser() {
         viewModelScope.launch {
-            val firebaseUser = app.auth.currentUser ?: return@launch
-            val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
+            val firebaseUser = app.auth.currentUser
+
+            if (firebaseUser == null) {
+                _user.value = null
+                _favouriteProducts.value = emptyList()
+                _isFavouritesLoading.value = false
+                return@launch
+            }
+            val localUser = userRepository.getLocalUser(firebaseUser.uid)
+
+            if (localUser == null) {
+                _user.value = null
+                _favouriteProducts.value = emptyList()
+                _isFavouritesLoading.value = false
+                return@launch
+            }
 
             _user.value = localUser
             observeFavourites(localUser.uid)
-
         }
     }
 

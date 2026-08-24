@@ -19,6 +19,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -33,6 +34,7 @@ import com.example.xml_app.adapters.cart.CartCartItemsAdapter
 import com.example.xml_app.adapters.home.HomeRecommendedHeaderAdapter
 import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
+import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.utils.HomeConcatAdapterSpacing
@@ -121,7 +123,16 @@ class Cart : Fragment() {
         )
 
         cartCartItemsAdapter = CartCartItemsAdapter(
-            cartAdapter = cartAdapter
+            cartAdapter = cartAdapter,
+            onContinueShopping = {
+                findNavController().navigate(ApiRoute.Home) {
+                    popUpTo<ApiRoute.Home> {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         )
 
         recommendationHeaderAdapter = HomeRecommendedHeaderAdapter(

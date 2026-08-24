@@ -3,6 +3,7 @@ package com.example.xml_app.fragments
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -52,6 +53,7 @@ import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.utils.CustomSnackbar
 import com.example.xml_app.utils.HomeConcatAdapterSpacing
 import com.example.xml_app.viewModel.HomeViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -94,6 +96,11 @@ class Home : Fragment() {
         setupMostPopularRecyclerView()
         setupRecommendedProducts()
         setupHomeRecyclerview()
+
+        FirebaseAuth.getInstance()
+            .currentUser?.getIdToken(false)?.addOnSuccessListener {
+                Log.d("FirebaseToken", it.token ?: "No Auth Sessions")
+            }
     }
 
     private fun applyEdgeToEdgeInsets() {

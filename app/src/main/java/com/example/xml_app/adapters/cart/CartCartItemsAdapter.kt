@@ -9,7 +9,8 @@ import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.databinding.SectionCartCartItemsBinding
 
 class CartCartItemsAdapter(
-    val cartAdapter: CartAdapter
+    val cartAdapter: CartAdapter,
+    private val onContinueShopping: () -> Unit
 ) : RecyclerView.Adapter<CartCartItemsAdapter.ViewHolder>() {
     private var isEmpty = true
 
@@ -21,7 +22,8 @@ class CartCartItemsAdapter(
             SectionCartCartItemsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(
             binding,
-            cartAdapter
+            cartAdapter,
+            onContinueShopping
         )
     }
 
@@ -42,7 +44,8 @@ class CartCartItemsAdapter(
 
     class ViewHolder(
         private val binding: SectionCartCartItemsBinding,
-        cartAdapter: CartAdapter
+        cartAdapter: CartAdapter,
+        onContinueShopping: () -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.rvCartProducts.apply {
@@ -50,6 +53,9 @@ class CartCartItemsAdapter(
                 layoutManager = LinearLayoutManager(context)
                 itemAnimator = null
                 isNestedScrollingEnabled = false
+            }
+            binding.emptyCart.btnContinueShopping.setOnClickListener {
+                onContinueShopping()
             }
         }
 
