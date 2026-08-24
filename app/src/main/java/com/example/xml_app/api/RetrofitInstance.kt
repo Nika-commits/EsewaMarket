@@ -32,4 +32,8 @@ object RetrofitInstance {
     val addressApi: MapboxApi by lazy {
         mapboxRetrofit.create(MapboxApi::class.java)
     }
+
+    val orderApi: OrderApi by lazy {
+        retrofit.create(OrderApi::class.java)
+    }
 }
