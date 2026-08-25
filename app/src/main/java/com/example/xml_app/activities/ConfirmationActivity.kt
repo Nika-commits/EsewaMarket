@@ -7,20 +7,36 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
+import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.TextDark200
+import com.example.xml_app.utils.styles.TextDark300
+import com.example.xml_app.utils.styles.TextDark400
+import com.example.xml_app.utils.styles.TextLight
 import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.viewModel.ConfirmationViewModel
@@ -51,7 +67,9 @@ class ConfirmationActivity : AppCompatActivity() {
 
         setContent {
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(OffWhiteBackground),
                 topBar = {
                     AppTopBar(
                         title = "Confirmation",
@@ -61,8 +79,10 @@ class ConfirmationActivity : AppCompatActivity() {
                     )
                 }
             ) { innerPadding ->
+                val order by viewModel.orderResponse.collectAsStateWithLifecycle()
                 val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-                if (isLoading) {
+                when  {
+                    isLoading ->
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -71,17 +91,18 @@ class ConfirmationActivity : AppCompatActivity() {
                             strokeWidth = 8.dp
                         )
                     }
-                } else {
-                    val order by viewModel.orderResponse.collectAsStateWithLifecycle()
+                }
+                order != null -> {
                     Column(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .padding(16.dp)
-                            .background(Surface)
-                            .padding(16.dp),
-
-                        ) {
-                        Text("Confirmation Activity")
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        OrderResponseCard(
+                            order
+                        )
                     }
                 }
             }
@@ -94,10 +115,127 @@ fun OrderResponseCard(
     order: OrderResponse
 ) {
 
+    Card(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Surface
+        ),
+
+        ) {
+
+        Column(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                "Payment Details",
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                letterSpacing = 0.1.sp
+            )
+
+            order.orderItems.forEach { item ->
+                ProductItem(item)
+            }
+
+            InfoRow(
+                "Delivery Address",
+                order.address.substringBefore(',')
+            )
+
+            InfoRow(
+                "Payment Option",
+                order.paymentOptions
+            )
+
+            InfoRow(
+                "Vehicle Number",
+                order.vehicleNumber
+            )
+
+            InfoRow(
+                "Delivery Charge",
+                order.deliveryCharge.toString()
+            )
+
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = TextLight
+            )
+            InfoRow(
+                "Total Paying Amount",
+                order.totalPrice.toString()
+            )
+        }
+    }
 
 }
 
-@Preview
+@Composable
+fun ProductItem(
+    orderItemResponse: OrderItemResponse
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            "Product Item (${orderItemResponse.quantity})",
+            color = TextDark300,
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
+            letterSpacing = 0.4.sp
+        )
+
+        InfoRow(
+            "Name",
+            orderItemResponse.productName
+        )
+
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = TextLight
+        )
+    }
+
+}
+
+@Composable()
+fun InfoRow(
+    label: String,
+    value: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            label,
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            color = TextDark200,
+            letterSpacing = 0.4.sp
+        )
+
+        Text(
+            value,
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            color = TextDark400,
+            letterSpacing = 0.1.sp
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun OrderResponseCardPreview() {
     val orderItem1 = OrderItemResponse(
@@ -109,7 +247,7 @@ fun OrderResponseCardPreview() {
     val orderItem2 = OrderItemResponse(
         productId = 1,
         productName = "Addidas Sambas - White",
-        quantity = 2,
+        quantity = 1,
         price = 4000
     )
     val response = OrderResponse(
