@@ -4,7 +4,7 @@ data class CreateOrderRequest(
     val address: String,
     val phone: String,
     val paymentOptions: PaymentOptions,
-    val promocode: String,
+    val promocode: String?,
     val items: List<CreateOrderItemRequest>
 )
 

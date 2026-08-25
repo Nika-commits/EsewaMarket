@@ -6,11 +6,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.models.Product
 import com.example.xml_app.repository.CartRepository
+import com.example.xml_app.repository.OrderRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CheckoutAuthState
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.CreateUserRequest
+import com.example.xml_app.utils.dto.request.CreateOrderItemRequest
+import com.example.xml_app.utils.dto.request.CreateOrderRequest
+import com.example.xml_app.utils.dto.request.PaymentOptions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -31,6 +35,7 @@ class CheckoutViewModel(
     private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(database.userDao())
     private val productRepository = ProductRepository()
+    private val orderRepository = OrderRepository()
     private val _address = MutableStateFlow<String?>(null)
     val address = _address.asStateFlow()
 
@@ -40,8 +45,9 @@ class CheckoutViewModel(
     val promoCodeResult = _promoCodeResult.asStateFlow()
     private val _promoCode = MutableStateFlow<String?>(null)
     val promoCode = _promoCode.asStateFlow()
-    private val _paymentOption = MutableStateFlow<String?>(null)
-    val paymentOption = _paymentOption.asStateFlow()
+
+    //    private val _paymentOption = MutableStateFlow<String?>(null)
+//    val paymentOption = _paymentOption.asStateFlow()
     private val _isCheckingPromoCode = MutableStateFlow(false)
     val isCheckingPromoCode = _isCheckingPromoCode.asStateFlow()
     private val _isOrdering = MutableStateFlow(false)
@@ -49,7 +55,6 @@ class CheckoutViewModel(
 
     private val _isUpdatingUser = MutableStateFlow(false)
     val isUpdatingUser = _isUpdatingUser.asStateFlow()
-
     private val _phoneNumberResult = MutableStateFlow<Boolean?>(null)
     val phoneNumberResult = _phoneNumberResult.asStateFlow()
 
@@ -162,7 +167,10 @@ class CheckoutViewModel(
                     _phoneNumberResult.value = false
                     return@launch
                 }
-                initializeUser()
+//                initializeUser()
+                _authState.value = CheckoutAuthState.Authorized(updatedUser)
+                _phoneNumber.value = updatedUser.phoneNumber
+                _phoneNumberResult.value = true
             } catch (e: Exception) {
                 _phoneNumberResult.value = false
             } finally {
@@ -170,48 +178,66 @@ class CheckoutViewModel(
             }
         }
     }
-//
-//    fun placeOrder() {
-//        viewModelScope.launch {
-//            _isOrdering.value = true
-//            try {
-//                val firebaseUser = app.auth.currentUser
-//                if (firebaseUser == null) {
-//                    Log.e("Checkout", "User is not authenticated")
-//                    return@launch
-//                }
-//
-//                val idToken = firebaseUser.getIdToken(false).await().token
-//                if (idToken == null) {
-//                    Log.e("Checkout", "Unable to get Firebase Token")
-//                    return@launch
-//                }
-//
-//                val orderItems: List<CreateOrderItemRequest> =
-//                    _productsInCart.value.map { product ->
-//                        CreateOrderItemRequest(
-//                            productId = product.id,
-//                            quantity = _productQuantityMap.value[product.id] ?: 1
-//                        )
-//                    }
-//
-//                if (orderItems.isEmpty()) {
-//                    Log.e("Checkout", "Empty Cart")
-//                    return@launch
-//                }
-//                if(_address.value == null){
-//                    return@launch
-//                }
-//                val request = CreateOrderRequest(
-//                    address = _address.value,
-//                    phone = "1234567890",
-//                    paymentOptions =
-//                )
-//
-//            } catch (e: Exception) {
-//
-//            }
-//        }
-//    }
+
+    suspend fun placeOrder(
+        paymentOptions: PaymentOptions
+    ): Int? {
+        _isOrdering.value = true
+        return try {
+            val firebaseUser = app.auth.currentUser
+            if (firebaseUser == null) {
+                Log.e("Checkout", "User is not authenticated")
+                return null
+            }
+
+            val idToken = firebaseUser.getIdToken(false).await().token
+            if (idToken == null) {
+                Log.e("Checkout", "Unable to get Firebase Token")
+                return null
+            }
+
+            val orderItems: List<CreateOrderItemRequest> =
+                _productsInCart.value.map { product ->
+                    CreateOrderItemRequest(
+                        productId = product.id,
+                        quantity = _productQuantityMap.value[product.id] ?: 1
+                    )
+                }
+
+            if (orderItems.isEmpty()) {
+                Log.e("Checkout", "Empty Cart")
+                return null
+            }
+            if (_address.value == null) {
+                return null
+            }
+            val address = _address.value ?: return null
+
+            val request = CreateOrderRequest(
+                address = address,
+                phone = "1234567890",
+                paymentOptions = paymentOptions,
+                promocode = if (_promoCode.value != null) _promoCode.value else null,
+                items = orderItems
+            )
+            val response = orderRepository.postOrder(
+                token = idToken,
+                request = request
+            )
+
+            if (!response.isSuccessful) {
+                Log.e("Checkout", "$response.code()")
+                return null
+            }
+            if (response.body() == null) return null
+
+            val id = response.body()?.id
+            return id
+        } catch (e: Exception) {
+            Log.e("Checkout", "${e.message}")
+        } finally {
+            _isOrdering.value = false
+        }
+    }
 
 }

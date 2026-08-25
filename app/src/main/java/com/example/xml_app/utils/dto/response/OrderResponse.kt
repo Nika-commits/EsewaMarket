@@ -3,7 +3,7 @@ package com.example.xml_app.utils.dto.response
 import com.example.xml_app.utils.dto.request.PaymentOptions
 
 data class OrderResponse(
-    val id: String,
+    val id: Int,
     val address: String,
     val phone: String,
     val paymentOptions: PaymentOptions,
@@ -16,7 +16,7 @@ data class OrderResponse(
 )
 
 data class OrderItemResponse(
-    val productId: String,
+    val productId: Int,
     val productName: String,
     val quantity: Int,
     val price: Int

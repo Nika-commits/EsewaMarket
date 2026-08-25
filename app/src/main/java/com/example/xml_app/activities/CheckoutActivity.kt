@@ -1,5 +1,6 @@
 package com.example.xml_app.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -60,6 +61,7 @@ import com.example.xml_app.models.Product
 import com.example.xml_app.utils.CheckoutAuthState
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.UserResponse
+import com.example.xml_app.utils.dto.request.PaymentOptions
 import com.example.xml_app.utils.styles.LightCharcoal
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
@@ -110,6 +112,7 @@ class CheckoutActivity : AppCompatActivity() {
                 is CheckoutAuthState.Authorized -> {
                     val user = (authState as CheckoutAuthState.Authorized).user
                     CheckoutScreen(
+                        context = this,
                         viewModel = viewModel,
                         user = user,
                         onBackClick = {
@@ -141,6 +144,7 @@ class CheckoutActivity : AppCompatActivity() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationStyleApi::class)
 @Composable
 fun CheckoutScreen(
+    context: Context,
     viewModel: CheckoutViewModel,
     user: UserResponse,
     onBackClick: () -> Unit,
@@ -177,6 +181,7 @@ fun CheckoutScreen(
     val phoneNumber by viewModel.phoneNumber.collectAsStateWithLifecycle()
     val phoneNumberResult by viewModel.phoneNumberResult.collectAsStateWithLifecycle()
     val isPhoneNumberUpdating by viewModel.isUpdatingUser.collectAsStateWithLifecycle()
+    val isOrdering by viewModel.isOrdering.collectAsStateWithLifecycle()
 
 
     Scaffold(
@@ -264,6 +269,18 @@ fun CheckoutScreen(
                             showPhoneNumberSheet = true
                             return@PaymentOptionsList
                         }
+                        scope.launch {
+                            val orderId = viewModel.placeOrder(
+                                PaymentOptions.Cash_On_Delivery
+                            )
+                            if (orderId == null) {
+                                Log.e("Checkout", "OrderId is null")
+                                return@launch
+                            }
+                            ConfirmationActivity.startActivity(context, orderId)
+                        }
+
+
                     },
                     onPayWithEsewa = {
                         if (user.address == null) {
@@ -274,6 +291,17 @@ fun CheckoutScreen(
                         if (user.phoneNumber == null) {
                             showPhoneNumberSheet = true
                             return@PaymentOptionsList
+                        }
+
+                        scope.launch {
+                            val orderId = viewModel.placeOrder(
+                                PaymentOptions.Esewa
+                            )
+                            if (orderId == null) {
+                                Log.e("Checkout", "OrderId is null")
+                                return@launch
+                            }
+                            ConfirmationActivity.startActivity(context, orderId)
                         }
                     }
                 )
