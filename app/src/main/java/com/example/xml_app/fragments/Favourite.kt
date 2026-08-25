@@ -414,26 +414,30 @@ fun FavouriteScreen(
                         fontSize = 14.sp,
                         letterSpacing = 1.sp,
                         textAlign = TextAlign.End,
-                        modifier = Modifier.clickable {
-                            val count = selectedSet.size
-                            val favouriteIdsCopy = selectedSet.toSet()
-                            selectedSet.forEach {
-                                viewModel.toggleFavourite(it)
-                            }
-                            selectedSet.clear()
-                            CustomSnackbar.show(
-                                view = rootView,
-                                context = context,
-                                text = "($count) items has been deleted",
-                                actionText = "UNDO",
-                                anchorView = anchor,
-                                action = {
-                                    favouriteIdsCopy.forEach {
-                                        viewModel.toggleFavourite(it)
-                                    }
+                        modifier = Modifier
+                            .clickable {
+                                val count = selectedSet.size
+                                val favouriteIdsCopy = selectedSet.toSet()
+                                selectedSet.forEach {
+                                    viewModel.toggleFavourite(it)
                                 }
+                                selectedSet.clear()
+                                CustomSnackbar.show(
+                                    view = rootView,
+                                    context = context,
+                                    text = "($count) items has been deleted",
+                                    actionText = "UNDO",
+                                    anchorView = anchor,
+                                    action = {
+                                        favouriteIdsCopy.forEach {
+                                            viewModel.toggleFavourite(it)
+                                        }
+                                    }
+                                )
+                            }
+                            .visible(
+                                parentState == ToggleableState.On || parentState == ToggleableState.Indeterminate
                             )
-                        }
                     )
                 }
                 LazyColumn(
