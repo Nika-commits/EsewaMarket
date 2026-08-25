@@ -71,7 +71,7 @@ fun AppButton(
         )
         contentPadding(
             horizontal = 16.dp,
-            vertical = 8.dp
+            vertical = 12.dp
         )
         border(
             width = when (variant) {

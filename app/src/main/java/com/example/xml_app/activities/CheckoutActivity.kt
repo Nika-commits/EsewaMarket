@@ -212,6 +212,7 @@ fun CheckoutScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
+
             item {
                 DeliveryAddress(
                     address = user.address,
@@ -232,6 +233,7 @@ fun CheckoutScreen(
                     letterSpacing = 0.25.sp
                 )
             }
+
             items(products) { product ->
                 val count = productQuantityMap[product.id] ?: return@items
                 OrderSummaryItem(
@@ -476,16 +478,14 @@ fun OrderingDialog() {
         )
     ) {
         Card(
-            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Surface
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Surface)
                 .height(200.dp)
-                .padding(16.dp)
-            ,
+                .padding(20.dp),
+            shape = RoundedCornerShape(16.dp),
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),

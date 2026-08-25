@@ -8,6 +8,7 @@ import com.example.xml_app.repository.OrderRepository
 import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -17,6 +18,7 @@ class ConfirmationViewModel(
     private val app = getApplication<CustomApplicationContext>()
     private val orderRepository = OrderRepository()
     private val _uiState = MutableStateFlow<ConfirmationUiState>(ConfirmationUiState.Loading)
+    val uiState = _uiState.asStateFlow()
 
     fun getOrder(orderId: Int) {
         viewModelScope.launch {
@@ -45,6 +47,7 @@ class ConfirmationViewModel(
                     return@launch
                 }
                 val order = orderResponse.body()
+                Log.d("Confirmation", "$order")
                 if (order == null) {
                     _uiState.value = ConfirmationUiState.Error
                     return@launch

@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
@@ -37,8 +37,10 @@ import com.example.xml_app.utils.styles.TextDark200
 import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.TextLight
+import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.AppTopBar
+import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.ConfirmationViewModel
 
 class ConfirmationActivity : AppCompatActivity() {
@@ -68,8 +70,7 @@ class ConfirmationActivity : AppCompatActivity() {
         setContent {
             Scaffold(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(OffWhiteBackground),
+                    .fillMaxSize(),
                 topBar = {
                     AppTopBar(
                         title = "Confirmation",
@@ -77,32 +78,50 @@ class ConfirmationActivity : AppCompatActivity() {
                             onBackPressedDispatcher.onBackPressed()
                         }
                     )
-                }
+                },
+                containerColor = OffWhiteBackground
             ) { innerPadding ->
-                val order by viewModel.orderResponse.collectAsStateWithLifecycle()
-                val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-                when  {
-                    isLoading ->
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        AppLoadingIndicator(
-                            size = 100.dp,
-                            strokeWidth = 8.dp
-                        )
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                when (val state = uiState) {
+                    ConfirmationUiState.Loading ->
+                        Column(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            AppLoadingIndicator(
+                                size = 100.dp,
+                                strokeWidth = 8.dp
+                            )
+                        }
+
+                    is ConfirmationUiState.Success -> {
+                        Column(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            OrderResponseCard(
+                                state.order
+                            )
+
+                            AppButton(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                variant = ButtonVariant.PRIMARY,
+                                onClick = {},
+                                text = "CONFIRM"
+                            )
+                        }
                     }
-                }
-                order != null -> {
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        OrderResponseCard(
-                            order
-                        )
+
+                    ConfirmationUiState.Error -> {
+                        finish()
                     }
                 }
             }
@@ -114,7 +133,6 @@ class ConfirmationActivity : AppCompatActivity() {
 fun OrderResponseCard(
     order: OrderResponse
 ) {
-
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -150,12 +168,17 @@ fun OrderResponseCard(
 
             InfoRow(
                 "Payment Option",
-                order.paymentOptions
+                order.paymentOption
             )
 
             InfoRow(
                 "Vehicle Number",
                 order.vehicleNumber
+            )
+
+            InfoRow(
+                "Discount",
+                order.discount.toString()
             )
 
             InfoRow(
@@ -206,7 +229,7 @@ fun ProductItem(
 
 }
 
-@Composable()
+@Composable
 fun InfoRow(
     label: String,
     value: String
@@ -254,7 +277,7 @@ fun OrderResponseCardPreview() {
         id = 1,
         address = "Gothater-8, Kageshori Manohora, Kathmandu, Bagmati",
         phone = "9841890609",
-        paymentOptions = "Esewa",
+        paymentOption = "Esewa",
         vehicleNumber = "BA 08672",
         deliveryCharge = 200,
         discount = 100,

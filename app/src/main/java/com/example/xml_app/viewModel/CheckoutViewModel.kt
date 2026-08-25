@@ -90,10 +90,10 @@ class CheckoutViewModel(
                     return@launch
                 }
                 Log.e("Checkout", "$serverUser")
-                _authState.value = CheckoutAuthState.Authorized(serverUser)
                 _phoneNumber.value = serverUser.phoneNumber
                 _address.value = serverUser.address
                 loadCart(serverUser.id)
+                _authState.value = CheckoutAuthState.Authorized(serverUser)
             } catch (e: Exception) {
                 Log.e("Checkout", e.message ?: "Error Occurred during Getting User")
                 _authState.value = CheckoutAuthState.Unauthorized

@@ -4,7 +4,7 @@ data class OrderResponse(
     val id: Int,
     val address: String,
     val phone: String,
-    val paymentOptions: String,
+    val paymentOption: String,
     val vehicleNumber: String,
     val deliveryCharge: Int,
     val discount: Int,
