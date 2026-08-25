@@ -81,7 +81,7 @@ class CartViewModel(
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    fun initializeUser() {
+    fun initializeUserAndObserveCart() {
         viewModelScope.launch {
             val firebaseUser = app.auth.currentUser ?: return@launch
             val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
@@ -98,8 +98,14 @@ class CartViewModel(
         _cartId.value = cart.uid
         database.cartDao().observeCartItems(cart.uid)
             .collect { cartItems ->
+                val oldProductIds = _cartItems.value
+                    .map { it.productId }
+                    .toSet()
+                val newProductIds = cartItems.map { it.productId }.toSet()
                 _cartItems.value = cartItems
-                getProductsInCart()
+                if (oldProductIds != newProductIds) {
+                    getProductsInCart()
+                }
             }
     }
 
