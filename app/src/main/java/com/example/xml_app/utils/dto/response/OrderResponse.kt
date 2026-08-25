@@ -1,12 +1,10 @@
 package com.example.xml_app.utils.dto.response
 
-import com.example.xml_app.utils.dto.request.PaymentOptions
-
 data class OrderResponse(
     val id: Int,
     val address: String,
     val phone: String,
-    val paymentOptions: PaymentOptions,
+    val paymentOptions: String,
     val vehicleNumber: String,
     val deliveryCharge: Int,
     val discount: Int,
