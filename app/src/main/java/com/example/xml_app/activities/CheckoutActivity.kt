@@ -33,6 +33,7 @@ import androidx.compose.foundation.style.ExperimentalFoundationStyleApi
 import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.style.styleable
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -54,6 +55,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -474,16 +476,21 @@ fun OrderingDialog() {
         )
     ) {
         Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Surface
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Surface)
                 .height(200.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
+                .padding(16.dp)
+            ,
         ) {
             Column(
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceAround
             ) {
                 AppLoadingIndicator(
                     size = 60.dp,
@@ -502,6 +509,12 @@ fun OrderingDialog() {
             }
         }
     }
+}
+
+@Preview(showBackground = false, showSystemUi = true)
+@Composable
+fun OrderDialog() {
+    OrderingDialog()
 }
 
 @Composable
