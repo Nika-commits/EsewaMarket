@@ -92,6 +92,7 @@ class CheckoutViewModel(
                 Log.e("Checkout", "$serverUser")
                 _authState.value = CheckoutAuthState.Authorized(serverUser)
                 _phoneNumber.value = serverUser.phoneNumber
+                _address.value = serverUser.address
                 loadCart(serverUser.id)
             } catch (e: Exception) {
                 Log.e("Checkout", e.message ?: "Error Occurred during Getting User")
@@ -208,25 +209,24 @@ class CheckoutViewModel(
                 Log.e("Checkout", "Empty Cart")
                 return null
             }
-            if (_address.value == null) {
-                return null
-            }
+
             val address = _address.value ?: return null
 
             val request = CreateOrderRequest(
                 address = address,
                 phone = "1234567890",
-                paymentOptions = paymentOptions,
+                paymentOption = paymentOptions,
                 promocode = if (_promoCode.value != null) _promoCode.value else null,
                 items = orderItems
             )
+            Log.d("Checkout", request.toString())
             val response = orderRepository.postOrder(
                 token = idToken,
                 request = request
             )
 
             if (!response.isSuccessful) {
-                Log.e("Checkout", "$response.code()")
+                Log.e("Checkout", "${response.code()}")
                 return null
             }
             if (response.body() == null) return null

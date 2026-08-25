@@ -9,7 +9,7 @@ class OrderRepository {
         token: String,
         request: CreateOrderRequest
     ) = RetrofitInstance.orderApi.postOrder(
-        token,
+        "Bearer $token",
         request
     )
 
@@ -18,12 +18,12 @@ class OrderRepository {
         token: String
     ) = RetrofitInstance.orderApi.getOrderById(
         id,
-        token
+        "Bearer $token"
     )
 
     suspend fun getOrders(
         token: String
     ) = RetrofitInstance.orderApi.getOrders(
-        token
+        "Bearer $token"
     )
 }

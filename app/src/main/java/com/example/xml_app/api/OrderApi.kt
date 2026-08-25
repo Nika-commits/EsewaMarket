@@ -17,7 +17,7 @@ interface OrderApi {
         @Body request: CreateOrderRequest
     ): Response<OrderResponse>
 
-    @GET("/api/order/{id")
+    @GET("/api/order/{id}")
     suspend fun getOrderById(
         @Path("id") id: Int,
         @Header("Authorization") authorization: String

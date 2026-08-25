@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.repository.OrderRepository
-import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.response.OrderResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +17,6 @@ class ConfirmationViewModel(
 ) : AndroidViewModel(application) {
     private val app = getApplication<CustomApplicationContext>()
     private val orderRepository = OrderRepository()
-    private val userRespository = UserRepository(app.database.userDao())
     private val _orderResponse = MutableStateFlow<OrderResponse?>(null)
     val orderResponse = _orderResponse.asStateFlow()
     private var _isLoading = MutableStateFlow(true)

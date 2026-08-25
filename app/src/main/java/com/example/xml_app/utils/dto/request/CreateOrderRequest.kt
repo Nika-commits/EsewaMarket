@@ -3,7 +3,7 @@ package com.example.xml_app.utils.dto.request
 data class CreateOrderRequest(
     val address: String,
     val phone: String,
-    val paymentOptions: PaymentOptions,
+    val paymentOption: PaymentOptions,
     val promocode: String?,
     val items: List<CreateOrderItemRequest>
 )

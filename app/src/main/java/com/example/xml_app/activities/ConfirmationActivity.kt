@@ -47,6 +47,8 @@ class ConfirmationActivity : AppCompatActivity() {
         val orderId = intent.getIntExtra(ID, -1)
         if (orderId == -1) finish()
 
+        viewModel.getOrder(orderId)
+
         setContent {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
