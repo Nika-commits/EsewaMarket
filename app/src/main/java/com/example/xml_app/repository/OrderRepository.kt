@@ -22,8 +22,10 @@ class OrderRepository {
     )
 
     suspend fun getOrders(
-        token: String
+        token: String,
+        status: String
     ) = RetrofitInstance.orderApi.getOrders(
-        "Bearer $token"
+        "Bearer $token",
+        status
     )
 }

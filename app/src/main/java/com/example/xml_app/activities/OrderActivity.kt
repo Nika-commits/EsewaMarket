@@ -42,6 +42,7 @@ class OrderActivity : AppCompatActivity() {
         Complete("Complete")
     }
 
+    //changes
     private val viewModel: OrderViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
