@@ -46,6 +46,30 @@ android {
                 "MapboxAccessToken",
                 providers.gradleProperty("MAPBOX_ACCESS_TOKEN").get()
             )
+
+            buildConfigField(
+                "String",
+                "EsewaClientId",
+                providers.gradleProperty("ESEWA_CLIENT_SECRET").get()
+            )
+
+            buildConfigField(
+                "String",
+                "EsewaClientSecret",
+                providers.gradleProperty("ESEWA_CLIENT_SECRET").get()
+            )
+
+            buildConfigField(
+                "String",
+                "EsewaIntentProductCode",
+                providers.gradleProperty("ESEWA_INTENT_PRODUCT_CODE").get()
+            )
+
+            buildConfigField(
+                "String",
+                "EsewaClientSecret",
+                providers.gradleProperty("ESEWA_INTENT_CLIENT_SECRET").get()
+            )
         }
         debug {
             buildConfigField(
@@ -185,4 +209,8 @@ dependencies {
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.paging.runtime)
+
+    //esewa
+    debugImplementation(files("libs/eSewaPaymentSdk-debug.aar"))
+    releaseImplementation(files("libs/eSewaPaymentSdk-release.aar"))
 }

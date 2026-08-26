@@ -34,7 +34,6 @@ class FavouriteViewModel(
     private val userRepository = UserRepository(database.userDao())
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
     private val cartRepository = CartRepository(database.cartDao())
-
     private var _isFavouritesLoading = MutableStateFlow(true)
     val isFavouritesLoading = _isFavouritesLoading.asStateFlow()
 
@@ -119,9 +118,26 @@ class FavouriteViewModel(
     private fun observeFavourites(userId: Int) {
         viewModelScope.launch {
             favouriteRepository.observeFavouriteIds(userId)
-                .collect {
-                    _favouriteIds.value = it
-                    getFavouriteProducts()
+                .collect { newFavouriteIds ->
+                    val previousIds = _favouriteIds.value.toSet()
+                    val newIds = newFavouriteIds.toSet()
+
+                    val addedIds = newIds - previousIds
+                    val removedIds = previousIds - newIds
+                    _favouriteIds.value = newFavouriteIds
+                    if (removedIds.isNotEmpty()) {
+                        _favouriteProducts.update { products ->
+                            products.filterNot { it.product.id in removedIds }
+                        }
+                    }
+                    if (addedIds.isNotEmpty()) {
+                        getFavouriteProducts()
+                    }
+
+                    if (newIds.isEmpty()) {
+                        _favouriteProducts.value = emptyList()
+                        _isFavouritesLoading.value = false
+                    }
                 }
         }
     }

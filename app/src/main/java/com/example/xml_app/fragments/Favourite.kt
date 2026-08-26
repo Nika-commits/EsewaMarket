@@ -133,7 +133,6 @@ class Favourite : Fragment() {
         composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-
                 MaterialTheme {
                     FavouriteScreen(
                         viewModel,
