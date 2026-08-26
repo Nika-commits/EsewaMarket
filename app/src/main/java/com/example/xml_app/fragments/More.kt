@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.MainActivity
+import com.example.xml_app.activities.OrderActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
@@ -101,6 +102,13 @@ class More : Fragment() {
         val myOrder = binding.authLayout.myOrder
         myOrder.ivIcon.setImageResource(R.drawable.ic_myorder)
         myOrder.tvName.text = "My Order"
+
+        myOrder.root.setOnClickListener {
+            Intent(requireContext(), OrderActivity::class.java)
+                .also {
+                    startActivity(it)
+                }
+        }
 
         val myReturn = binding.authLayout.myReturn
         myReturn.ivIcon.setImageResource(R.drawable.ic_myreturn)
