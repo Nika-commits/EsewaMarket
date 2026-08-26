@@ -50,7 +50,7 @@ android {
             buildConfigField(
                 "String",
                 "EsewaClientId",
-                providers.gradleProperty("ESEWA_CLIENT_SECRET").get()
+                providers.gradleProperty("ESEWA_CLIENT_ID").get()
             )
 
             buildConfigField(
@@ -67,7 +67,7 @@ android {
 
             buildConfigField(
                 "String",
-                "EsewaClientSecret",
+                "EsewaIntentClientSecret",
                 providers.gradleProperty("ESEWA_INTENT_CLIENT_SECRET").get()
             )
         }
@@ -76,6 +76,29 @@ android {
                 "String",
                 "MapboxAccessToken",
                 providers.gradleProperty("MAPBOX_ACCESS_TOKEN").get()
+            )
+            buildConfigField(
+                "String",
+                "EsewaClientId",
+                providers.gradleProperty("ESEWA_CLIENT_ID").get()
+            )
+
+            buildConfigField(
+                "String",
+                "EsewaClientSecret",
+                providers.gradleProperty("ESEWA_CLIENT_SECRET").get()
+            )
+
+            buildConfigField(
+                "String",
+                "EsewaIntentProductCode",
+                providers.gradleProperty("ESEWA_INTENT_PRODUCT_CODE").get()
+            )
+
+            buildConfigField(
+                "String",
+                "EsewaIntentSecret",
+                providers.gradleProperty("ESEWA_INTENT_CLIENT_SECRET").get()
             )
         }
     }
@@ -211,6 +234,7 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
 
     //esewa
+    implementation("com.squareup.okhttp3:logging-interceptor:5.5.0")
     debugImplementation(files("libs/eSewaPaymentSdk-debug.aar"))
     releaseImplementation(files("libs/eSewaPaymentSdk-release.aar"))
 }

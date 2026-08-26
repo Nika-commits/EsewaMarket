@@ -3,6 +3,7 @@ package com.example.xml_app.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -27,8 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.xml_app.BuildConfig
 import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.utils.SourceSansPro
+import com.example.xml_app.utils.dto.request.PaymentOptions
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import com.example.xml_app.utils.styles.OffWhiteBackground
@@ -42,6 +45,9 @@ import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.ConfirmationViewModel
+import com.f1soft.esewapaymentsdk.EsewaConfiguration
+import com.f1soft.esewapaymentsdk.EsewaPayment
+import com.f1soft.esewapaymentsdk.ui.screens.EsewaPaymentActivity
 
 class ConfirmationActivity : AppCompatActivity() {
     companion object {
@@ -114,7 +120,18 @@ class ConfirmationActivity : AppCompatActivity() {
                                     .padding(16.dp)
                                     .fillMaxWidth(),
                                 variant = ButtonVariant.PRIMARY,
-                                onClick = {},
+                                onClick = {
+                                    if (state.order.paymentOption == PaymentOptions.Esewa.toString()) {
+                                        val eSewaPayment = EsewaPayment(
+                                            amount = state.order.totalPrice.toString(),
+                                            productName = "Product1",
+                                            productUniqueId = "1",
+                                        )
+                                        initiateEsewaPayment(eSewaPayment = eSewaPayment)
+                                    } else {
+
+                                    }
+                                },
                                 text = "CONFIRM"
                             )
                         }
@@ -126,6 +143,30 @@ class ConfirmationActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun initiateEsewaPayment(
+        eSewaPayment: EsewaPayment
+    ) {
+        Log.d("Esewa", BuildConfig.EsewaClientId)
+        Log.d("Esewa", BuildConfig.EsewaIntentSecret)
+        Log.d("Esewa", EsewaConfiguration.ENVIRONMENT_TEST)
+        val eSewaConfiguration = EsewaConfiguration(
+            clientId = BuildConfig.EsewaClientId,
+            secretKey = BuildConfig.EsewaClientSecret,
+            environment = EsewaConfiguration.ENVIRONMENT_TEST
+        )
+
+
+        val intent = Intent(this, EsewaPaymentActivity::class.java).apply {
+            putExtra(EsewaConfiguration.ESEWA_CONFIGURATION, eSewaConfiguration)
+            putExtra(EsewaPayment.ESEWA_PAYMENT, eSewaPayment)
+        }
+        startActivity(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }
 

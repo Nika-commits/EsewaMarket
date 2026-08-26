@@ -4,9 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xml_app.BuildConfig
 import com.example.xml_app.repository.OrderRepository
 import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.utils.CustomApplicationContext
+import com.f1soft.esewapaymentsdk.EsewaConfiguration
+import com.f1soft.esewapaymentsdk.EsewaPayment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +22,6 @@ class ConfirmationViewModel(
     private val orderRepository = OrderRepository()
     private val _uiState = MutableStateFlow<ConfirmationUiState>(ConfirmationUiState.Loading)
     val uiState = _uiState.asStateFlow()
-
     fun getOrder(orderId: Int) {
         viewModelScope.launch {
             _uiState.value = ConfirmationUiState.Loading
@@ -58,5 +60,16 @@ class ConfirmationViewModel(
                 _uiState.value = ConfirmationUiState.Error
             }
         }
+    }
+
+    fun makeEsewaPayment(
+        eSewaPayment: EsewaPayment
+    ) {
+        val eSewaConfiguration: EsewaConfiguration = EsewaConfiguration(
+            clientId = BuildConfig.EsewaClientId,
+            secretKey = BuildConfig.EsewaClientSecret,
+            environment = EsewaConfiguration.ENVIRONMENT_TEST
+        )
+
     }
 }
