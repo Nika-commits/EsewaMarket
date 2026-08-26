@@ -1,0 +1,136 @@
+package com.example.xml_app.activities
+
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.xml_app.utils.SourceSansPro
+import com.example.xml_app.utils.styles.OffWhiteBackground
+import com.example.xml_app.utils.styles.PrimaryGreen
+import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.TextDark200
+import com.example.xml_app.utils.styles.components.AppTopBar
+import com.example.xml_app.viewModel.OrderViewModel
+
+class OrderActivity : AppCompatActivity() {
+    enum class OrderFilterType(val label: String) {
+        ALL("All"),
+        PENDING("Pending"),
+        Complete("Complete")
+    }
+
+    private val viewModel: OrderViewModel by viewModels()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                containerColor = OffWhiteBackground,
+                topBar = {
+                    AppTopBar(
+                        "My Order",
+                        onBackClick = {
+                            onBackPressedDispatcher.onBackPressed()
+                        }
+                    )
+                }
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    val filter by viewModel.filter.collectAsStateWithLifecycle()
+                    OrderFilter(
+                        selected = filter,
+                        onStatusSelect = { newFilter ->
+                            viewModel.changeFilter(newFilter)
+                        }
+                    )
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+fun OrderFilter(
+    modifier: Modifier = Modifier,
+    selected: OrderActivity.OrderFilterType,
+    onStatusSelect: (OrderActivity.OrderFilterType) -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Surface)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        OrderActivity.OrderFilterType.entries.forEach { filterType ->
+            FilterTab(
+                text = filterType.label,
+                selected = selected == filterType,
+                onClick = {
+                    onStatusSelect(filterType)
+                }
+            )
+        }
+
+    }
+}
+
+@Composable
+fun FilterTab(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text,
+        fontFamily = SourceSansPro,
+        fontSize = if (selected) 16.sp else 14.sp,
+        fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
+        color = if (selected) PrimaryGreen else TextDark200,
+        letterSpacing = if (selected) 0.15.sp else 0.25.sp,
+        modifier = modifier
+            .clickable(
+                enabled = true,
+                onClick = {
+                    onClick()
+                },
+                interactionSource = null,
+                indication = null
+                )
+    )
+}
+
+@Preview
+@Composable
+fun OrderFilterPreview() {
+    OrderFilter(
+        selected = OrderActivity.OrderFilterType.PENDING,
+        onStatusSelect = {
+
+        }
+    )
+}

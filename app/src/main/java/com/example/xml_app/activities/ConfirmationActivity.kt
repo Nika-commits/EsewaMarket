@@ -52,7 +52,6 @@ import com.f1soft.esewapaymentsdk.ui.screens.EsewaPaymentActivity
 class ConfirmationActivity : AppCompatActivity() {
     companion object {
         const val ID = "ORDER_ID"
-
         fun startActivity(
             context: Context,
             orderId: Int
@@ -149,7 +148,7 @@ class ConfirmationActivity : AppCompatActivity() {
         eSewaPayment: EsewaPayment
     ) {
         Log.d("Esewa", BuildConfig.EsewaClientId)
-        Log.d("Esewa", BuildConfig.EsewaIntentSecret)
+        Log.d("Esewa", BuildConfig.EsewaClientSecret)
         Log.d("Esewa", EsewaConfiguration.ENVIRONMENT_TEST)
         val eSewaConfiguration = EsewaConfiguration(
             clientId = BuildConfig.EsewaClientId,
