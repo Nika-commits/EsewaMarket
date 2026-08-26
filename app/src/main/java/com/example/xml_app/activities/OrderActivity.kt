@@ -23,12 +23,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.xml_app.R
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark200
+import com.example.xml_app.utils.styles.TextDark300
+import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppTopBar
+import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.OrderViewModel
 
 class OrderActivity : AppCompatActivity() {
@@ -83,18 +87,31 @@ fun OrderFilter(
             .background(Surface)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(20.dp)
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        OrderActivity.OrderFilterType.entries.forEach { filterType ->
-            FilterTab(
-                text = filterType.label,
-                selected = selected == filterType,
-                onClick = {
-                    onStatusSelect(filterType)
-                }
-            )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OrderActivity.OrderFilterType.entries.forEach { filterType ->
+                FilterTab(
+                    text = filterType.label,
+                    selected = selected == filterType,
+                    onClick = {
+                        onStatusSelect(filterType)
+                    }
+                )
+            }
         }
 
+        AppButton(
+            variant = ButtonVariant.GHOST,
+            icon = R.drawable.ic_slider,
+            tint = TextDark300,
+            onClick = {
+
+            }
+        )
     }
 }
 
@@ -120,7 +137,7 @@ fun FilterTab(
                 },
                 interactionSource = null,
                 indication = null
-                )
+            )
     )
 }
 

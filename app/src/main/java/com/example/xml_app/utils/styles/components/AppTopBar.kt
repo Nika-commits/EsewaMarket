@@ -40,7 +40,7 @@ fun AppTopBar(
     val scrollbarBehaviour = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = OffWhiteBackground,
+            containerColor = Surface,
             titleContentColor = TextDark400,
         ),
         title = {
@@ -80,7 +80,7 @@ fun OrderSummaryItem(
             .background(Surface)
             .padding(16.dp)
     ) {
-        
+
 
     }
 
