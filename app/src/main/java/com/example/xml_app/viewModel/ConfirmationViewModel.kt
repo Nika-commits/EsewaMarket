@@ -4,12 +4,15 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xml_app.repository.CartRepository
 import com.example.xml_app.repository.OrderRepository
+import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.ui.state.ConfirmationOrderUiState
 import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.request.OrderStatus
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
+import com.example.xml_app.utils.dto.response.OrderResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -20,6 +23,8 @@ class ConfirmationViewModel(
 ) : AndroidViewModel(application) {
     private val app = getApplication<CustomApplicationContext>()
     private val orderRepository = OrderRepository()
+    private val userRepository = UserRepository(app.database.userDao())
+    private val cartRepository = CartRepository(app.database.cartDao())
     private val _uiState = MutableStateFlow<ConfirmationUiState>(ConfirmationUiState.Loading)
     val uiState = _uiState.asStateFlow()
     private val _confirmationOrderUiState = MutableStateFlow<ConfirmationOrderUiState>(ConfirmationOrderUiState.Idle)
@@ -102,6 +107,11 @@ class ConfirmationViewModel(
                     _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
                     return@launch
                 }
+                try {
+                    removeFromCart(responseOrder)
+                } catch (e: Exception) {
+                    Log.e("Confirmation", "Failed to delete from cart. ${e.message}")
+                }
                 _confirmationOrderUiState.value = ConfirmationOrderUiState.Success(responseOrder)
             } catch (e: Exception) {
                 Log.e("Confirmation", "${e.message}")
@@ -110,5 +120,25 @@ class ConfirmationViewModel(
         }
     }
 
+    fun removeFromCart(
+        order: OrderResponse
+    ) {
+        viewModelScope.launch {
+            try {
+                val firebaseUser = app.auth.currentUser ?: return@launch
+                val token = firebaseUser.getIdToken(false).await().token ?: return@launch
+                val currentUser = userRepository.getCurrentUser(token) ?: return@launch
+                val cart = cartRepository.getOrCreateCart(currentUser.id)
+                val productIds = order.orderItems.map { it.productId }.distinct()
 
+                cartRepository.removeCartIds(
+                    cartId = cart.uid,
+                    productIds = productIds
+                )
+
+            } catch (e: Exception) {
+                Log.e("Confirmation", "${e.message}")
+            }
+        }
+    }
 }

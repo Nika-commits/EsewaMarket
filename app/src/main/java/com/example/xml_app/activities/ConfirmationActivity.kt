@@ -197,12 +197,13 @@ class ConfirmationActivity : AppCompatActivity() {
 
                     is ConfirmationOrderUiState.Success -> {
                         OrderSuccessScreen(
-                          order = orderState.order,
+                            order = orderState.order,
                             onGoToHome = {
+                                goToMain()
 
                             },
                             onGoToOrders = {
-
+                                goToOrders()
                             },
                         )
                     }
@@ -231,6 +232,30 @@ class ConfirmationActivity : AppCompatActivity() {
         }
         eSewaPaymentLauncher.launch(intent)
     }
+
+    private fun goToMain() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        startActivity(intent)
+        finish()
+    }
+
+    private fun goToOrders() {
+        val mainIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val intent = Intent(this, OrderActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        startActivities(
+            arrayOf(
+                mainIntent,
+                intent
+            )
+        )
+        finish()
+    }
 }
 
 @Composable
@@ -243,7 +268,7 @@ fun OrderSuccessScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(OffWhiteBackground)
-            .padding(24.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 38.dp, bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -303,7 +328,7 @@ fun OrderSuccessScreen(
             variant = ButtonVariant.SECONDARY,
             text = "GO TO HOME",
             onClick = onGoToHome
-            )
+        )
 
     }
 }

@@ -73,4 +73,12 @@ class CartRepository(
     suspend fun getProductIdsInCart(cartId: Int): List<Int> {
         return cartDao.getAllProductsIdsInCart(cartId)
     }
+
+    suspend fun removeCartIds(cartId: Int, productIds: List<Int>) {
+        if (productIds.isEmpty()) return
+        cartDao.deleteCartItems(
+            cartId,
+            productIds
+        )
+    }
 }
