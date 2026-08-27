@@ -120,16 +120,21 @@ class ConfirmationActivity : AppCompatActivity() {
                                     .fillMaxWidth(),
                                 variant = ButtonVariant.PRIMARY,
                                 onClick = {
-                                    if (state.order.paymentOption == PaymentOptions.Esewa.toString()) {
-                                        val eSewaPayment = EsewaPayment(
-                                            amount = state.order.totalPrice.toString(),
-                                            productName = "Product1",
-                                            productUniqueId = "1",
-                                        )
-                                        initiateEsewaPayment(eSewaPayment = eSewaPayment)
-                                    } else {
+                                    when (state.order.paymentOption) {
+                                        PaymentOptions.Esewa.toString() -> {
+                                            val eSewaPayment = EsewaPayment(
+                                                amount = state.order.totalPrice.toString(),
+                                                productName = "Product1",
+                                                productUniqueId = "1",
+                                            )
+                                            initiateEsewaPayment(eSewaPayment = eSewaPayment)
+                                        }
 
+                                        PaymentOptions.Cash_On_Delivery.toString() -> {
+                                            Log.d("Confirmation", "Cash On Delivery")
+                                        }
                                     }
+
                                 },
                                 text = "CONFIRM"
                             )

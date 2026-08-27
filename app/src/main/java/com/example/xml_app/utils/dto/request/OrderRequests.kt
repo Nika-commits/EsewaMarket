@@ -16,3 +16,12 @@ data class CreateOrderItemRequest(
 enum class PaymentOptions {
     Cash_On_Delivery, Esewa
 }
+
+
+data class UpdateOrderStatus(
+    val status: PaymentStatus
+)
+
+enum class PaymentStatus {
+    Pending, Paid, Refund
+}

@@ -2,6 +2,7 @@ package com.example.xml_app.repository
 
 import com.example.xml_app.api.RetrofitInstance
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
+import com.example.xml_app.utils.dto.request.UpdateOrderStatus
 
 class OrderRepository {
 
@@ -27,5 +28,15 @@ class OrderRepository {
     ) = RetrofitInstance.orderApi.getOrders(
         "Bearer $token",
         status
+    )
+
+    suspend fun updateOrderStatus(
+        id: Int,
+        token: String,
+        request: UpdateOrderStatus
+    ) = RetrofitInstance.orderApi.updateOrderStatus(
+        id = id,
+        authorization = "Bearer $token",
+        request = request
     )
 }
