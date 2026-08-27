@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -14,17 +15,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,11 +37,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.BuildConfig
+import com.example.xml_app.R
+import com.example.xml_app.ui.state.ConfirmationOrderUiState
 import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.PaymentOptions
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
+import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark200
@@ -64,9 +72,30 @@ class ConfirmationActivity : AppCompatActivity() {
             }
             context.startActivity(intent)
         }
+
     }
 
     private val viewModel: ConfirmationViewModel by viewModels()
+
+    private val eSewaPaymentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        when (result.resultCode) {
+            RESULT_OK -> {
+                val message = result.data?.getStringExtra(EsewaPayment.EXTRA_RESULT_MESSAGE)
+                Log.i("Esewa", "$message")
+            }
+
+            RESULT_CANCELED -> {
+                Log.i("Esewa", "Payment Cancelled")
+            }
+
+            EsewaPayment.RESULT_EXTRAS_INVALID -> {
+                val message = result.data?.getStringExtra(EsewaPayment.EXTRA_RESULT_MESSAGE)
+                Log.e("Esewa", "$message")
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,6 +177,26 @@ class ConfirmationActivity : AppCompatActivity() {
                         finish()
                     }
                 }
+
+                val orderState by viewModel.confirmationOrderUiState.collectAsStateWithLifecycle()
+
+                when (orderState) {
+                    ConfirmationOrderUiState.Idle -> Unit
+
+                    ConfirmationOrderUiState.Loading,
+                    ConfirmationOrderUiState.Error -> {
+                        PlacingOrderDialog(
+                            onDismissRequest = {},
+                            onRetry = {},
+                            state = orderState
+                        )
+                    }
+
+                    ConfirmationOrderUiState.Success -> {
+
+                    }
+
+                }
             }
         }
     }
@@ -169,17 +218,20 @@ class ConfirmationActivity : AppCompatActivity() {
             putExtra(EsewaConfiguration.ESEWA_CONFIGURATION, eSewaConfiguration)
             putExtra(EsewaPayment.ESEWA_PAYMENT, eSewaPayment)
         }
-        startActivity(intent)
+        eSewaPaymentLauncher.launch(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
     }
 }
 
 @Composable
 fun PlacingOrderDialog(
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onRetry: () -> Unit,
+    state: ConfirmationOrderUiState
 ) {
     Dialog(
         onDismissRequest = {
@@ -194,7 +246,7 @@ fun PlacingOrderDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(240.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
@@ -207,20 +259,51 @@ fun PlacingOrderDialog(
                     .fillMaxSize()
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceAround
             ) {
-                AppLoadingIndicator(
-                    size = 60.dp,
-                    strokeWidth = 4.dp
-                )
+                when (state) {
+                    ConfirmationOrderUiState.Loading -> {
+                        AppLoadingIndicator(
+                            size = 60.dp,
+                            strokeWidth = 4.dp
+                        )
 
-                Text(
-                    "Placing your Order...",
-                    fontFamily = SourceSansPro,
-                    fontWeight = FontWeight.Medium,
-                    color = TextDark300,
-                    letterSpacing = 0.5.sp
-                    )
+                        Text(
+                            "Placing your Order...",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Medium,
+                            color = TextDark300,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+
+                    ConfirmationOrderUiState.Error -> {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_error),
+                            contentDescription = "Order failed",
+                            tint = EsewaRed,
+                            modifier = Modifier.size(52.dp)
+                        )
+
+                        Text(
+                            text = "Something went wrong while placing your order. Please try again.",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = TextDark200,
+                            textAlign = TextAlign.Center
+                        )
+
+                        AppButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "TRY AGAIN",
+                            variant = ButtonVariant.SECONDARY,
+                            onClick = onRetry
+                        )
+                    }
+
+                    else -> {}
+                }
             }
         }
     }
@@ -359,6 +442,8 @@ fun InfoRow(
 @Composable
 fun OrderResponseCardPreview() {
     PlacingOrderDialog(
-        onDismissRequest = {}
+        onDismissRequest = {},
+        onRetry = {},
+        state = ConfirmationOrderUiState.Loading
     )
 }
