@@ -211,6 +211,102 @@ class ConfirmationActivity : AppCompatActivity() {
                 }
             }
         }
+
+        setContent {
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val orderState by viewModel.confirmationOrderUiState.collectAsStateWithLifecycle()
+
+            when (val state = orderState) {
+                is ConfirmationOrderUiState.Success -> {
+                    OrderSuccessScreen(
+                        order = state.order,
+                        onGoToHome = {
+                            goToMain()
+                        },
+                        onGoToOrders = {
+                            goToOrders()
+                        }
+                    )
+                }
+
+                else -> {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        topBar = {
+                            AppTopBar(
+                                title = "Confirmation",
+                                onBackClick = {
+                                    onBackPressedDispatcher.onBackPressed()
+                                }
+                            )
+                        },
+                        containerColor = OffWhiteBackground
+                    ) { innerPadding ->
+
+                        when (val confirmationState = uiState) {
+                            ConfirmationUiState.Loading -> {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(innerPadding)
+                                        .fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    AppLoadingIndicator(
+                                        size = 100.dp,
+                                        strokeWidth = 8.dp
+                                    )
+                                }
+                            }
+
+                            is ConfirmationUiState.Success -> {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(innerPadding)
+                                        .fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    OrderResponseCard(
+                                        confirmationState.order
+                                    )
+
+                                    AppButton(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                        variant = ButtonVariant.PRIMARY,
+                                        onClick = {
+                                            // existing payment logic
+                                        },
+                                        text = "CONFIRM"
+                                    )
+                                }
+                            }
+
+                            ConfirmationUiState.Error -> {
+                                finish()
+                            }
+                        }
+
+                        when (state) {
+                            ConfirmationOrderUiState.Loading,
+                            ConfirmationOrderUiState.Error -> {
+                                PlacingOrderDialog(
+                                    state = state,
+                                    onDismissRequest = {},
+                                    onRetry = {
+                                        viewModel.updateOrderStatusToPending()
+                                    }
+                                )
+                            }
+
+                            else -> Unit
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun initiateEsewaPayment(
