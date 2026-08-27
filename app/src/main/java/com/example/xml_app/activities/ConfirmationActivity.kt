@@ -8,9 +8,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +48,7 @@ import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.OffWhiteBackground
+import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark200
 import com.example.xml_app.utils.styles.TextDark300
@@ -180,7 +183,7 @@ class ConfirmationActivity : AppCompatActivity() {
 
                 val orderState by viewModel.confirmationOrderUiState.collectAsStateWithLifecycle()
 
-                when (orderState) {
+                when (val orderState = orderState) {
                     ConfirmationOrderUiState.Idle -> Unit
 
                     ConfirmationOrderUiState.Loading,
@@ -192,8 +195,16 @@ class ConfirmationActivity : AppCompatActivity() {
                         )
                     }
 
-                    ConfirmationOrderUiState.Success -> {
+                    is ConfirmationOrderUiState.Success -> {
+                        OrderSuccessScreen(
+                          order = orderState.order,
+                            onGoToHome = {
 
+                            },
+                            onGoToOrders = {
+
+                            },
+                        )
                     }
 
                 }
@@ -220,10 +231,167 @@ class ConfirmationActivity : AppCompatActivity() {
         }
         eSewaPaymentLauncher.launch(intent)
     }
+}
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+@Composable
+fun OrderSuccessScreen(
+    order: OrderResponse,
+    onGoToOrders: () -> Unit,
+    onGoToHome: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(OffWhiteBackground)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_success),
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = PrimaryGreen
+        )
+        Spacer(
+            modifier = Modifier.height(24.dp)
+        )
 
+        Text(
+            text = "Your Order is placed successfully.",
+            fontFamily = SourceSansPro,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            color = TextDark400,
+            letterSpacing = 0.25.sp
+        )
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
+        Text(
+            "Order Id: #${order.id}",
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Normal,
+            color = TextDark300,
+            fontSize = 14.sp,
+            letterSpacing = 0.5.sp
+        )
+        Spacer(
+            modifier = Modifier.height(24.dp)
+        )
+        OrderSuccessSummary(
+            order
+        )
+
+        Spacer(
+            modifier = Modifier.weight(1f)
+        )
+
+        AppButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = "VIEW MY ORDERS",
+            variant = ButtonVariant.PRIMARY,
+            onClick = onGoToOrders
+        )
+        Spacer(
+            modifier = Modifier.height(12.dp)
+        )
+
+        AppButton(
+            modifier = Modifier.fillMaxWidth(),
+            variant = ButtonVariant.SECONDARY,
+            text = "GO TO HOME",
+            onClick = onGoToHome
+            )
+
+    }
+}
+
+@Composable
+fun OrderSuccessSummary(
+    order: OrderResponse
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Order Status",
+                    fontFamily = SourceSansPro,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = TextDark400
+                )
+                Text(
+                    order.status,
+                    fontFamily = SourceSansPro,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PrimaryGreen,
+                    letterSpacing = 1.sp
+                )
+
+            }
+            HorizontalDivider(
+                color = TextLight
+            )
+
+            Text(
+                "Order Items",
+                fontFamily = SourceSansPro,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = TextDark400
+            )
+
+            order.orderItems.forEach { item ->
+                OrderSuccessItems(
+                    item
+                )
+            }
+
+
+        }
+    }
+}
+
+@Composable
+fun OrderSuccessItems(
+    item: OrderItemResponse
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            item.productName,
+            modifier = Modifier.weight(1f),
+            fontFamily = SourceSansPro,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = TextDark300
+        )
+        Text(
+            "x ${item.quantity}",
+            fontFamily = SourceSansPro,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = TextDark400
+        )
     }
 }
 
@@ -441,9 +609,37 @@ fun InfoRow(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun OrderResponseCardPreview() {
-    PlacingOrderDialog(
-        onDismissRequest = {},
-        onRetry = {},
-        state = ConfirmationOrderUiState.Loading
+
+    val orderItem1 = OrderItemResponse(
+        productId = 1,
+        productName = "Addidas Sambas - White",
+        quantity = 2,
+        price = 4000
+    )
+    val orderItem2 = OrderItemResponse(
+        productId = 1,
+        productName = "Addidas Sambas - White",
+        quantity = 1,
+        price = 4000
+    )
+    val response = OrderResponse(
+        id = 1,
+        address = "Gothater-8, Kageshori Manohora, Kathmandu, Bagmati",
+        phone = "9841890609",
+        paymentOption = "Esewa",
+        vehicleNumber = "BA 08672",
+        deliveryCharge = 200,
+        discount = 100,
+        status = "Pending",
+        totalPrice = 8000,
+        orderItems = listOf(
+            orderItem1,
+            orderItem2
+        )
+    )
+    OrderSuccessScreen(
+        onGoToOrders = {},
+        onGoToHome = {},
+        order = response
     )
 }

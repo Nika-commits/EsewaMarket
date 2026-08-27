@@ -14,6 +14,9 @@ sealed interface ConfirmationUiState {
 sealed interface ConfirmationOrderUiState {
     data object Idle : ConfirmationOrderUiState
     data object Loading : ConfirmationOrderUiState
-    data object Success : ConfirmationOrderUiState
+    data class Success(
+        val order: OrderResponse
+    ) : ConfirmationOrderUiState
+
     data object Error : ConfirmationOrderUiState
 }

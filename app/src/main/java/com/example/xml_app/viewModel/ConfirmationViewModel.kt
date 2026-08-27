@@ -97,7 +97,12 @@ class ConfirmationViewModel(
                     _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
                     return@launch
                 }
-                _confirmationOrderUiState.value = ConfirmationOrderUiState.Success
+                val responseOrder = response.body()
+                if (responseOrder == null) {
+                    _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
+                    return@launch
+                }
+                _confirmationOrderUiState.value = ConfirmationOrderUiState.Success(responseOrder)
             } catch (e: Exception) {
                 Log.e("Confirmation", "${e.message}")
                 _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
@@ -105,5 +110,5 @@ class ConfirmationViewModel(
         }
     }
 
-    
+
 }
