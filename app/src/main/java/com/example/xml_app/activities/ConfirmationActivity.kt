@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -27,6 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.BuildConfig
 import com.example.xml_app.ui.state.ConfirmationUiState
@@ -131,7 +134,7 @@ class ConfirmationActivity : AppCompatActivity() {
                                         }
 
                                         PaymentOptions.Cash_On_Delivery.toString() -> {
-                                            Log.d("Confirmation", "Cash On Delivery")
+                                            viewModel.updateOrderStatusToPending()
                                         }
                                     }
 
@@ -171,6 +174,55 @@ class ConfirmationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+    }
+}
+
+@Composable
+fun PlacingOrderDialog(
+    onDismissRequest: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Surface
+            )
+
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                AppLoadingIndicator(
+                    size = 60.dp,
+                    strokeWidth = 4.dp
+                )
+
+                Text(
+                    "Placing your Order...",
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Medium,
+                    color = TextDark300,
+                    letterSpacing = 0.5.sp
+                    )
+            }
+        }
     }
 }
 
@@ -306,33 +358,7 @@ fun InfoRow(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun OrderResponseCardPreview() {
-    val orderItem1 = OrderItemResponse(
-        productId = 1,
-        productName = "Addidas Sambas - White",
-        quantity = 2,
-        price = 4000
+    PlacingOrderDialog(
+        onDismissRequest = {}
     )
-    val orderItem2 = OrderItemResponse(
-        productId = 1,
-        productName = "Addidas Sambas - White",
-        quantity = 1,
-        price = 4000
-    )
-    val response = OrderResponse(
-        id = 1,
-        address = "Gothater-8, Kageshori Manohora, Kathmandu, Bagmati",
-        phone = "9841890609",
-        paymentOption = "Esewa",
-        vehicleNumber = "BA 08672",
-        deliveryCharge = 200,
-        discount = 100,
-        status = "Pending",
-        totalPrice = 8000,
-        orderItems = listOf(
-            orderItem1,
-            orderItem2
-        )
-    )
-
-    OrderResponseCard(response)
 }

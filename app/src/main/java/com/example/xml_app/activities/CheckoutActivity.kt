@@ -503,7 +503,7 @@ fun OrderingDialog() {
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     letterSpacing = 0.5.sp,
-                    color = TextDark400,
+                    color = TextDark300,
                     textAlign = TextAlign.Center
                 )
             }
