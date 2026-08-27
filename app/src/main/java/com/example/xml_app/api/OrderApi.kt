@@ -1,7 +1,7 @@
 package com.example.xml_app.api
 
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
-import com.example.xml_app.utils.dto.request.UpdateOrderStatus
+import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 import com.example.xml_app.utils.dto.response.OrderResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -36,6 +36,6 @@ interface OrderApi {
     suspend fun updateOrderStatus(
         @Header("Authorization") authorization: String,
         @Path("id") id: Int,
-        @Body request: UpdateOrderStatus
-    )
+        @Body request: UpdateOrderStatusRequest
+    ): Response<OrderResponse>
 }

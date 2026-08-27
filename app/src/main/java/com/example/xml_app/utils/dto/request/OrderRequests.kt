@@ -18,9 +18,13 @@ enum class PaymentOptions {
 }
 
 
-data class UpdateOrderStatus(
-    val status: PaymentStatus
+data class UpdateOrderStatusRequest(
+    val status: OrderStatus
 )
+
+enum class OrderStatus {
+    Initialized, Pending, Processing, Shipped, Delivered, Cancelled
+}
 
 enum class PaymentStatus {
     Pending, Paid, Refund
