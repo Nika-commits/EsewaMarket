@@ -642,6 +642,8 @@ fun OrderResponseCardPreview() {
     val orderItem1 = OrderItemResponse(
         productId = 1,
         productName = "Addidas Sambas - White",
+        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/mnml-men's-front-pocket-geo-shorts-mnml-/1770621841231",
+        brand = "Core Studio",
         quantity = 2,
         price = 4000
     )
@@ -649,6 +651,8 @@ fun OrderResponseCardPreview() {
         productId = 1,
         productName = "Addidas Sambas - White",
         quantity = 1,
+        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/pranish-nicks/1780819796759",
+        brand = "Oxford",
         price = 4000
     )
     val response = OrderResponse(
@@ -661,6 +665,8 @@ fun OrderResponseCardPreview() {
         discount = 100,
         status = "Pending",
         totalPrice = 8000,
+
+        orderDate = "2026-08-29T06:16:03.123456Z",
         orderItems = listOf(
             orderItem1,
             orderItem2
