@@ -212,7 +212,7 @@ fun OrderCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 16.dp),
+            .padding(vertical = 16.dp, horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Surface
@@ -221,7 +221,7 @@ fun OrderCard(
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -297,7 +297,38 @@ fun OrderCard(
                 )
             }
 
-            order.orderItems.forEach { OrderItemsCard(it) }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                order.orderItems.forEach { OrderItemsCard(it) }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "Total Price",
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    color = TextDark300,
+                    letterSpacing = 0.25.sp
+                )
+
+                Text(
+                    "Rs. ${order.totalPrice}",
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                    color = TextDark400,
+                    letterSpacing = 0.15.sp
+
+                    )
+            }
         }
     }
 }
@@ -308,8 +339,7 @@ fun OrderItemsCard(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
