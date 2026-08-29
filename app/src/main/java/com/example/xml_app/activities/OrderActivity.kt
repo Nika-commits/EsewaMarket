@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -57,7 +58,7 @@ class OrderActivity : AppCompatActivity() {
     enum class OrderFilterType(val label: String) {
         ALL("All"),
         PENDING("Pending"),
-        Complete("Complete")
+        DELIVERED("Delivered")
     }
 
     private val viewModel: OrderViewModel by viewModels()
@@ -96,7 +97,8 @@ class OrderActivity : AppCompatActivity() {
                         OrderUiState.Loading -> {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth(),
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(),
                                 contentAlignment = Alignment.Center
                             ) {
                                 AppLoadingIndicator(
@@ -148,7 +150,7 @@ fun OrderFilter(
         modifier = modifier
             .fillMaxWidth()
             .background(Surface)
-            .padding(16.dp),
+            .padding(vertical = 4.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -243,7 +245,7 @@ fun OrderCard(
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         Text(
-                            "Order No. ${order.id}",
+                            "Order No. #${order.id}",
                             fontFamily = SourceSansPro,
                             fontWeight = FontWeight.Medium,
                             fontSize = 12.sp,
