@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -197,6 +199,7 @@ class ConfirmationActivity : AppCompatActivity() {
 
                     is ConfirmationOrderUiState.Success -> {
                         OrderSuccessScreen(
+                            modifier = Modifier.padding(innerPadding),
                             order = orderState.order,
                             onGoToHome = {
                                 goToMain()
@@ -208,102 +211,6 @@ class ConfirmationActivity : AppCompatActivity() {
                         )
                     }
 
-                }
-            }
-        }
-
-        setContent {
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            val orderState by viewModel.confirmationOrderUiState.collectAsStateWithLifecycle()
-
-            when (val state = orderState) {
-                is ConfirmationOrderUiState.Success -> {
-                    OrderSuccessScreen(
-                        order = state.order,
-                        onGoToHome = {
-                            goToMain()
-                        },
-                        onGoToOrders = {
-                            goToOrders()
-                        }
-                    )
-                }
-
-                else -> {
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        topBar = {
-                            AppTopBar(
-                                title = "Confirmation",
-                                onBackClick = {
-                                    onBackPressedDispatcher.onBackPressed()
-                                }
-                            )
-                        },
-                        containerColor = OffWhiteBackground
-                    ) { innerPadding ->
-
-                        when (val confirmationState = uiState) {
-                            ConfirmationUiState.Loading -> {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(innerPadding)
-                                        .fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    AppLoadingIndicator(
-                                        size = 100.dp,
-                                        strokeWidth = 8.dp
-                                    )
-                                }
-                            }
-
-                            is ConfirmationUiState.Success -> {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(innerPadding)
-                                        .fillMaxWidth(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    OrderResponseCard(
-                                        confirmationState.order
-                                    )
-
-                                    AppButton(
-                                        modifier = Modifier
-                                            .padding(16.dp)
-                                            .fillMaxWidth(),
-                                        variant = ButtonVariant.PRIMARY,
-                                        onClick = {
-                                            // existing payment logic
-                                        },
-                                        text = "CONFIRM"
-                                    )
-                                }
-                            }
-
-                            ConfirmationUiState.Error -> {
-                                finish()
-                            }
-                        }
-
-                        when (state) {
-                            ConfirmationOrderUiState.Loading,
-                            ConfirmationOrderUiState.Error -> {
-                                PlacingOrderDialog(
-                                    state = state,
-                                    onDismissRequest = {},
-                                    onRetry = {
-                                        viewModel.updateOrderStatusToPending()
-                                    }
-                                )
-                            }
-
-                            else -> Unit
-                        }
-                    }
                 }
             }
         }
@@ -356,14 +263,16 @@ class ConfirmationActivity : AppCompatActivity() {
 
 @Composable
 fun OrderSuccessScreen(
+    modifier: Modifier = Modifier,
     order: OrderResponse,
     onGoToOrders: () -> Unit,
     onGoToHome: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(OffWhiteBackground)
+            .verticalScroll(rememberScrollState())
             .padding(start = 16.dp, end = 16.dp, top = 38.dp, bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -406,9 +315,8 @@ fun OrderSuccessScreen(
         )
 
         Spacer(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.height(24.dp)
         )
-
         AppButton(
             modifier = Modifier.fillMaxWidth(),
             text = "VIEW MY ORDERS",
