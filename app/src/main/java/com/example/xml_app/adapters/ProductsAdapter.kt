@@ -109,8 +109,8 @@ class ProductsAdapter(
 
             Glide.with(root)
                 .load(product.imageUrls.firstOrNull())
-                .placeholder(R.drawable.resource_default)
-                .error(R.drawable.resource_default)
+                .placeholder(R.drawable.bg_offwhite_rounded)
+                .error(R.drawable.bg_offwhite_rounded)
                 .into(ivProductImage)
         }
 

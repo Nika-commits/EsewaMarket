@@ -231,10 +231,10 @@ fun OrderCard(
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(18.dp)
                 ) {
                     Icon(
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(28.dp),
                         painter = painterResource(R.drawable.ic_myproducts),
                         contentDescription = null,
                         tint = PrimaryGreen,
@@ -327,7 +327,7 @@ fun OrderCard(
                     color = TextDark400,
                     letterSpacing = 0.15.sp
 
-                    )
+                )
             }
         }
     }
