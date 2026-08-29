@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -59,10 +60,10 @@ class OrderActivity : AppCompatActivity() {
         Complete("Complete")
     }
 
-    //changes
     private val viewModel: OrderViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.getOrders()
         setContent {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -76,48 +77,61 @@ class OrderActivity : AppCompatActivity() {
                     )
                 }
             ) { innerPadding ->
-                Box(
-                    modifier = Modifier.padding(innerPadding)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+
                 ) {
                     val filter by viewModel.filter.collectAsStateWithLifecycle()
                     OrderFilter(
                         selected = filter,
                         onStatusSelect = { newFilter ->
                             viewModel.changeFilter(newFilter)
+                            viewModel.getOrders()
                         }
                     )
-                }
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-                when (val state = uiState){
-                    OrderUiState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ){
-                            AppLoadingIndicator(
-                                size = 80.dp,
-                                strokeWidth = 4.dp
-                            )
+                    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                    when (val state = uiState) {
+                        OrderUiState.Loading -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                AppLoadingIndicator(
+                                    size = 80.dp,
+                                    strokeWidth = 4.dp
+                                )
+                            }
+                        }
+
+                        OrderUiState.Error -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("Failed to load orders")
+                            }
+                        }
+
+                        is OrderUiState.Success -> {
+                            LazyColumn(
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(
+                                    items = state.orders,
+                                    key = { it.id }
+                                ) { order ->
+                                    OrderCard(order)
+                                }
+                            }
                         }
                     }
-
-                    OrderUiState.Error -> {
-
-                    }
-
-                    is OrderUiState.Success -> {
-
-                LazyColumn(
-                    Modifier
-                        .padding(innerPadding)
-                        .background(OffWhiteBackground)
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
                 }
-                    }
-                }
-
             }
 
         }
@@ -196,7 +210,7 @@ fun OrderCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(vertical = 4.dp, horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Surface
@@ -230,23 +244,44 @@ fun OrderCard(
                     ) {
                         Text(
                             "Order No. ${order.id}",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 12.sp,
+                            letterSpacing = 0.4.sp
                         )
                         Text(
                             "Placed on ${order.orderDate.formatOrderDate()}",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            letterSpacing = 0.4.sp,
+                            color = TextDark200
                         )
                         Row(
                             modifier = Modifier.padding(vertical = 4.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                "${order.orderItems.size}"
+                                "${order.orderItems.size}",
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 12.sp,
+                                color = TextDark400
                             )
                             Text(
-                                "items purchased"
+                                "items purchased",
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 12.sp,
+                                color = TextDark200
                             )
 
                             Text(
-                                order.status
+                                order.status,
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 12.sp,
+                                color = TextDark400
                             )
                         }
                     }
@@ -270,9 +305,11 @@ fun OrderItemsCard(
     orderItem: OrderItemResponse
 ) {
     Row(
-        modifier = Modifier.padding(vertical = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
             model = orderItem.productImage,
@@ -283,29 +320,59 @@ fun OrderItemsCard(
             contentScale = ContentScale.Crop
         )
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
                 orderItem.productName,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                letterSpacing = 0.15.sp,
+                color = TextDark400
             )
             Text(
-                orderItem.brand
+                orderItem.brand,
+                fontFamily = SourceSansPro,
+                fontWeight = FontWeight.Normal,
+                fontSize = 10.sp,
+                letterSpacing = 1.5.sp,
+                color = TextDark200
             )
             Row(
-
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                Text("Rs.")
+                Text(
+                    "Rs.",
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.25.sp,
+                    color = TextDark400
+                )
 
                 Text(
-                    "${orderItem.price}"
+                    "${orderItem.price}",
+                    fontFamily = SourceSansPro,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 20.sp,
+                    letterSpacing = 0.15.sp,
+                    color = TextDark400
                 )
             }
         }
 
         Text(
-            "X ${orderItem.quantity}"
+            "X ${orderItem.quantity}",
+            modifier = Modifier.align(Alignment.Bottom),
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            color = TextDark400,
         )
     }
 

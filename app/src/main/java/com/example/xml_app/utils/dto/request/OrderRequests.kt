@@ -23,7 +23,7 @@ data class UpdateOrderStatusRequest(
 )
 
 enum class OrderStatus {
-    Initialized, Pending, Processing, Shipped, Delivered, Cancelled
+    Initialized, Pending, Shipped, Delivered, Cancelled
 }
 
 enum class PaymentStatus {
