@@ -245,11 +245,9 @@ class MapsActivity : AppCompatActivity() {
                                 value = searchQuery,
                                 onValueChange = viewModel::onSearchQueryChange,
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
+                                isLoading = isAddressSearching || isSearching
                             )
-                            if (isAddressSearching || isSearching) {
-                                AppLoadingIndicator(modifier = Modifier.padding(horizontal = 16.dp))
-                            }
                         }
 
                         if (predictions.isNotEmpty()) {
@@ -332,12 +330,14 @@ fun SearchBox(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-) {
+    isLoading: Boolean
+    ) {
     AppTextField(
         modifier,
         value = value,
         onValueChange = onValueChange,
         placeholder = "Enter your address",
+        isLoading = isLoading
     )
 }
 
@@ -347,6 +347,7 @@ fun SearchBoxPreview() {
     SearchBox(
         value = "",
         onValueChange = {
-        }
+        },
+        isLoading = true
     )
 }

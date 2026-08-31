@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +37,8 @@ fun AppTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     isError: Boolean = false,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    isLoading: Boolean = false
 ) {
     Column(
         modifier,
@@ -78,8 +80,16 @@ fun AppTextField(
                             letterSpacing = 0.5.sp
                         )
                     }
-
                     innerTextField()
+
+                    if(isLoading){
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                        AppLoadingIndicator()
+                        }
+                    }
                 }
             }
         )
@@ -107,6 +117,6 @@ fun PreviewTextField() {
         onValueChange = { text = it },
         placeholder = "PROMO CODE",
 //        isError = true,
-        errorMessage = "Error Occured "
+        isLoading = true
     )
 }
