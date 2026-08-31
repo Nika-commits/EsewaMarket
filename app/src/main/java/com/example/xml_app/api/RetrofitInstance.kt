@@ -3,8 +3,8 @@ package com.example.xml_app.api
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val BASE = "192.168.1.71"
-//const val BASE = "10.19.16.196"
+//const val BASE = "192.168.1.71"
+const val BASE = "10.19.16.196"
 
 //const val BASE = "10.10.29.125"
 

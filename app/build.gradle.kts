@@ -7,6 +7,8 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.devtools.ksp")
+
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -198,6 +200,9 @@ dependencies {
     //Mapbox
     implementation("com.mapbox.maps:android-ndk27:11.28.3")
     implementation("com.mapbox.extension:maps-compose-ndk27:11.28.3")
+
+
+    implementation("com.google.android.libraries.places:places:5.1.1")
 
     //Google Play Services
     implementation("com.google.android.gms:play-services-location:21.4.0")
