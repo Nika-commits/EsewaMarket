@@ -104,6 +104,7 @@ class MapsActivity : AppCompatActivity() {
             finish()
             return
         }
+        Log.d("Maps", apiKey)
         Places.initializeWithNewPlacesApiEnabled(applicationContext, apiKey)
 
         val permissions = listOf(
@@ -235,6 +236,7 @@ class MapsActivity : AppCompatActivity() {
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             AppButton(
+                                modifier = Modifier.padding(0.dp),
                                 variant = ButtonVariant.GHOST,
                                 icon = R.drawable.ic_cancel,
                                 onClick = { viewModel.onSearchQueryChange("") }
@@ -242,7 +244,8 @@ class MapsActivity : AppCompatActivity() {
                             SearchBox(
                                 value = searchQuery,
                                 onValueChange = viewModel::onSearchQueryChange,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier
+                                    .fillMaxWidth()
                             )
                             if (isAddressSearching || isSearching) {
                                 AppLoadingIndicator(modifier = Modifier.padding(horizontal = 16.dp))

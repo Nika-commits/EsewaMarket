@@ -154,7 +154,7 @@ class MapsViewModel(
                     .await()
                 _predictions.value = response.autocompletePredictions
             } catch (e: Exception) {
-                Log.e("Maps", "${e.message}")
+                Log.e("Maps", "Could not get AutoComplete ${e.message}")
             } finally {
                 _isSearching.value = false
             }
@@ -184,7 +184,7 @@ class MapsViewModel(
                     updateUserPoint(point)
                 }
             } catch (e: Exception) {
-                Log.e("Maps", "${e.message}")
+                Log.e("Maps", "Could not select value ${e.message}")
             } finally {
                 session = null
                 _predictions.value = emptyList()
