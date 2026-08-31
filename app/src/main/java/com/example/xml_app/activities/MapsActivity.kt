@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.BuildConfig
@@ -43,14 +44,15 @@ import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
-import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppLoadingIndicator
+import com.example.xml_app.utils.styles.components.AppTextField
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.MapsViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.libraries.places.api.Places
 import com.mapbox.common.MapboxOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -91,11 +93,18 @@ class MapsActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        MapboxOptions.accessToken = BuildConfig.MapboxAccessToken
         enableEdgeToEdge()
         WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
             true
+
+        MapboxOptions.accessToken = BuildConfig.MapboxAccessToken
+        val apiKey = BuildConfig.PLACES_API_KEY
+        if (apiKey.isEmpty()) {
+            Log.e("Maps", "No Places Api Key")
+            finish()
+            return
+        }
+        Places.initializeWithNewPlacesApiEnabled(applicationContext, apiKey)
 
         val permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -108,9 +117,11 @@ class MapsActivity : AppCompatActivity() {
             val location = remember {
                 LocationServices.getFusedLocationProviderClient(this)
             }
+            val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+            val predictions by viewModel.predictions.collectAsStateWithLifecycle()
+            val isSearching by viewModel.isSearching.collectAsStateWithLifecycle()
+            val isAddressSearching by viewModel.isAddressLoading.collectAsStateWithLifecycle()
             val userPoint by viewModel.userPoint.collectAsStateWithLifecycle()
-            val currentAddress by viewModel.address.collectAsStateWithLifecycle()
-            val isAddressLoading by viewModel.isAddressLoading.collectAsStateWithLifecycle()
             val isPointSelected by viewModel.isPointSelected.collectAsStateWithLifecycle()
             val isUpdatingUser by viewModel.isUpdatingUser.collectAsStateWithLifecycle()
             val mapViewPortState = rememberMapViewportState()
@@ -206,42 +217,68 @@ class MapsActivity : AppCompatActivity() {
 
                     }
 
-                    Row(
+                    Column(
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .fillMaxWidth()
-                            .wrapContentHeight()
                             .statusBarsPadding()
                             .padding(24.dp)
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Surface)
-                            .padding(vertical = 6.dp, horizontal = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = if (isAddressLoading) Arrangement.SpaceBetween else Arrangement.spacedBy(
-                            8.dp
-                        )
                     ) {
-                        AppButton(
-                            variant = ButtonVariant.GHOST,
-                            icon = R.drawable.ic_cancel,
-                            onClick = {}
-                        )
-                        if (isAddressLoading) {
-                            AppLoadingIndicator(
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Surface)
+                                .padding(horizontal = 2.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            AppButton(
+                                variant = ButtonVariant.GHOST,
+                                icon = R.drawable.ic_cancel,
+                                onClick = { viewModel.onSearchQueryChange("") }
                             )
-                        } else {
-                            Text(
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                text = currentAddress ?: "",
-                                fontFamily = SourceSansPro,
-                                color = TextDark300,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Normal,
-                                letterSpacing = 0.5.sp
+                            SearchBox(
+                                value = searchQuery,
+                                onValueChange = viewModel::onSearchQueryChange,
+                                modifier = Modifier.weight(1f)
                             )
+                            if (isAddressSearching || isSearching) {
+                                AppLoadingIndicator(modifier = Modifier.padding(horizontal = 16.dp))
+                            }
+                        }
+
+                        if (predictions.isNotEmpty()) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 4.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(Surface)
+                            ) {
+                                predictions.forEach { prediction ->
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { viewModel.selectPrediction(prediction) }
+                                            .padding(horizontal = 16.dp, vertical = 10.dp)
+                                    ) {
+                                        Text(
+                                            prediction.getPrimaryText(null).toString(),
+                                            fontFamily = SourceSansPro
+                                        )
+
+                                        Text(
+                                            prediction.getSecondaryText(null).toString(),
+                                            fontFamily = SourceSansPro
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
+
                     Column(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -285,4 +322,28 @@ class MapsActivity : AppCompatActivity() {
             }
         }
     }
+}
+
+@Composable
+fun SearchBox(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+) {
+    AppTextField(
+        modifier,
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = "Enter your address",
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchBoxPreview() {
+    SearchBox(
+        value = "",
+        onValueChange = {
+        }
+    )
 }

@@ -4,7 +4,7 @@ import com.example.xml_app.api.RetrofitInstance
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
-class MapboxRepository {
+class MapRepository {
 
     suspend fun getAddressFromCoordinates(
         coordinates: String,

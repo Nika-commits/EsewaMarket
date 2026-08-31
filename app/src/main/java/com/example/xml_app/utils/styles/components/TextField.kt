@@ -31,6 +31,7 @@ import com.example.xml_app.utils.styles.TextDark400
 @OptIn(ExperimentalFoundationStyleApi::class)
 @Composable
 fun AppTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -38,6 +39,7 @@ fun AppTextField(
     errorMessage: String? = null
 ) {
     Column(
+        modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         BasicTextField(
