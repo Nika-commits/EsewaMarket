@@ -242,4 +242,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:5.5.0")
     debugImplementation(files("libs/eSewaPaymentSdk-debug.aar"))
     releaseImplementation(files("libs/eSewaPaymentSdk-release.aar"))
+
+    // Koin
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
 }
