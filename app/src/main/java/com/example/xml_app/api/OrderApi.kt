@@ -29,7 +29,9 @@ interface OrderApi {
     @GET("/api/order")
     suspend fun getOrders(
         @Header("Authorization") authorization: String,
-        @Query("status") status: String = "All"
+        @Query("status") status: String = "All",
+        @Query("from") from: String?,
+        @Query("to") to: String?
     ): Response<List<OrderResponse>>
 
     @PATCH("/api/order/{id}/status")

@@ -2,6 +2,7 @@ package com.example.xml_app.repository
 
 import com.example.xml_app.api.RetrofitInstance
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
+import com.example.xml_app.utils.dto.request.OrderDateFilter
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 
 class OrderRepository {
@@ -24,10 +25,13 @@ class OrderRepository {
 
     suspend fun getOrders(
         token: String,
-        status: String
+        status: String,
+        dateFilter: OrderDateFilter? = null
     ) = RetrofitInstance.orderApi.getOrders(
         "Bearer $token",
-        status
+        status = status,
+        from = dateFilter?.from,
+        to = dateFilter?.to
     )
 
     suspend fun updateOrderStatus(
