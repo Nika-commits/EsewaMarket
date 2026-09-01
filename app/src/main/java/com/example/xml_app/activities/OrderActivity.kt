@@ -1,6 +1,7 @@
 package com.example.xml_app.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +59,7 @@ import com.example.xml_app.utils.dto.request.OrderDateFilter
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import com.example.xml_app.utils.formatOrderDate
+import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.Surface
@@ -69,6 +72,7 @@ import com.example.xml_app.utils.styles.components.AppTextField
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.OrderViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -102,6 +106,7 @@ class OrderActivity : AppCompatActivity() {
                 val filter by viewModel.filter.collectAsStateWithLifecycle()
                 val sheetState = rememberModalBottomSheetState()
                 var showBottomSheet by remember { mutableStateOf(false) }
+                val scope = rememberCoroutineScope()
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -170,6 +175,12 @@ class OrderActivity : AppCompatActivity() {
                         dragHandle = null
                     ) {
                         OrderDateFilterSheet {
+                            Log.d("Order", it.toString())
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showBottomSheet = false
+                                }
+                            }
 
                         }
                     }
@@ -452,7 +463,7 @@ fun OrderItemsCard(
 
 @Composable
 fun OrderDateFilterSheet(
-    onApply: () -> Unit
+    onApply: (OrderDateFilter) -> Unit
 ) {
 
     var dateFilter by remember {
@@ -463,6 +474,8 @@ fun OrderDateFilterSheet(
             )
         )
     }
+
+    var showError by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -515,12 +528,28 @@ fun OrderDateFilterSheet(
                 )
             }
         }
+        if(showError){
+
+        Text(
+            "Please choose a date range to apply.",
+            fontFamily = SourceSansPro,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = EsewaRed
+        )
+        }
 
         AppButton(
             modifier = Modifier.fillMaxWidth(),
             variant = ButtonVariant.PRIMARY,
             text = "APPLY",
-            onClick = onApply
+            onClick = {
+                if(dateFilter.to == "" || dateFilter.from ==""){
+                    showError = true
+                    return@AppButton
+                }
+                onApply(dateFilter)
+            }
         )
     }
 }
