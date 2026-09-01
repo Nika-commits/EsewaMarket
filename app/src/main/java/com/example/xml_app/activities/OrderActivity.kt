@@ -181,7 +181,7 @@ class OrderActivity : AppCompatActivity() {
                                     showBottomSheet = false
                                 }
                             }
-
+                            viewModel.getOrders(it)
                         }
                     }
                 }
@@ -528,15 +528,15 @@ fun OrderDateFilterSheet(
                 )
             }
         }
-        if(showError){
+        if (showError) {
 
-        Text(
-            "Please choose a date range to apply.",
-            fontFamily = SourceSansPro,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            color = EsewaRed
-        )
+            Text(
+                "Please choose a date range to apply.",
+                fontFamily = SourceSansPro,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = EsewaRed
+            )
         }
 
         AppButton(
@@ -544,7 +544,7 @@ fun OrderDateFilterSheet(
             variant = ButtonVariant.PRIMARY,
             text = "APPLY",
             onClick = {
-                if(dateFilter.to == "" || dateFilter.from ==""){
+                if (dateFilter.to == "" || dateFilter.from == "") {
                     showError = true
                     return@AppButton
                 }

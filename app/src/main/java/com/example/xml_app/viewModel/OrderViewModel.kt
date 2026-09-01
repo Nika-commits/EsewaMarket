@@ -9,6 +9,7 @@ import com.example.xml_app.repository.OrderRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.ui.state.OrderUiState
 import com.example.xml_app.utils.CustomApplicationContext
+import com.example.xml_app.utils.dto.request.OrderDateFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class OrderViewModel(
         _filter.value = newFilter
     }
 
-    fun getOrders() {
+    fun getOrders(dateFilter: OrderDateFilter? = null) {
         viewModelScope.launch {
             _uiState.value = OrderUiState.Loading
             try {
@@ -50,7 +51,8 @@ class OrderViewModel(
                 Log.d("Orders", filter.value.label)
                 val response = orderRepository.getOrders(
                     token = token,
-                    status = _filter.value.label
+                    status = _filter.value.label,
+                    dateFilter = dateFilter
                 )
 
                 if (!response.isSuccessful) {
