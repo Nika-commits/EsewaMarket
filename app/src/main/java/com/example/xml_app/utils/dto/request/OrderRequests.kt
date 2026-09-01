@@ -29,3 +29,8 @@ enum class OrderStatus {
 enum class PaymentStatus {
     Pending, Paid, Refund
 }
+
+data class OrderDateFilter(
+    val from: String,
+    val to: String
+)

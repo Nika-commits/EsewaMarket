@@ -25,10 +25,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +53,7 @@ import coil3.compose.AsyncImage
 import com.example.xml_app.R
 import com.example.xml_app.ui.state.OrderUiState
 import com.example.xml_app.utils.SourceSansPro
+import com.example.xml_app.utils.dto.request.OrderDateFilter
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import com.example.xml_app.utils.formatOrderDate
@@ -77,6 +81,8 @@ class OrderActivity : AppCompatActivity() {
     }
 
     private val viewModel: OrderViewModel by viewModels()
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.getOrders()
@@ -93,18 +99,24 @@ class OrderActivity : AppCompatActivity() {
                     )
                 }
             ) { innerPadding ->
+                val filter by viewModel.filter.collectAsStateWithLifecycle()
+                val sheetState = rememberModalBottomSheetState()
+                var showBottomSheet by remember { mutableStateOf(false) }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
 
                 ) {
-                    val filter by viewModel.filter.collectAsStateWithLifecycle()
+
                     OrderFilter(
                         selected = filter,
                         onStatusSelect = { newFilter ->
                             viewModel.changeFilter(newFilter)
                             viewModel.getOrders()
+                        },
+                        onDateFilter = {
+                            showBottomSheet = true
                         }
                     )
                     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -149,6 +161,19 @@ class OrderActivity : AppCompatActivity() {
                         }
                     }
                 }
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            showBottomSheet = false
+                        },
+                        sheetState = sheetState,
+                        dragHandle = null
+                    ) {
+                        OrderDateFilterSheet {
+
+                        }
+                    }
+                }
             }
 
         }
@@ -160,6 +185,7 @@ fun OrderFilter(
     modifier: Modifier = Modifier,
     selected: OrderActivity.OrderFilterType,
     onStatusSelect: (OrderActivity.OrderFilterType) -> Unit = {},
+    onDateFilter: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -188,8 +214,7 @@ fun OrderFilter(
             variant = ButtonVariant.GHOST,
             icon = R.drawable.ic_slider,
             tint = TextDark300,
-            onClick = {
-            }
+            onClick = onDateFilter
         )
     }
 }
@@ -429,7 +454,15 @@ fun OrderItemsCard(
 fun OrderDateFilterSheet(
     onApply: () -> Unit
 ) {
-    val datePickerState = rememberDatePickerState()
+
+    var dateFilter by remember {
+        mutableStateOf(
+            OrderDateFilter(
+                from = "",
+                to = ""
+            )
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -451,21 +484,35 @@ fun OrderDateFilterSheet(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
                 Text("From")
 
                 DatePickerFieldToModal(
+                    onDateSelect = {
+                        dateFilter = dateFilter.copy(
+                            from = it
+                        )
+                    }
 
                 )
             }
-
             Column(
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
                 Text("To")
 
-                DatePickerFieldToModal()
+                DatePickerFieldToModal(
+                    onDateSelect = {
+                        dateFilter = dateFilter.copy(
+                            to = it
+                        )
+                    }
+                )
             }
         }
 
@@ -480,9 +527,11 @@ fun OrderDateFilterSheet(
 
 @Composable
 fun DatePickerFieldToModal(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDateSelect: (String) -> Unit
 ) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
+
     var showModal by remember { mutableStateOf(false) }
 
     AppTextField(
@@ -513,8 +562,13 @@ fun DatePickerFieldToModal(
     if (showModal) {
         DatePickerModal(
             onDismiss = { showModal = false },
-            onDateSelected = {
-                selectedDate = it
+            onDateSelected = { millis ->
+                selectedDate = millis
+                millis?.let {
+                    onDateSelect(
+                        convertMillisToDate(it)
+                    )
+                }
             }
         )
     }
@@ -553,7 +607,7 @@ fun DatePickerModal(
 }
 
 fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return formatter.format(Date(millis))
 
 }
