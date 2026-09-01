@@ -14,10 +14,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -45,7 +45,6 @@ import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.components.AppButton
-import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.AppTextField
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.MapsViewModel
@@ -225,30 +224,19 @@ class MapsActivity : AppCompatActivity() {
                             .statusBarsPadding()
                             .padding(24.dp)
                     ) {
-                        Row(
+
+                        SearchBox(
+                            value = searchQuery,
+                            onValueChange = viewModel::onSearchQueryChange,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .wrapContentHeight()
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(Surface)
-                                .padding(horizontal = 2.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            AppButton(
-                                modifier = Modifier.padding(0.dp),
-                                variant = ButtonVariant.GHOST,
-                                icon = R.drawable.ic_cancel,
-                                onClick = { viewModel.onSearchQueryChange("") }
-                            )
-                            SearchBox(
-                                value = searchQuery,
-                                onValueChange = viewModel::onSearchQueryChange,
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                isLoading = isAddressSearching || isSearching
-                            )
-                        }
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Surface),
+                            isLoading = isAddressSearching || isSearching,
+                            onClear = {
+                                viewModel.onSearchQueryChange("")
+                            }
+                        )
 
                         if (predictions.isNotEmpty()) {
                             Column(
@@ -330,14 +318,22 @@ fun SearchBox(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    isLoading: Boolean
-    ) {
+    isLoading: Boolean,
+    onClear: () -> Unit
+) {
     AppTextField(
         modifier,
         value = value,
         onValueChange = onValueChange,
         placeholder = "Enter your address",
-        isLoading = isLoading
+        isLoading = isLoading,
+        startButton = {
+            AppButton(
+                variant = ButtonVariant.GHOST,
+                onClick = onClear,
+                icon = R.drawable.ic_cancel
+            )
+        }
     )
 }
 
@@ -348,6 +344,7 @@ fun SearchBoxPreview() {
         value = "",
         onValueChange = {
         },
-        isLoading = true
+        isLoading = true,
+        onClear = {},
     )
 }

@@ -6,6 +6,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,14 +23,22 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,9 +61,13 @@ import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppLoadingIndicator
+import com.example.xml_app.utils.styles.components.AppTextField
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.OrderViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class OrderActivity : AppCompatActivity() {
     enum class OrderFilterType(val label: String) {
@@ -410,45 +425,178 @@ fun OrderItemsCard(
 
 }
 
+@Composable
+fun OrderDateFilterSheet(
+    onApply: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            "Filter by",
+            fontFamily = SourceSansPro,
+            fontSize = 16.sp,
+            letterSpacing = 0.15.sp,
+            fontWeight = FontWeight.Medium,
+            color = TextDark400
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            ) {
+                Text("From")
+
+                DatePickerFieldToModal(
+
+                )
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            ) {
+                Text("To")
+
+                DatePickerFieldToModal()
+            }
+        }
+
+        AppButton(
+            modifier = Modifier.fillMaxWidth(),
+            variant = ButtonVariant.PRIMARY,
+            text = "APPLY",
+            onClick = onApply
+        )
+    }
+}
+
+@Composable
+fun DatePickerFieldToModal(
+    modifier: Modifier = Modifier
+) {
+    var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var showModal by remember { mutableStateOf(false) }
+
+    AppTextField(
+        value = selectedDate?.let {
+            convertMillisToDate(it)
+        } ?: "",
+        onValueChange = {},
+        placeholder = "Select Date",
+        endButton = {
+            Icon(
+                painter = painterResource(R.drawable.ic_calender_default),
+                contentDescription = "Calendar"
+            )
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .pointerInput(selectedDate) {
+                awaitEachGesture {
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+                    if (upEvent != null) {
+                        showModal = true
+                    }
+                }
+            }
+    )
+
+    if (showModal) {
+        DatePickerModal(
+            onDismiss = { showModal = false },
+            onDateSelected = {
+                selectedDate = it
+            }
+        )
+    }
+}
+
+@Composable
+fun DatePickerModal(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            AppButton(
+                variant = ButtonVariant.SECONDARY,
+                onClick = onDismiss,
+                text = "CANCEL",
+            )
+        },
+        dismissButton = {
+            AppButton(
+                variant = ButtonVariant.PRIMARY,
+                text = "SELECT",
+                onClick = {
+                    onDateSelected(datePickerState.selectedDateMillis)
+                    onDismiss()
+                }
+            )
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+
+}
+
+fun convertMillisToDate(millis: Long): String {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
+
+}
+
 @Preview(showBackground = true)
 @Composable
 fun OrderFilterPreview() {
+//
+//    val orderItem1 = OrderItemResponse(
+//        productId = 1,
+//        productName = "Addidas Sambas - White",
+//        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/mnml-men's-front-pocket-geo-shorts-mnml-/1770621841231",
+//        brand = "Core Studio",
+//        quantity = 2,
+//        price = 4000
+//    )
+//    val orderItem2 = OrderItemResponse(
+//        productId = 1,
+//        productName = "Addidas Sambas - White",
+//        quantity = 1,
+//        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/pranish-nicks/1780819796759",
+//        brand = "Oxford",
+//        price = 4000
+//    )
+//    val response = OrderResponse(
+//        id = 1,
+//        address = "Gothater-8, Kageshori Manohora, Kathmandu, Bagmati",
+//        phone = "9841890609",
+//        paymentOption = "Esewa",
+//        vehicleNumber = "BA 08672",
+//        deliveryCharge = 200,
+//        discount = 100,
+//        status = "Pending",
+//        totalPrice = 8000,
+//
+//        orderDate = "2026-08-29T06:16:03.123456Z",
+//        orderItems = listOf(
+//            orderItem1,
+//            orderItem2
+//        )
+//    )
 
-    val orderItem1 = OrderItemResponse(
-        productId = 1,
-        productName = "Addidas Sambas - White",
-        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/mnml-men's-front-pocket-geo-shorts-mnml-/1770621841231",
-        brand = "Core Studio",
-        quantity = 2,
-        price = 4000
-    )
-    val orderItem2 = OrderItemResponse(
-        productId = 1,
-        productName = "Addidas Sambas - White",
-        quantity = 1,
-        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/pranish-nicks/1780819796759",
-        brand = "Oxford",
-        price = 4000
-    )
-    val response = OrderResponse(
-        id = 1,
-        address = "Gothater-8, Kageshori Manohora, Kathmandu, Bagmati",
-        phone = "9841890609",
-        paymentOption = "Esewa",
-        vehicleNumber = "BA 08672",
-        deliveryCharge = 200,
-        discount = 100,
-        status = "Pending",
-        totalPrice = 8000,
+    OrderDateFilterSheet {
 
-        orderDate = "2026-08-29T06:16:03.123456Z",
-        orderItems = listOf(
-            orderItem1,
-            orderItem2
-        )
-    )
-
-    OrderCard(
-        response
-    )
+    }
 }

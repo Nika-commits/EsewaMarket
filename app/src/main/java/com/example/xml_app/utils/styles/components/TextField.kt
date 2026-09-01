@@ -18,11 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.xml_app.R
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.styles.Error
 import com.example.xml_app.utils.styles.InputBackgroundCompose
@@ -38,7 +40,9 @@ fun AppTextField(
     placeholder: String,
     isError: Boolean = false,
     errorMessage: String? = null,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    startButton: (@Composable () -> Unit)? = null,
+    endButton: (@Composable () -> Unit)? = null
 ) {
     Column(
         modifier,
@@ -71,29 +75,65 @@ fun AppTextField(
             ),
             singleLine = true,
             decorationBox = { innerTextField ->
-                Box {
-                    if (value.isEmpty()) {
-                        Text(
-                            text = placeholder,
-                            color = TextDark100,
-                            fontSize = 16.sp,
-                            letterSpacing = 0.5.sp
-                        )
-                    }
-                    innerTextField()
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
 
-                    if(isLoading){
+                    if (startButton != null) {
                         Box(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.align(Alignment.CenterStart)
+                        ) {
+                            startButton()
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = if (startButton != null) 48.dp else 0.dp,
+                                end = if (isLoading) 32.dp else 0.dp
+                            )
+                    ) {
+                        if (value.isEmpty()) {
+                            Text(
+                                text = placeholder,
+                                color = TextDark100,
+                                fontSize = 16.sp,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+
+                        innerTextField()
+                    }
+
+                    // Loading indicator
+
+                    if(endButton != null){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.CenterEnd),
+                            contentAlignment = Alignment.CenterEnd
+                        ){
+                            endButton()
+                        }
+                    }
+
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.CenterEnd),
                             contentAlignment = Alignment.CenterEnd
                         ) {
-                        AppLoadingIndicator()
+                            AppLoadingIndicator()
                         }
                     }
                 }
-            }
-        )
-        if(isError && errorMessage != null) {
+            })
+        if (isError && errorMessage != null) {
             Text(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 text = errorMessage,
@@ -116,7 +156,20 @@ fun PreviewTextField() {
         value = text,
         onValueChange = { text = it },
         placeholder = "PROMO CODE",
-//        isError = true,
-        isLoading = true
+//        isLoading = true,
+        startButton = {
+            AppButton(
+                variant = ButtonVariant.GHOST,
+                onClick = {},
+                icon = R.drawable.ic_cancel
+            )
+        },
+        endButton = {
+            AppButton(
+                variant = ButtonVariant.GHOST,
+                onClick = {},
+                icon = R.drawable.ic_calender_default
+            )
+        }
     )
 }
