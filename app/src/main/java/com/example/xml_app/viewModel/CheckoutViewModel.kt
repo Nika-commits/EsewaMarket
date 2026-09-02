@@ -80,18 +80,20 @@ class CheckoutViewModel(
                 }
 
                 val serverUser = userRepository.getCurrentUser(idToken)
-                Log.d("Checkout", "$serverUser")
+                Log.d("Checkout", "Server User: $serverUser")
                 if (serverUser == null) {
+                    Log.d("Checkout", "Server User is null")
                     _authState.value = CheckoutAuthState.Unauthorized
                     return@launch
                 }
+
                 Log.e("Checkout", "$serverUser")
                 _phoneNumber.value = serverUser.phone
                 _address.value = serverUser.address
                 loadCart(serverUser.id)
                 _authState.value = CheckoutAuthState.Authorized(serverUser)
             } catch (e: Exception) {
-                Log.e("Checkout", e.message ?: "Error Occurred during Getting User")
+                Log.e("Checkout", "Error during user initialization: ${e.localizedMessage}", e)
                 _authState.value = CheckoutAuthState.Unauthorized
             }
         }

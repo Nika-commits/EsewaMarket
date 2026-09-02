@@ -19,7 +19,7 @@ import com.example.xml_app.entities.User
         CartItem::class,
         Favourite::class
     ],
-    version = 2
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

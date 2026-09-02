@@ -106,6 +106,7 @@ class CheckoutActivity : AppCompatActivity() {
                 }
 
                 CheckoutAuthState.Unauthorized -> {
+                    Log.e("Checkout", "Unauthorized")
                     LaunchedEffect(Unit) {
                         finish()
                     }

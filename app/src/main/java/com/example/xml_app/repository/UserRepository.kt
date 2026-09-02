@@ -39,6 +39,7 @@ class UserRepository(
                 firebaseUid = user.firebaseUid,
                 fullName = user.fullName,
                 username = user.username,
+                email = user.email
             )
         )
     }
