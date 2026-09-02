@@ -13,7 +13,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface OrderApi {
-
     @POST("/api/order")
     suspend fun postOrder(
         @Header("Authorization") authorization: String,

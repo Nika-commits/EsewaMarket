@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import org.koin.core.context.startKoin
 
 class CustomApplicationContext : Application() {
     lateinit var auth: FirebaseAuth
@@ -24,5 +25,11 @@ class CustomApplicationContext : Application() {
             name = "app_database",
             klass = AppDatabase::class.java
         ).build()
+
+        startKoin {
+        }
+
     }
+
+
 }
