@@ -17,8 +17,31 @@ data class User(
     @ColumnInfo(name = "firebase_uid") val firebaseUid: String,
     @ColumnInfo(name = "full_name") val fullName: String,
     val username: String,
-    val address: String?,
-    val phone: String?
+)
+
+@Entity(
+    tableName = "addresses",
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["uid"],
+            childColumns = ["user_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index("user_id")
+    ]
+)
+data class Address(
+    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+    @ColumnInfo(name = "user_id") val userId: Int,
+    @ColumnInfo(name = "full_name") val fullName: String,
+    @ColumnInfo(name = "phone_number") val phone: String,
+    @ColumnInfo(name = "full_address") val fullAddress: String,
+    @ColumnInfo(name = "label") val label: String = "Home",
+    @ColumnInfo(name = "is_default_address") val isDefaultAddress: Boolean,
+    @ColumnInfo(name = "is_default_shipping_address") val isDefaultShippingAddress: Boolean
 )
 
 @Entity(

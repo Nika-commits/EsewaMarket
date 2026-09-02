@@ -3,6 +3,7 @@ package com.example.xml_app.utils
 import android.app.Application
 import androidx.room3.Room
 import com.example.xml_app.data.AppDatabase
+import com.example.xml_app.data.MIGRATION_1_2
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -24,7 +25,9 @@ class CustomApplicationContext : Application() {
             context = applicationContext,
             name = "app_database",
             klass = AppDatabase::class.java
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
 
         startKoin {
         }

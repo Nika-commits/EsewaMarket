@@ -273,7 +273,7 @@ fun CheckoutScreen(
                             return@PaymentOptionsList
                         }
 
-                        if (user.phoneNumber == null) {
+                        if (user.phone == null) {
                             showPhoneNumberSheet = true
                             return@PaymentOptionsList
                         }
@@ -296,7 +296,7 @@ fun CheckoutScreen(
                             return@PaymentOptionsList
                         }
 
-                        if (user.phoneNumber == null) {
+                        if (user.phone == null) {
                             showPhoneNumberSheet = true
                             return@PaymentOptionsList
                         }
@@ -453,7 +453,7 @@ fun CheckoutScreen(
                             }
                     },
                     onApply = {
-                        viewModel.updatePhoneNumber()
+//                        viewModel.updatePhoneNumber()
                     },
                     phoneNumberResult = phoneNumberResult == true,
                     isPhoneNumberUpdating = isPhoneNumberUpdating

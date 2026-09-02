@@ -11,7 +11,6 @@ import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CheckoutAuthState
 import com.example.xml_app.utils.CustomApplicationContext
-import com.example.xml_app.utils.dto.CreateUserRequest
 import com.example.xml_app.utils.dto.request.CreateOrderItemRequest
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
 import com.example.xml_app.utils.dto.request.PaymentOptions
@@ -90,7 +89,7 @@ class CheckoutViewModel(
                     return@launch
                 }
                 Log.e("Checkout", "$serverUser")
-                _phoneNumber.value = serverUser.phoneNumber
+                _phoneNumber.value = serverUser.phone
                 _address.value = serverUser.address
                 loadCart(serverUser.id)
                 _authState.value = CheckoutAuthState.Authorized(serverUser)
@@ -139,46 +138,6 @@ class CheckoutViewModel(
         }
     }
 
-    fun updatePhoneNumber() {
-        viewModelScope.launch {
-            _isUpdatingUser.value = true
-            try {
-                val updateUserRequest = CreateUserRequest(
-                    phone = _phoneNumber.value,
-                    username = null,
-                    address = null,
-                    fullName = null,
-                    profilePicture = null
-                )
-
-                val firebaseUser = app.auth.currentUser ?: throw Exception("User session timed out")
-                val token = firebaseUser.getIdToken(false).await().token
-                    ?: throw Exception("Failed to get token")
-                val response = userRepository.updateUserProfile(
-                    token = token,
-                    request = updateUserRequest
-                )
-
-                if (!response.isSuccessful) {
-                    _phoneNumberResult.value = false
-                    return@launch
-                }
-                val updatedUser = userRepository.getCurrentUser(token)
-                if (updatedUser == null) {
-                    _phoneNumberResult.value = false
-                    return@launch
-                }
-//                initializeUser()
-                _authState.value = CheckoutAuthState.Authorized(updatedUser)
-                _phoneNumber.value = updatedUser.phoneNumber
-                _phoneNumberResult.value = true
-            } catch (e: Exception) {
-                _phoneNumberResult.value = false
-            } finally {
-                _isUpdatingUser.value = false
-            }
-        }
-    }
 
     suspend fun placeOrder(
         paymentOptions: PaymentOptions
