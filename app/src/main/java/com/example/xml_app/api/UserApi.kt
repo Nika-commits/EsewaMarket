@@ -52,7 +52,8 @@ interface UserApi {
     @PUT("/api/user/address/{id}")
     suspend fun updateAddress(
         @Header("Authorization") authorization: String,
-        @Path("id") id: Int
+        @Path("id") id: Int,
+        @Body request: CreateAddressRequest
     )
 
     @PATCH("/api/user/address/{id}/set-default")
