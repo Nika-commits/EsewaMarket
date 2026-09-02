@@ -44,9 +44,6 @@ class CheckoutViewModel(
     val promoCodeResult = _promoCodeResult.asStateFlow()
     private val _promoCode = MutableStateFlow<String?>(null)
     val promoCode = _promoCode.asStateFlow()
-
-    //    private val _paymentOption = MutableStateFlow<String?>(null)
-//    val paymentOption = _paymentOption.asStateFlow()
     private val _isCheckingPromoCode = MutableStateFlow(false)
     val isCheckingPromoCode = _isCheckingPromoCode.asStateFlow()
     private val _isOrdering = MutableStateFlow(false)

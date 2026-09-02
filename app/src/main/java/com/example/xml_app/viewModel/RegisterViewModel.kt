@@ -74,8 +74,6 @@ class RegisterViewModel(
                 val request = CreateUserRequest(
                     username = username,
                     fullName = fullName,
-                    address = null,
-                    phone = null,
                     profilePicture = null
                 )
                 val fireStoreUser = hashMapOf(
@@ -125,8 +123,6 @@ class RegisterViewModel(
                     username = firebaseUser.displayName ?: firebaseUser.email?.substringBefore("@")
                     ?: "user",
                     fullName = firebaseUser.displayName ?: "",
-                    address = null,
-                    phone = firebaseUser.phoneNumber,
                     profilePicture = null
                 )
 

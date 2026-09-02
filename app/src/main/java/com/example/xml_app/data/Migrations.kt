@@ -12,6 +12,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
                 uid INTEGER PRIMARY KEY AUTOINCREMENT not null,
                 user_id Integer not null,
                 full_name text not null,
+                full_address text not null,
                 phone_number text not null,
                 label text not null,
                 is_default_address integer not null,
@@ -23,7 +24,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 
         connection.execSQL(
             """
-                create index index_adressess_user_id on addresses(user_id)
+                create index index_adresses_user_id on addresses(user_id)
             """.trimIndent()
         )
 

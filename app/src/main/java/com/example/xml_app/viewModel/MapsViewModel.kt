@@ -8,7 +8,6 @@ import com.example.xml_app.BuildConfig
 import com.example.xml_app.repository.MapRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
-import com.example.xml_app.utils.dto.CreateUserRequest
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
@@ -88,36 +87,6 @@ class MapsViewModel(
     }
 
     private fun updateUserAddress() {
-        viewModelScope.launch {
-            _isUpdatingUser.value = true
-            try {
-                val updateUserRequest = CreateUserRequest(
-                    username = null,
-                    fullName = null,
-                    address = _address.value,
-                    phone = null,
-                    profilePicture = null
-                )
-                val firebaseUser = app.auth.currentUser ?: throw Exception("User is not logged in.")
-                val token = firebaseUser.getIdToken(false).await().token
-                    ?: throw Exception("Failed to get Firebase Token")
-                val response = userRepository.updateUserProfile(
-                    token = token,
-                    request = updateUserRequest
-                )
-
-                if (!response.isSuccessful) {
-                    Log.e("MAPS", "Failed to update: ${response.code()}")
-                    throw Exception("Failed: ${response.code()}")
-                }
-
-                Log.d("MAPS", "Address : ${response.body()?.address}")
-                _isUpdatingUser.value = false
-            } catch (e: Exception) {
-                Log.e("MAPS", "Exception : ${e.message}")
-                _isUpdatingUser.value = false
-            }
-        }
     }
 
     fun onSearchQueryChange(query: String) {
