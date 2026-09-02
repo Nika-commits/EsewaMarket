@@ -6,6 +6,9 @@ import com.example.xml_app.entities.User
 import com.example.xml_app.utils.dto.CreateUserRequest
 import com.example.xml_app.utils.dto.UserResponse
 import com.example.xml_app.utils.dto.request.CreateAddressRequest
+import com.example.xml_app.utils.dto.response.UserAddressResponse
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 
 class UserRepository(
     private val userDao: UserDao
@@ -30,6 +33,13 @@ class UserRepository(
         } else {
             response.body()
         }
+    }
+
+    suspend fun getFirebaseToken(firebase: FirebaseAuth): String? {
+        val firebaseUser = firebase.currentUser ?: return null
+        val token = firebaseUser.getIdToken(false).await().token ?: return null
+
+        return token
     }
 
     private suspend fun saveUserLocally(user: UserResponse) {
@@ -66,9 +76,17 @@ class UserRepository(
 
     suspend fun getUserAddresses(
         token: String
-    ) = RetrofitInstance.userApi.getAddresses(
-        authorization = "Bearer $token"
-    )
+    ): List<UserAddressResponse> {
+        val response = RetrofitInstance.userApi.getAddresses(
+            token
+        )
+        if (!response.isSuccessful) {
+            throw Exception("Failed to fetch Addresses: ${response.code()}")
+        }
+
+        val addresses = response.body() ?: throw Exception("Addresses is null")
+        return addresses
+    }
 
     suspend fun deleteAddress(
         token: String,

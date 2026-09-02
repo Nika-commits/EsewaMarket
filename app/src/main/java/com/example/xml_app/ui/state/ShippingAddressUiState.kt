@@ -6,6 +6,6 @@ sealed interface ShippingAddressUiState {
     object Loading : ShippingAddressUiState
     object Error : ShippingAddressUiState
     class Success(
-        val data: UserAddressResponse
+        val data: List<UserAddressResponse>
     ) : ShippingAddressUiState
 }

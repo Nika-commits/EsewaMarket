@@ -55,6 +55,7 @@ class ShippingAddressActivity : AppCompatActivity() {
                     )
                 }
             ) { innerPadding ->
+
                 ShippingAddressScreen(
                     modifier = Modifier.padding(innerPadding)
                 )
@@ -95,7 +96,7 @@ fun AddressCard(
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             AppButton(
                 variant = ButtonVariant.ICON,
@@ -138,7 +139,6 @@ fun AddressCard(
             }
 
             AppButton(
-                modifier = Modifier.align(Alignment.Top),
                 variant = ButtonVariant.GHOST,
                 onClick = {},
                 icon = R.drawable.ic_overflow_option
@@ -175,7 +175,7 @@ fun ShippingAddressPreview() {
         phoneNumber = "9748285043",
         fullAddress = "Tej Binayak Chowk, Gothatar-8, Kageshwori Manohora",
         label = AddressLabel.Home,
-        isDefaultAddress = true,
+        isDefaultAddress = false,
         createdAt = "2026-08-29",
         updatedAt = "2026-09-22",
         isDefaultShippingAddress = false
