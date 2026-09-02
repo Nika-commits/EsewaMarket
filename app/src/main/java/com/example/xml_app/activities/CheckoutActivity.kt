@@ -126,12 +126,12 @@ class CheckoutActivity : AppCompatActivity() {
                             onBackPressedDispatcher.onBackPressed()
                         },
                         onSetAddress = {
-                            Intent(this, MapsActivity::class.java).also {
+                            Intent(this, ShippingAddressActivity::class.java).also {
                                 startActivity(it)
                             }
                         },
                         onEditAddressClick = {
-                            Intent(this, MapsActivity::class.java).also {
+                            Intent(this, ShippingAddressActivity::class.java).also {
                                 startActivity(it)
                             }
                         }
