@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -110,6 +112,16 @@ class ShippingAddressActivity : AppCompatActivity() {
                                     AddNewAddressActivity.Companion.MODE.ADD,
                                     null
                                 )
+                            },
+                            onEditAddress = {
+                                AddNewAddressActivity.startActivity(
+                                    this,
+                                    AddNewAddressActivity.Companion.MODE.EDIT,
+                                    it
+                                )
+                            },
+                            onDeleteAddress = {
+
                             }
                         )
                     }
@@ -128,7 +140,9 @@ class ShippingAddressActivity : AppCompatActivity() {
 fun ShippingAddressScreen(
     modifier: Modifier = Modifier,
     addresses: List<UserAddressResponse>,
-    onAddAddress: () -> Unit
+    onAddAddress: () -> Unit,
+    onEditAddress: (id: Int) -> Unit,
+    onDeleteAddress: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -154,7 +168,13 @@ fun ShippingAddressScreen(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100))
                                 .background(PrimaryGreen)
-                                .padding(12.dp),
+                                .padding(12.dp)
+                                .clickable(
+                                    enabled = true,
+                                    onClick = {
+                                        onEditAddress(address.id)
+                                    },
+                                ),
                             painter = painterResource(R.drawable.ic_edit),
                             contentDescription = null,
                             tint = Surface
@@ -163,7 +183,11 @@ fun ShippingAddressScreen(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100))
                                 .background(EsewaRed)
-                                .padding(12.dp),
+                                .padding(12.dp)
+                                .clickable(
+                                    enabled = true,
+                                    onClick = onDeleteAddress
+                                ),
                             painter = painterResource(R.drawable.ic_trash),
                             contentDescription = null,
                             tint = Surface
