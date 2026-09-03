@@ -33,7 +33,6 @@ import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.AddNewAddressViewModel
 
 class AddNewAddressActivity : AppCompatActivity() {
-
     companion object {
         const val TYPE = "type"
         const val ADDRESS_ID = "address_id"

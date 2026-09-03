@@ -1,5 +1,6 @@
 package com.example.xml_app.repository
 
+import android.util.Log
 import com.example.xml_app.api.RetrofitInstance
 import com.example.xml_app.data.dao.UserDao
 import com.example.xml_app.entities.User
@@ -69,10 +70,20 @@ class UserRepository(
     suspend fun createUserAddress(
         token: String,
         request: CreateAddressRequest
-    ) = RetrofitInstance.userApi.createUserAddress(
-        authorization = "Bearer $token",
-        request = request
-    )
+    ): UserAddressResponse? {
+        val response = RetrofitInstance.userApi.createUserAddress(
+            authorization = "Bearer $token",
+            request = request
+        )
+        if (!response.isSuccessful) {
+            Log.e("Address", "Failed to create Address: ${response.body()}")
+            return null
+        }
+        if (response.body() == null) {
+            return null
+        }
+        return response.body()
+    }
 
     suspend fun getUserAddresses(
         token: String
@@ -116,11 +127,23 @@ class UserRepository(
         token: String,
         id: Int,
         request: CreateAddressRequest
-    ) = RetrofitInstance.userApi.updateAddress(
-        authorization = "Bearer $token",
-        id = id,
-        request = request
-    )
+    ): UserAddressResponse? {
+        val response = RetrofitInstance.userApi.updateAddress(
+            authorization = "Bearer $token",
+            id = id,
+            request = request
+        )
+
+        if (!response.isSuccessful) {
+            Log.e("Address", "Failed to Update Address: ${response.code()}")
+            return null
+        }
+        if (response.body() == null) {
+            Log.e("Address", "Update Body is null: ${response.body()}")
+            return null
+        }
+        return response.body()
+    }
 
     suspend fun setDefaultAddress(
         token: String,

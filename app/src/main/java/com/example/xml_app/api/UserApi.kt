@@ -60,7 +60,7 @@ interface UserApi {
         @Header("Authorization") authorization: String,
         @Path("id") id: Int,
         @Body request: CreateAddressRequest
-    )
+    ): Response<UserAddressResponse>
 
     @PATCH("/api/user/address/{id}/set-default")
     suspend fun setDefaultAddress(

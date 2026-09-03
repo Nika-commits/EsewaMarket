@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xml_app.activities.AddNewAddressActivity
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.ui.state.AddShippingAddressUiState
 import com.example.xml_app.utils.CustomApplicationContext
@@ -21,6 +22,8 @@ class AddNewAddressViewModel(
     val state = _state.asStateFlow()
     private val _formData = MutableStateFlow(CreateAddressRequest())
     val formData = _formData.asStateFlow()
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving = _isSaving.asStateFlow()
 
     fun getCurrentAddress(addressId: Int) {
         viewModelScope.launch {
@@ -47,6 +50,35 @@ class AddNewAddressViewModel(
             } catch (e: Exception) {
                 Log.e("Address", "getCurrentAddress: ${e.message}")
                 _state.value = AddShippingAddressUiState.Error
+            }
+        }
+    }
+
+    fun SaveAddress(
+        mode: AddNewAddressActivity.Companion.MODE,
+        id: Int?
+    ) {
+        viewModelScope.launch {
+            _isSaving.value = true
+            try {
+                val token = userRepository.getFirebaseToken(app.auth) ?: return@launch
+                when (mode) {
+                    AddNewAddressActivity.Companion.MODE.ADD -> {
+                        val response = userRepository.createUserAddress(token, _formData.value)
+                    }
+
+                    AddNewAddressActivity.Companion.MODE.EDIT -> {
+                        if (id == null) return@launch
+                        val response = userRepository.updateAddress(
+                            token = token,
+                            id = id,
+                            request = _formData.value
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Address", "SaveAddress: ${e.message}")
+                _isSaving.value = false
             }
         }
     }
