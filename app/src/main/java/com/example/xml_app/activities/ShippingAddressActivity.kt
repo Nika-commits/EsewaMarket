@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import com.example.xml_app.R
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.dto.response.UserAddressResponse
+import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
@@ -55,9 +57,9 @@ class ShippingAddressActivity : AppCompatActivity() {
                     )
                 }
             ) { innerPadding ->
-
                 ShippingAddressScreen(
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
+                    onAddAddress = {}
                 )
             }
         }
@@ -66,14 +68,29 @@ class ShippingAddressActivity : AppCompatActivity() {
 
 @Composable
 fun ShippingAddressScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAddAddress: () -> Unit
 ) {
-    LazyColumn(
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(OffWhiteBackground)
     ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
 
+        }
+        AppButton(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp),
+            variant = ButtonVariant.PRIMARY,
+            text = "ADD ADDRESS",
+            onClick = onAddAddress
+        )
     }
 }
 
@@ -122,7 +139,7 @@ fun AddressCard(
                         letterSpacing = 0.4.sp,
                         color = TextDark400,
                         fontSize = 12.sp
-                        )
+                    )
 
                     AddressLabelChip(address.label)
                 }
@@ -150,15 +167,15 @@ fun AddressCard(
 @Composable
 fun AddressLabelChip(
     label: AddressLabel
-){
+) {
     Text(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(if(label == AddressLabel.Home) PrimaryGreen else PrimaryGreenTransparent)
+            .background(if (label == AddressLabel.Home) PrimaryGreen else PrimaryGreenTransparent)
             .padding(vertical = 2.dp, horizontal = 8.dp),
         text = label.name,
         fontFamily = SourceSansPro,
-        color = if(label == AddressLabel.Home) Surface else PrimaryGreen,
+        color = if (label == AddressLabel.Home) Surface else PrimaryGreen,
         fontSize = 14.sp,
     )
 }
@@ -180,10 +197,10 @@ fun ShippingAddressPreview() {
         updatedAt = "2026-09-22",
         isDefaultShippingAddress = false
     )
-
-    AddressCard(
-        response
-    )
+//
+//    AddressCard(
+//        response
+//    )
 }
 
 

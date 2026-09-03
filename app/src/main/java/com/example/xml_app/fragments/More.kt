@@ -15,6 +15,7 @@ import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.MainActivity
 import com.example.xml_app.activities.OrderActivity
+import com.example.xml_app.activities.ShippingAddressActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
@@ -98,11 +99,16 @@ class More : Fragment() {
         val shippingAddress = binding.authLayout.shippingAddress
         shippingAddress.ivIcon.setImageResource(R.drawable.ic_shippping_address)
         shippingAddress.tvName.text = "Shipping Address"
+        shippingAddress.root.setOnClickListener {
+            Intent(requireContext(), ShippingAddressActivity::class.java)
+                .also {
+                    startActivity(it)
+                }
+        }
 
         val myOrder = binding.authLayout.myOrder
         myOrder.ivIcon.setImageResource(R.drawable.ic_myorder)
         myOrder.tvName.text = "My Order"
-
         myOrder.root.setOnClickListener {
             Intent(requireContext(), OrderActivity::class.java)
                 .also {
