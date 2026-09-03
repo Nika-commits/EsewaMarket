@@ -9,7 +9,9 @@ import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.ui.state.AddShippingAddressUiState
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.request.CreateAddressRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -25,6 +27,8 @@ class AddNewAddressViewModel(
     private val _isSaving = MutableStateFlow(false)
     val isSaving = _isSaving.asStateFlow()
 
+    private val _snackbarMessage = MutableSharedFlow<String>()
+    val snackbarMessage = _snackbarMessage.asSharedFlow()
     fun getCurrentAddress(addressId: Int) {
         viewModelScope.launch {
             try {
@@ -65,6 +69,11 @@ class AddNewAddressViewModel(
                 when (mode) {
                     AddNewAddressActivity.Companion.MODE.ADD -> {
                         val response = userRepository.createUserAddress(token, _formData.value)
+                        if (response != null) {
+                            _snackbarMessage.emit("Address Created Successfully")
+                        } else {
+                            _snackbarMessage.emit("Failed to create Address")
+                        }
                     }
 
                     AddNewAddressActivity.Companion.MODE.EDIT -> {
@@ -74,10 +83,17 @@ class AddNewAddressViewModel(
                             id = id,
                             request = _formData.value
                         )
+                        if (response != null) {
+                            _snackbarMessage.emit("Address Edited Successfully")
+                        } else {
+                            _snackbarMessage.emit("Failed to edit Address")
+                        }
                     }
                 }
             } catch (e: Exception) {
                 Log.e("Address", "SaveAddress: ${e.message}")
+                _snackbarMessage.emit("Failed to save address")
+            } finally {
                 _isSaving.value = false
             }
         }

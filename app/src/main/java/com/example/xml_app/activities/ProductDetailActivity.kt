@@ -23,7 +23,7 @@ import com.example.xml_app.adapters.ProductCarouselAdapter
 import com.example.xml_app.databinding.ActivityProductDetailBinding
 import com.example.xml_app.models.ProductUiModel
 import com.example.xml_app.ui.SizeSelectorButton
-import com.example.xml_app.utils.CustomSnackbar
+import com.example.xml_app.utils.CustomSnackBar
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.viewModel.ProductDetailsViewModel
 import com.google.android.material.tabs.TabLayoutMediator
@@ -171,7 +171,7 @@ class ProductDetailActivity : AppCompatActivity() {
     }
 
     private fun showLoginSnackbar(message: String) {
-        CustomSnackbar.show(
+        CustomSnackBar.show(
             view = binding.root,
             context = this,
             text = message,

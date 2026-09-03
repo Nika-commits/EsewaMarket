@@ -14,15 +14,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.ui.state.AddShippingAddressUiState
+import com.example.xml_app.utils.CustomComposeSnackBar
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.dto.request.CreateAddressRequest
 import com.example.xml_app.utils.styles.Surface
@@ -70,6 +75,12 @@ class AddNewAddressActivity : AppCompatActivity() {
         }
 
         setContent {
+            val snackbarHostState = remember { SnackbarHostState() }
+            LaunchedEffect(Unit) {
+                viewModel.snackbarMessage.collect { message ->
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
             Scaffold(
                 topBar = {
                     AppTopBar(
@@ -81,6 +92,16 @@ class AddNewAddressActivity : AppCompatActivity() {
                             onBackPressedDispatcher.onBackPressed()
                         }
                     )
+                },
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState
+                    ) { snackbarData ->
+                        CustomComposeSnackBar(
+                            snackBarData = snackbarData
+                        )
+
+                    }
                 }
             ) { innerPadding ->
                 val formData by viewModel.formData.collectAsStateWithLifecycle()

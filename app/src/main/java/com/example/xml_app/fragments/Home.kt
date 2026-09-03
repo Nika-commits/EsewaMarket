@@ -50,7 +50,7 @@ import com.example.xml_app.models.Category
 import com.example.xml_app.models.Hero
 import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
-import com.example.xml_app.utils.CustomSnackbar
+import com.example.xml_app.utils.CustomSnackBar
 import com.example.xml_app.utils.HomeConcatAdapterSpacing
 import com.example.xml_app.viewModel.HomeViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -366,7 +366,7 @@ class Home : Fragment() {
 
     private fun showLoginSnackBar(message: String) {
         val bottomNav = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
-        CustomSnackbar.show(
+        CustomSnackBar.show(
             view = binding.root,
             context = requireContext(),
             text = message,
@@ -416,7 +416,7 @@ class Home : Fragment() {
             viewModel.toggleFavourite(id)
             val bottomNavigation =
                 requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
-            CustomSnackbar.show(
+            CustomSnackBar.show(
                 binding.root,
                 context = requireContext(),
                 anchorView = bottomNavigation,
@@ -443,7 +443,7 @@ class Home : Fragment() {
 
     private fun showAddToCartSnackBar() {
         val bottomNavigation = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
-        CustomSnackbar.show(
+        CustomSnackBar.show(
             binding.root,
             requireContext(),
             "Added to cart successfully",

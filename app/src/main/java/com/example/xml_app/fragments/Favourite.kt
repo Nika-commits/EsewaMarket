@@ -68,7 +68,7 @@ import com.example.xml_app.databinding.FragmentFavouriteBinding
 import com.example.xml_app.models.Product
 import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.composeUi.EmptyFavourites
-import com.example.xml_app.utils.CustomSnackbar
+import com.example.xml_app.utils.CustomSnackBar
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.ActionIcon
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
@@ -421,7 +421,7 @@ fun FavouriteScreen(
                                     viewModel.toggleFavourite(it)
                                 }
                                 selectedSet.clear()
-                                CustomSnackbar.show(
+                                CustomSnackBar.show(
                                     view = rootView,
                                     context = context,
                                     text = "($count) items has been deleted",
@@ -463,7 +463,7 @@ fun FavouriteScreen(
                                     onClick = {
                                         viewModel.toggleFavourite(product.product.id)
                                         viewModel.setOptionsRevealed(product.product.id, false)
-                                        CustomSnackbar.show(
+                                        CustomSnackBar.show(
                                             view = rootView,
                                             context = context,
                                             text = "(1) item has been deleted",
@@ -491,7 +491,7 @@ fun FavouriteScreen(
                                 },
                                 onAddToCart = { id ->
                                     viewModel.addToCart(id)
-                                    CustomSnackbar.show(
+                                    CustomSnackBar.show(
                                         view = rootView,
                                         context = context,
                                         text = "Added To Cart Successfully",

@@ -36,7 +36,7 @@ import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentCartBinding
 import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
-import com.example.xml_app.utils.CustomSnackbar
+import com.example.xml_app.utils.CustomSnackBar
 import com.example.xml_app.utils.HomeConcatAdapterSpacing
 import com.example.xml_app.viewModel.CartViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -274,7 +274,7 @@ class Cart : Fragment() {
             val bottomNavigation =
                 requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
             if (viewModel.user.value == null) {
-                CustomSnackbar.show(
+                CustomSnackBar.show(
                     view = binding.root,
                     context = requireContext(),
                     text = "Log in to Checkout",
@@ -293,7 +293,7 @@ class Cart : Fragment() {
 
             val cartSize = viewModel.productsInCart.value.size
             if (cartSize == 0) {
-                CustomSnackbar.show(
+                CustomSnackBar.show(
                     view = binding.root,
                     context = requireContext(),
                     text = "Cannot checkout with an empty Cart.",
