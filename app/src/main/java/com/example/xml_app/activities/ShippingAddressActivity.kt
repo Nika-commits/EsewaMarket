@@ -22,7 +22,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -71,18 +70,6 @@ class ShippingAddressActivity : AppCompatActivity() {
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
                 when (val addresses = state) {
-                    ShippingAddressUiState.Error -> {
-                        Box(
-                            modifier = Modifier
-                                .padding(innerPadding)
-                                .background(OffWhiteBackground)
-                                .fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("An Error Occurred")
-                        }
-                    }
-
                     ShippingAddressUiState.Loading -> {
                         Box(
                             modifier = Modifier
@@ -97,6 +84,19 @@ class ShippingAddressActivity : AppCompatActivity() {
                             )
                         }
                     }
+
+                    ShippingAddressUiState.Error -> {
+                        Box(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .background(OffWhiteBackground)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("An Error Occurred")
+                        }
+                    }
+
 
                     ShippingAddressUiState.Empty -> {
 

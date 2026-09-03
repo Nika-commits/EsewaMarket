@@ -153,13 +153,6 @@ class AddNewAddressActivity : AppCompatActivity() {
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 val isSaving by viewModel.isSaving.collectAsStateWithLifecycle()
                 when (state) {
-                    AddShippingAddressUiState.Error -> {
-                        Text(
-                            modifier = Modifier.padding(innerPadding),
-                            text = "An Error Occurred"
-                        )
-                    }
-
                     AddShippingAddressUiState.Loading -> {
                         Box(
                             modifier = Modifier
@@ -172,6 +165,13 @@ class AddNewAddressActivity : AppCompatActivity() {
                                 size = 80.dp
                             )
                         }
+                    }
+
+                    AddShippingAddressUiState.Error -> {
+                        Text(
+                            modifier = Modifier.padding(innerPadding),
+                            text = "An Error Occurred"
+                        )
                     }
 
                     AddShippingAddressUiState.Success -> {

@@ -27,11 +27,11 @@ class AddNewAddressViewModel(
     val formData = _formData.asStateFlow()
     private val _isSaving = MutableStateFlow(false)
     val isSaving = _isSaving.asStateFlow()
-
     private val _snackbarMessage = MutableSharedFlow<String>()
     val snackbarMessage = _snackbarMessage.asSharedFlow()
     fun getCurrentAddress(addressId: Int) {
         viewModelScope.launch {
+            _state.value = AddShippingAddressUiState.Loading
             try {
                 val token = userRepository.getFirebaseToken(app.auth)
                 if (token == null) {
@@ -51,7 +51,7 @@ class AddNewAddressViewModel(
                     isDefaultAddress = address.isDefaultAddress,
                     isDefaultShippingAddress = address.isDefaultShippingAddress,
                 )
-
+                _state.value = AddShippingAddressUiState.Success
             } catch (e: Exception) {
                 Log.e("Address", "getCurrentAddress: ${e.message}")
                 _state.value = AddShippingAddressUiState.Error
