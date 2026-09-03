@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,11 +32,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.xml_app.R
 import com.example.xml_app.ui.state.AddShippingAddressUiState
 import com.example.xml_app.utils.CustomComposeSnackBar
 import com.example.xml_app.utils.SourceSansPro
@@ -73,6 +78,19 @@ class AddNewAddressActivity : AppCompatActivity() {
                 putExtra(ADDRESS_ID, addressId)
             }
             context.startActivity(intent)
+        }
+    }
+
+    private val mapsActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if(result.resultCode == RESULT_OK){
+            val address = result.data?.getStringExtra(MapsActivity.EXTRA_ADDRESS)
+            if(address != null){
+                viewModel.onEvent(
+                    AddressFormEvent.FullAddressChanged(address)
+                )
+            }
         }
     }
 
@@ -257,7 +275,19 @@ fun DetailsFormScreen(
                     onValueChange = {
                         onEvent(AddNewAddressActivity.AddressFormEvent.FullAddressChanged(it))
                     },
-                    placeholder = "Enter Address"
+                    placeholder = "Enter Address",
+                    endButton = {
+                        Icon(
+                            modifier = Modifier.clickable(
+                                enabled = true,
+                                onClick = {
+
+                                }
+                            ),
+                            painter = painterResource(R.drawable.ic_address_pin),
+                            contentDescription = null,
+                        )
+                    }
                 )
             }
 
@@ -373,11 +403,11 @@ fun DetailsFormScreen(
 fun FormPreview() {
     DetailsFormScreen(
         address = CreateAddressRequest(
-            fullName = "",
-            phoneNumber = "",
-            fullAddress = "",
+            fullName = "Pranish Chaulagain",
+            phoneNumber = "9841890609",
+            fullAddress = "Gothatar-8, Kathmandu",
             label = AddressLabel.Home,
-            isDefaultAddress = false,
+            isDefaultAddress = true,
             isDefaultShippingAddress = true
         ),
         modifier = Modifier.fillMaxWidth(),

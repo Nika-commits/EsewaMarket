@@ -2,6 +2,7 @@ package com.example.xml_app.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
@@ -69,8 +70,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class MapsActivity : AppCompatActivity() {
+    companion object{
+        const val EXTRA_ADDRESS = "extra_address"
+        const val EXTRA_LATITUDE = "extra_latitude"
+        const val EXTRA_LONGITUDE = "extra_longitude"
+    }
     private val viewModel: MapsViewModel by viewModels()
     private var locationPermissionsGranted by mutableStateOf(false)
+
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -303,7 +310,18 @@ class MapsActivity : AppCompatActivity() {
                             variant = ButtonVariant.PRIMARY,
                             text = "DONE",
                             onClick = {
-                                finish()
+                                val address = viewModel.address.value
+                                val point = viewModel.userPoint.value
+
+                                if(address != null && point != null){
+                                    val resultIntent = Intent().apply {
+                                        putExtra(EXTRA_ADDRESS, address)
+                                        putExtra(EXTRA_LATITUDE, point.latitude())
+                                        putExtra(EXTRA_LONGITUDE, point.longitude())
+                                    }
+                                    setResult(RESULT_OK, resultIntent)
+                                    finish()
+                                }
                             }
                         )
                     }
