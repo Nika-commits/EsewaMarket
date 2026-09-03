@@ -29,6 +29,8 @@ class ShippingAddressViewModel(
                 }
 
                 val addresses = userRepository.getUserAddresses(token)
+                if (addresses.isEmpty()) _state.value = ShippingAddressUiState.Empty
+
                 _state.value = ShippingAddressUiState.Success(addresses)
             } catch (e: Exception) {
                 Log.e("Shipping", "Exception while initializing User: ${e.message}")

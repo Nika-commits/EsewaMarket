@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.R
 import com.example.xml_app.ui.state.ShippingAddressUiState
 import com.example.xml_app.utils.SourceSansPro
+import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.dto.response.UserAddressResponse
 import com.example.xml_app.utils.styles.OffWhiteBackground
@@ -92,6 +93,10 @@ class ShippingAddressActivity : AppCompatActivity() {
                         }
                     }
 
+                    ShippingAddressUiState.Empty -> {
+
+                    }
+
                     is ShippingAddressUiState.Success -> {
                         ShippingAddressScreen(
                             modifier = Modifier.padding(innerPadding),
@@ -137,7 +142,27 @@ fun ShippingAddressScreen(
                 items = addresses,
                 key = { it.id }
             ) { address ->
-                AddressCard(address)
+                SwipableItemsWithActions(
+                    content = {
+                        AddressCard(address)
+                    },
+                    actions = {
+                        AppButton(
+                            variant = ButtonVariant.ROUNDED,
+                            onClick = {},
+                            icon = R.drawable.ic_trash
+                        )
+                        AppButton(
+                            variant = ButtonVariant.ROUNDED,
+                            onClick = {},
+                            icon = R.drawable.ic_edit
+                        )
+                    },
+                    onExpanded = {},
+                    onCollapsed = {},
+                    isRevealed = false
+
+                )
             }
         }
         AppButton(
@@ -260,4 +285,6 @@ fun ShippingAddressPreview() {
 //    )
 }
 
+fun EmptyAddressCard() {
 
+}

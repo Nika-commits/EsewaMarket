@@ -8,4 +8,6 @@ sealed interface ShippingAddressUiState {
     class Success(
         val data: List<UserAddressResponse>
     ) : ShippingAddressUiState
+
+    object Empty : ShippingAddressUiState
 }
