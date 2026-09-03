@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.R
+import com.example.xml_app.ui.state.ShippingAddressUiState
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.dto.response.UserAddressResponse
@@ -37,6 +41,7 @@ import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.components.AppButton
+import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.ShippingAddressViewModel
@@ -57,20 +62,64 @@ class ShippingAddressActivity : AppCompatActivity() {
                     )
                 }
             ) { innerPadding ->
-                ShippingAddressScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onAddAddress = {
-                        AddNewAddressActivity.startActivity(this, AddNewAddressActivity.Companion.MODE.ADD, null)
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                when (val addresses = state) {
+                    ShippingAddressUiState.Error -> {
+                        Box(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .background(OffWhiteBackground)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("An Error Occurred")
+                        }
                     }
-                )
+
+                    ShippingAddressUiState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .background(OffWhiteBackground)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AppLoadingIndicator(
+                                strokeWidth = 4.dp,
+                                size = 80.dp
+                            )
+                        }
+                    }
+
+                    is ShippingAddressUiState.Success -> {
+                        ShippingAddressScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            addresses = addresses.data,
+                            onAddAddress = {
+                                AddNewAddressActivity.startActivity(
+                                    this,
+                                    AddNewAddressActivity.Companion.MODE.ADD,
+                                    null
+                                )
+                            }
+                        )
+                    }
+                }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getAddresses()
     }
 }
 
 @Composable
 fun ShippingAddressScreen(
     modifier: Modifier = Modifier,
+    addresses: List<UserAddressResponse>,
     onAddAddress: () -> Unit
 ) {
     Box(
@@ -81,9 +130,15 @@ fun ShippingAddressScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
+            items(
+                items = addresses,
+                key = { it.id }
+            ) { address ->
+                AddressCard(address)
+            }
         }
         AppButton(
             modifier = Modifier
