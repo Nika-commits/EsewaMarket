@@ -43,6 +43,12 @@ interface UserApi {
         @Header("Authorization") authorization: String,
     ): Response<List<UserAddressResponse>>
 
+    @GET("/api/user/address/{id}")
+    suspend fun getAddressById(
+        @Header("Authorization") authorization: String,
+        @Path("id") id: Int
+    ): Response<UserAddressResponse>
+
     @DELETE("/api/user/address/{id}")
     suspend fun deleteAddress(
         @Header("Authorization") authorization: String,

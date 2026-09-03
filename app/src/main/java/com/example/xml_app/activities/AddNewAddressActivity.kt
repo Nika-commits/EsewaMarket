@@ -15,9 +15,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.xml_app.utils.dto.response.UserAddressResponse
 import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppTopBar
+import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.AddNewAddressViewModel
 
 class AddNewAddressActivity : AppCompatActivity() {
@@ -73,7 +77,9 @@ class AddNewAddressActivity : AppCompatActivity() {
                 }
             ) { innerPadding ->
                 DetailsFormScreen(
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
+                    onSave = {},
+                    address = null
                 )
             }
         }
@@ -83,7 +89,9 @@ class AddNewAddressActivity : AppCompatActivity() {
 
 @Composable
 fun DetailsFormScreen(
-    modifier: Modifier = Modifier
+    address: UserAddressResponse?,
+    modifier: Modifier = Modifier,
+    onSave: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -100,5 +108,21 @@ fun DetailsFormScreen(
 
         }
 
+        AppButton(
+            modifier = Modifier.fillMaxWidth(),
+            variant = ButtonVariant.PRIMARY,
+            onClick = onSave,
+            text = "SAVE"
+        )
     }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun FormPreview() {
+    DetailsFormScreen(
+        address = null,
+        modifier = Modifier.fillMaxWidth(),
+        onSave = {}
+    )
 }

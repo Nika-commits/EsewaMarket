@@ -78,7 +78,7 @@ class UserRepository(
         token: String
     ): List<UserAddressResponse> {
         val response = RetrofitInstance.userApi.getAddresses(
-            token
+            "Bearer $token"
         )
         if (!response.isSuccessful) {
             throw Exception("Failed to fetch Addresses: ${response.code()}")
@@ -86,6 +86,22 @@ class UserRepository(
 
         val addresses = response.body() ?: throw Exception("Addresses is null")
         return addresses
+    }
+
+    suspend fun getAddressById(
+        token: String,
+        id: Int
+    ): UserAddressResponse? {
+        val response = RetrofitInstance.userApi.getAddressById(
+            authorization = "Bearer $token",
+            id = id
+        )
+
+        if (!response.isSuccessful) {
+            throw Exception("Failed to fetch address of id: $id , ${response.code()}")
+        }
+
+        return response.body()
     }
 
     suspend fun deleteAddress(
