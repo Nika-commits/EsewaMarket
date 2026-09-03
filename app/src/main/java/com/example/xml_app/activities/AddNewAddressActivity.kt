@@ -24,6 +24,7 @@ class AddNewAddressActivity : AppCompatActivity() {
 
     companion object {
         const val TYPE = "type"
+        const val ADDRESS_ID = "address_id"
 
         enum class MODE {
             ADD, EDIT
@@ -31,10 +32,12 @@ class AddNewAddressActivity : AppCompatActivity() {
 
         fun startActivity(
             context: Context,
-            mode: MODE
+            mode: MODE,
+            addressId: Int?
         ) {
             val intent = Intent(context, AddNewAddressActivity::class.java).apply {
                 putExtra(TYPE, mode.name)
+                putExtra(ADDRESS_ID, addressId)
             }
             context.startActivity(intent)
         }
@@ -50,6 +53,11 @@ class AddNewAddressActivity : AppCompatActivity() {
             else -> MODE.ADD
 
         }
+        val addressId = intent.getIntExtra(ADDRESS_ID, -1)
+        if (addressId != -1) {
+            viewModel.getCurrentAddress(addressId)
+        }
+
         setContent {
             Scaffold(
                 topBar = {
