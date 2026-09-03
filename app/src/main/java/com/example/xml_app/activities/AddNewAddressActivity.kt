@@ -8,18 +8,26 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.xml_app.utils.dto.response.UserAddressResponse
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.xml_app.ui.state.AddShippingAddressUiState
+import com.example.xml_app.utils.dto.request.AddressLabel
+import com.example.xml_app.utils.dto.request.CreateAddressRequest
 import com.example.xml_app.utils.styles.Surface
 import com.example.xml_app.utils.styles.components.AppButton
+import com.example.xml_app.utils.styles.components.AppLoadingIndicator
 import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.utils.styles.components.ButtonVariant
 import com.example.xml_app.viewModel.AddNewAddressViewModel
@@ -58,7 +66,7 @@ class AddNewAddressActivity : AppCompatActivity() {
 
         }
         val addressId = intent.getIntExtra(ADDRESS_ID, -1)
-        if (addressId != -1) {
+        if (addressId != -1 && mode == MODE.EDIT) {
             viewModel.getCurrentAddress(addressId)
         }
 
@@ -76,11 +84,38 @@ class AddNewAddressActivity : AppCompatActivity() {
                     )
                 }
             ) { innerPadding ->
-                DetailsFormScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onSave = {},
-                    address = null
-                )
+                val formData by viewModel.formData.collectAsStateWithLifecycle()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                when (state) {
+                    AddShippingAddressUiState.Error -> {
+                        Text(
+                            modifier = Modifier.padding(innerPadding),
+                            text = "An Error Occurred"
+                        )
+                    }
+
+                    AddShippingAddressUiState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AppLoadingIndicator(
+                                strokeWidth = 4.dp,
+                                size = 80.dp
+                            )
+                        }
+                    }
+
+                    AddShippingAddressUiState.Success -> {
+                        DetailsFormScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            address = formData,
+                            onSave = {},
+                        )
+                    }
+                }
             }
         }
     }
@@ -89,7 +124,7 @@ class AddNewAddressActivity : AppCompatActivity() {
 
 @Composable
 fun DetailsFormScreen(
-    address: UserAddressResponse?,
+    address: CreateAddressRequest,
     modifier: Modifier = Modifier,
     onSave: () -> Unit
 ) {
@@ -121,7 +156,14 @@ fun DetailsFormScreen(
 @Composable
 fun FormPreview() {
     DetailsFormScreen(
-        address = null,
+        address = CreateAddressRequest(
+            fullName = "",
+            phoneNumber = "",
+            fullAddress = "",
+            label = AddressLabel.Home,
+            isDefaultAddress = false,
+            isDefaultShippingAddress = false
+        ),
         modifier = Modifier.fillMaxWidth(),
         onSave = {}
     )
