@@ -21,6 +21,7 @@ class ShippingAddressViewModel(
 
     fun getAddresses() {
         viewModelScope.launch {
+            _state.value = ShippingAddressUiState.Loading
             try {
                 val token = userRepository.getFirebaseToken(app.auth)
                 if (token == null) {
