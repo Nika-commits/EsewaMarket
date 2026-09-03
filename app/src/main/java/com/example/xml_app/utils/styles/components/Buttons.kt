@@ -108,7 +108,6 @@ fun AppButton(
                 enabled = !isLoading,
                 interactionSource = interactionSource,
                 indication = null,
-
                 onClick = onClick
             )
             .styleable(styleState, style),

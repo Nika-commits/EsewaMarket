@@ -93,7 +93,7 @@ fun AppTextField(
                             .fillMaxWidth()
                             .padding(
                                 start = if (startButton != null) 48.dp else 0.dp,
-                                end = if (isLoading) 32.dp else 0.dp
+                                end = if (isLoading || endButton != null) 44.dp else 0.dp
                             )
                     ) {
                         if (value.isEmpty()) {
@@ -151,7 +151,7 @@ fun AppTextField(
 @Preview(showBackground = true)
 @Composable
 fun PreviewTextField() {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("sssssssssssssssssssssssssssssssssssssssssssssssssss") }
     AppTextField(
         value = text,
         onValueChange = { text = it },

@@ -84,9 +84,9 @@ class AddNewAddressActivity : AppCompatActivity() {
     private val mapsActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if(result.resultCode == RESULT_OK){
+        if (result.resultCode == RESULT_OK) {
             val address = result.data?.getStringExtra(MapsActivity.EXTRA_ADDRESS)
-            if(address != null){
+            if (address != null) {
                 viewModel.onEvent(
                     AddressFormEvent.FullAddressChanged(address)
                 )
@@ -151,6 +151,7 @@ class AddNewAddressActivity : AppCompatActivity() {
             ) { innerPadding ->
                 val formData by viewModel.formData.collectAsStateWithLifecycle()
                 val state by viewModel.state.collectAsStateWithLifecycle()
+                val isSaving by viewModel.isSaving.collectAsStateWithLifecycle()
                 when (state) {
                     AddShippingAddressUiState.Error -> {
                         Text(
@@ -177,7 +178,10 @@ class AddNewAddressActivity : AppCompatActivity() {
                         DetailsFormScreen(
                             modifier = Modifier.padding(innerPadding),
                             address = formData,
-                            onSave = {},
+                            onSave = {
+                                viewModel.saveAddress(mode, addressId)
+                            },
+                            isSaving = isSaving,
                             onEvent = {
                                 viewModel.onEvent(it)
                             },
@@ -199,7 +203,8 @@ fun DetailsFormScreen(
     address: CreateAddressRequest,
     modifier: Modifier = Modifier,
     onEvent: (AddNewAddressActivity.AddressFormEvent) -> Unit,
-    onOpenMaps:() -> Unit,
+    isSaving: Boolean,
+    onOpenMaps: () -> Unit,
     onSave: () -> Unit
 ) {
     Column(
@@ -396,7 +401,8 @@ fun DetailsFormScreen(
             modifier = Modifier.fillMaxWidth(),
             variant = ButtonVariant.PRIMARY,
             onClick = onSave,
-            text = "SAVE"
+            text = "SAVE",
+            isLoading = isSaving
         )
     }
 }
@@ -422,6 +428,7 @@ fun FormPreview() {
         },
         onOpenMaps = {
 
-        }
+        },
+        isSaving = false
     )
 }

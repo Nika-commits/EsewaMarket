@@ -59,7 +59,7 @@ class AddNewAddressViewModel(
         }
     }
 
-    fun SaveAddress(
+    fun saveAddress(
         mode: AddNewAddressActivity.Companion.MODE,
         id: Int?
     ) {

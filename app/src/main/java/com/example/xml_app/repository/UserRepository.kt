@@ -71,19 +71,33 @@ class UserRepository(
         token: String,
         request: CreateAddressRequest
     ): UserAddressResponse? {
-        val response = RetrofitInstance.userApi.createUserAddress(
-            authorization = "Bearer $token",
-            request = request
-        )
-        if (!response.isSuccessful) {
-            Log.e("Address", "Failed to create Address: ${response.body()}")
-            return null
+        try {
+            Log.d("Address", "BEFORE Retrofit")
+
+            val response = RetrofitInstance.userApi.createUserAddress(
+                authorization = "Bearer $token",
+                request = request
+            )
+
+            Log.d("Address", "AFTER Retrofit")
+            Log.d("Address", "Code: ${response.code()}")
+
+            if (!response.isSuccessful) {
+                Log.e(
+                    "Address",
+                    "HTTP ${response.code()}: ${response.errorBody()?.string()}"
+                )
+                return null
+            }
+
+            return response.body()
+
+        } catch (e: Exception) {
+            Log.e("Address", "Retrofit exception", e)
+            throw e
         }
-        if (response.body() == null) {
-            return null
-        }
-        return response.body()
     }
+
 
     suspend fun getUserAddresses(
         token: String
