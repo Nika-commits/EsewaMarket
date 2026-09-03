@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,7 @@ import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.dto.response.UserAddressResponse
+import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
@@ -147,15 +150,23 @@ fun ShippingAddressScreen(
                         AddressCard(address)
                     },
                     actions = {
-                        AppButton(
-                            variant = ButtonVariant.ROUNDED,
-                            onClick = {},
-                            icon = R.drawable.ic_trash
+                        Icon(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(100))
+                                .background(PrimaryGreen)
+                                .padding(12.dp),
+                            painter = painterResource(R.drawable.ic_edit),
+                            contentDescription = null,
+                            tint = Surface
                         )
-                        AppButton(
-                            variant = ButtonVariant.ROUNDED,
-                            onClick = {},
-                            icon = R.drawable.ic_edit
+                        Icon(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(100))
+                                .background(EsewaRed)
+                                .padding(12.dp),
+                            painter = painterResource(R.drawable.ic_trash),
+                            contentDescription = null,
+                            tint = Surface
                         )
                     },
                     onExpanded = {},
