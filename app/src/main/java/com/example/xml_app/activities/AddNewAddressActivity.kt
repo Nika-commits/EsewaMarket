@@ -180,6 +180,10 @@ class AddNewAddressActivity : AppCompatActivity() {
                             onSave = {},
                             onEvent = {
                                 viewModel.onEvent(it)
+                            },
+                            onOpenMaps = {
+                                val intent = Intent(this, MapsActivity::class.java)
+                                mapsActivityLauncher.launch(intent)
                             }
                         )
                     }
@@ -195,6 +199,7 @@ fun DetailsFormScreen(
     address: CreateAddressRequest,
     modifier: Modifier = Modifier,
     onEvent: (AddNewAddressActivity.AddressFormEvent) -> Unit,
+    onOpenMaps:() -> Unit,
     onSave: () -> Unit
 ) {
     Column(
@@ -280,9 +285,7 @@ fun DetailsFormScreen(
                         Icon(
                             modifier = Modifier.clickable(
                                 enabled = true,
-                                onClick = {
-
-                                }
+                                onClick = onOpenMaps
                             ),
                             painter = painterResource(R.drawable.ic_address_pin),
                             contentDescription = null,
@@ -415,6 +418,9 @@ fun FormPreview() {
 
         },
         onEvent = {
+
+        },
+        onOpenMaps = {
 
         }
     )
