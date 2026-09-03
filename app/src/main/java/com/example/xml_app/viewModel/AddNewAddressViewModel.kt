@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AddNewAddressViewModel(
@@ -95,6 +96,21 @@ class AddNewAddressViewModel(
                 _snackbarMessage.emit("Failed to save address")
             } finally {
                 _isSaving.value = false
+            }
+        }
+    }
+
+    fun onEvent(event: AddNewAddressActivity.AddressFormEvent) {
+        _formData.update { current ->
+            when (event) {
+                is AddNewAddressActivity.AddressFormEvent.FullNameChanged -> current.copy(fullName = event.value)
+                is AddNewAddressActivity.AddressFormEvent.FullAddressChanged -> current.copy(fullAddress = event.value)
+                is AddNewAddressActivity.AddressFormEvent.PhoneNumberChanged -> current.copy(phoneNumber = event.value)
+                is AddNewAddressActivity.AddressFormEvent.LabelChanged -> current.copy(label = event.value)
+                is AddNewAddressActivity.AddressFormEvent.DefaultAddressChanged -> current.copy(isDefaultAddress = event.value)
+                is AddNewAddressActivity.AddressFormEvent.DefaultShippingAddressChanged -> current.copy(
+                    isDefaultShippingAddress = event.value
+                )
             }
         }
     }

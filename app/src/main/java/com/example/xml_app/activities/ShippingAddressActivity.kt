@@ -60,7 +60,7 @@ class ShippingAddressActivity : AppCompatActivity() {
                 ShippingAddressScreen(
                     modifier = Modifier.padding(innerPadding),
                     onAddAddress = {
-                        AddNewAddressActivity.startActivity(this, AddNewAddressActivity.Companion.MODE.ADD)
+                        AddNewAddressActivity.startActivity(this, AddNewAddressActivity.Companion.MODE.ADD, null)
                     }
                 )
             }
