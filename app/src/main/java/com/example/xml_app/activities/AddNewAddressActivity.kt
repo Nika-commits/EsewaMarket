@@ -1,5 +1,7 @@
 package com.example.xml_app.activities
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -19,16 +21,43 @@ import com.example.xml_app.utils.styles.components.AppTopBar
 import com.example.xml_app.viewModel.AddNewAddressViewModel
 
 class AddNewAddressActivity : AppCompatActivity() {
+
+    companion object {
+        const val TYPE = "type"
+
+        enum class MODE {
+            ADD, EDIT
+        }
+
+        fun startActivity(
+            context: Context,
+            mode: MODE
+        ) {
+            val intent = Intent(context, AddNewAddressActivity::class.java).apply {
+                putExtra(TYPE, mode.name)
+            }
+            context.startActivity(intent)
+        }
+    }
+
     private val viewModel: AddNewAddressViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mode = when (intent.getStringExtra(TYPE)) {
+            "ADD" -> MODE.ADD
+            "EDIT" -> MODE.EDIT
+            else -> MODE.ADD
 
+        }
         setContent {
             Scaffold(
                 topBar = {
                     AppTopBar(
-                        "Add your new Address",
+                        title = when (mode) {
+                            MODE.ADD -> "Add new Address"
+                            MODE.EDIT -> "Edit your address"
+                        },
                         onBackClick = {
                             onBackPressedDispatcher.onBackPressed()
                         }
@@ -41,6 +70,7 @@ class AddNewAddressActivity : AppCompatActivity() {
             }
         }
     }
+
 }
 
 @Composable
