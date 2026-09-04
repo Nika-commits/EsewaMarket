@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 sealed interface ApiRoute {
     @Serializable
     data object Home : ApiRoute
+
     @Serializable
     data object Cart : ApiRoute
 
@@ -13,4 +14,7 @@ sealed interface ApiRoute {
 
     @Serializable
     data object More : ApiRoute
+
+    @Serializable
+    data object Search : ApiRoute
 }

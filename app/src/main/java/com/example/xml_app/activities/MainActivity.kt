@@ -60,7 +60,9 @@ class MainActivity : AppCompatActivity() {
             fragment<Cart, ApiRoute.Cart> { label = "Cart" }
             fragment<Favourite, ApiRoute.Favourite> { label = "Favourite" }
             fragment<More, ApiRoute.More> { label = "More" }
+            fragment<Search, ApiRoute.Search>()
         }
+
 
         setupBottomNavigation()
 
