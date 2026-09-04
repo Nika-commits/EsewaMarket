@@ -450,15 +450,14 @@ fun EmptyAddressCard(
     Card(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth()
-            .padding(24.dp),
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = Surface
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
