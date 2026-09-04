@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -45,6 +47,7 @@ import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.dto.request.CreateAddressRequest
 import com.example.xml_app.utils.styles.Black
+import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.SecondaryGreen
@@ -176,10 +179,14 @@ class AddNewAddressActivity : AppCompatActivity() {
 
                     AddShippingAddressUiState.Success -> {
                         DetailsFormScreen(
+                            mode = mode,
                             modifier = Modifier.padding(innerPadding),
                             address = formData,
                             onSave = {
                                 viewModel.saveAddress(mode, addressId)
+                            },
+                            onDelete = {
+
                             },
                             isSaving = isSaving,
                             onEvent = {
@@ -200,11 +207,13 @@ class AddNewAddressActivity : AppCompatActivity() {
 
 @Composable
 fun DetailsFormScreen(
+    mode: AddNewAddressActivity.Companion.MODE,
     address: CreateAddressRequest,
     modifier: Modifier = Modifier,
     onEvent: (AddNewAddressActivity.AddressFormEvent) -> Unit,
     isSaving: Boolean,
     onOpenMaps: () -> Unit,
+    onDelete: () -> Unit,
     onSave: () -> Unit
 ) {
     Column(
@@ -395,8 +404,47 @@ fun DetailsFormScreen(
                     }
                 )
             }
-        }
 
+            if (mode == AddNewAddressActivity.Companion.MODE.EDIT) {
+
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 0.5.dp,
+                    color = TextDark100
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            enabled = true,
+                            onClick = onDelete,
+                        )
+                        .align(Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+
+                    ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_trash),
+                        contentDescription = null,
+                        tint = EsewaRed
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
+                    Text(
+                        "DELETE ADDRESS",
+                        fontFamily = SourceSansPro,
+                        color = EsewaRed,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp,
+                        letterSpacing = 1.sp
+                    )
+                }
+            }
+        }
         AppButton(
             modifier = Modifier.fillMaxWidth(),
             variant = ButtonVariant.PRIMARY,
@@ -411,6 +459,7 @@ fun DetailsFormScreen(
 @Composable
 fun FormPreview() {
     DetailsFormScreen(
+        mode = AddNewAddressActivity.Companion.MODE.ADD,
         address = CreateAddressRequest(
             fullName = "Pranish Chaulagain",
             phoneNumber = "9841890609",
@@ -429,6 +478,7 @@ fun FormPreview() {
         onOpenMaps = {
 
         },
+        onDelete = {},
         isSaving = false
     )
 }
