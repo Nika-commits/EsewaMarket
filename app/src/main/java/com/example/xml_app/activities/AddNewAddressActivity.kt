@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.R
+import com.example.xml_app.ui.state.AddShippingAddressEvent
 import com.example.xml_app.ui.state.AddShippingAddressUiState
 import com.example.xml_app.utils.CustomComposeSnackBar
 import com.example.xml_app.utils.SourceSansPro
@@ -135,10 +136,27 @@ class AddNewAddressActivity : AppCompatActivity() {
             val sheetState = rememberModalBottomSheetState()
             val scope = rememberCoroutineScope()
             var showBottomSheet by remember { mutableStateOf(false) }
+            var isDeleting by remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
                 viewModel.snackbarMessage.collect { message ->
                     snackbarHostState.showSnackbar(message)
+                }
+            }
+
+            LaunchedEffect(Unit) {
+                viewModel.event.collect { event ->
+                    when (event) {
+                        is AddShippingAddressEvent.IsDeleting -> {
+                            isDeleting = true
+                        }
+
+                        is AddShippingAddressEvent.Success -> {
+                            isDeleting = false
+                            showBottomSheet = false
+                            finish()
+                        }
+                    }
                 }
             }
             Scaffold(
@@ -231,7 +249,10 @@ class AddNewAddressActivity : AppCompatActivity() {
                                     }
                                 }
                             },
-                            onDelete = {}
+                            onDelete = {
+                                viewModel.deleteAddress(id = addressId)
+                            },
+                            isDeleting = isDeleting
                         )
                     }
 
@@ -296,7 +317,7 @@ fun DeleteBottomSheetContent(
                 variant = ButtonVariant.PRIMARY,
                 text = "DELETE",
                 onClick = onDelete,
-                isLoading = false
+                isLoading = isDeleting
             )
         }
     }

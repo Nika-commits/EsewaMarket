@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.activities.AddNewAddressActivity
 import com.example.xml_app.repository.UserRepository
+import com.example.xml_app.ui.state.AddShippingAddressEvent
 import com.example.xml_app.ui.state.AddShippingAddressUiState
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.request.CreateAddressRequest
@@ -23,6 +24,8 @@ class AddNewAddressViewModel(
     private val userRepository = UserRepository(app.database.userDao())
     private val _state = MutableStateFlow<AddShippingAddressUiState>(AddShippingAddressUiState.Success)
     val state = _state.asStateFlow()
+    private val _event = MutableSharedFlow<AddShippingAddressEvent>()
+    val event = _event.asSharedFlow()
     private val _formData = MutableStateFlow(CreateAddressRequest())
     val formData = _formData.asStateFlow()
     private val _isSaving = MutableStateFlow(false)
@@ -96,6 +99,28 @@ class AddNewAddressViewModel(
                 _snackbarMessage.emit("Failed to save address")
             } finally {
                 _isSaving.value = false
+            }
+        }
+    }
+
+    fun deleteAddress(id: Int) {
+        viewModelScope.launch {
+            _event.emit(AddShippingAddressEvent.IsDeleting)
+            try {
+                val token = userRepository.getFirebaseToken(app.auth)
+                if (token == null) {
+                    _snackbarMessage.emit("Authentication Error")
+                    return@launch
+                }
+                userRepository.deleteAddress(
+                    token = token,
+                    id = id
+                )
+                _snackbarMessage.emit("Address Deleted Successfully")
+                _event.emit(AddShippingAddressEvent.Success)
+            } catch (e: Exception) {
+                Log.e("Address", "Failed to delete address: ${e.message}")
+                _snackbarMessage.emit("Failed to delete address.")
             }
         }
     }
