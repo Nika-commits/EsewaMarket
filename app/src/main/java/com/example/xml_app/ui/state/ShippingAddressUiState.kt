@@ -11,3 +11,10 @@ sealed interface ShippingAddressUiState {
 
     object Empty : ShippingAddressUiState
 }
+
+sealed interface ShippingAddressUiEvent {
+    data object DeleteSuccess : ShippingAddressUiEvent
+    data class Error(
+        val message: String
+    ) : ShippingAddressUiEvent
+}

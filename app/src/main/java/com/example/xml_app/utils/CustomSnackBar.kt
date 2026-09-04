@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.xml_app.R
 import com.example.xml_app.utils.styles.Black
@@ -60,12 +63,30 @@ fun CustomComposeSnackBar(
         actionContentColor = PrimaryGreen,
         action = {
             snackBarData.visuals.actionLabel?.let { actionLabel ->
-                Text(actionLabel)
+                TextButton(
+                    onClick = {
+                        snackBarData.performAction()
+                    }
+                ) {
+                    Text(
+                        actionLabel,
+                        color = PrimaryGreen,
+                        fontFamily = SourceSansPro,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.4.sp
+                    )
+                }
             }
         }
     ) {
-        Text(snackBarData.visuals.message)
-
+        Text(
+            snackBarData.visuals.message,
+            color = Surface,
+            fontFamily = SourceSansPro,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp
+        )
     }
 
 }

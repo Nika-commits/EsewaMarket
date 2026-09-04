@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,27 +15,39 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.R
+import com.example.xml_app.ui.state.ShippingAddressUiEvent
 import com.example.xml_app.ui.state.ShippingAddressUiState
+import com.example.xml_app.utils.CustomComposeSnackBar
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.utils.dto.request.AddressLabel
@@ -44,6 +57,8 @@ import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
 import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.TextDark200
+import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.TextDark400
 import com.example.xml_app.utils.styles.components.AppButton
 import com.example.xml_app.utils.styles.components.AppLoadingIndicator
@@ -54,9 +69,11 @@ import com.example.xml_app.viewModel.ShippingAddressViewModel
 class ShippingAddressActivity : AppCompatActivity() {
     private val viewModel: ShippingAddressViewModel by viewModels()
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val snackbarHostState = remember { SnackbarHostState() }
             Scaffold(
                 topBar = {
                     AppTopBar(
@@ -65,9 +82,44 @@ class ShippingAddressActivity : AppCompatActivity() {
                             onBackPressedDispatcher.onBackPressed()
                         }
                     )
+                },
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState
+                    ) { snackbarData ->
+                        CustomComposeSnackBar(
+                            snackBarData = snackbarData
+                        )
+                    }
                 }
             ) { innerPadding ->
                 val state by viewModel.state.collectAsStateWithLifecycle()
+                val isDeleting by viewModel.isDeleting.collectAsStateWithLifecycle()
+                val openDeleteDialog = remember { mutableStateOf<Int?>(null) }
+
+                LaunchedEffect(Unit) {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            ShippingAddressUiEvent.DeleteSuccess -> {
+                                openDeleteDialog.value = null
+                                snackbarHostState.showSnackbar(
+                                    "Address Deleted Successfully",
+                                    actionLabel = "OK",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+
+                            is ShippingAddressUiEvent.Error -> {
+                                openDeleteDialog.value = null
+                                snackbarHostState.showSnackbar(
+                                    "Failed to delete address",
+                                    actionLabel = "OK",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
+                    }
+                }
 
                 when (val addresses = state) {
                     ShippingAddressUiState.Loading -> {
@@ -99,6 +151,23 @@ class ShippingAddressActivity : AppCompatActivity() {
 
 
                     ShippingAddressUiState.Empty -> {
+                        Box(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .background(OffWhiteBackground)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.TopStart
+                        ) {
+                            EmptyAddressCard(
+                                onAddNewAddress = {
+                                    AddNewAddressActivity.startActivity(
+                                        this@ShippingAddressActivity,
+                                        AddNewAddressActivity.Companion.MODE.ADD,
+                                        null
+                                    )
+                                }
+                            )
+                        }
 
                     }
 
@@ -121,10 +190,58 @@ class ShippingAddressActivity : AppCompatActivity() {
                                 )
                             },
                             onDeleteAddress = {
-
+                                openDeleteDialog.value = it
                             }
                         )
                     }
+                }
+
+                if (openDeleteDialog.value != null) {
+                    AlertDialog(
+                        containerColor = Surface,
+                        title = {
+                            Text(
+                                "Do you want to delete this",
+                                fontSize = 14.sp,
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Medium,
+                                color = TextDark400
+                            )
+                        },
+                        text = {
+                            Text(
+                                "This action cannot be undone.",
+                                fontSize = 12.sp,
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Normal,
+                                color = TextDark300
+                            )
+                        },
+                        onDismissRequest = {
+                            openDeleteDialog.value = null
+                        },
+                        confirmButton = {
+                            AppButton(
+                                variant = ButtonVariant.PRIMARY,
+                                text = "DELETE",
+                                onClick = {
+                                    if (openDeleteDialog.value != null) {
+                                        viewModel.deleteAddress(openDeleteDialog.value!!)
+                                    }
+                                },
+                                isLoading = isDeleting
+                            )
+                        },
+                        dismissButton = {
+                            AppButton(
+                                variant = ButtonVariant.SECONDARY,
+                                text = "CANCEL",
+                                onClick = {
+                                    openDeleteDialog.value = null
+                                }
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -142,7 +259,7 @@ fun ShippingAddressScreen(
     addresses: List<UserAddressResponse>,
     onAddAddress: () -> Unit,
     onEditAddress: (id: Int) -> Unit,
-    onDeleteAddress: () -> Unit
+    onDeleteAddress: (id: Int) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -186,7 +303,9 @@ fun ShippingAddressScreen(
                                 .padding(12.dp)
                                 .clickable(
                                     enabled = true,
-                                    onClick = onDeleteAddress
+                                    onClick = {
+                                        onDeleteAddress(address.id)
+                                    }
                                 ),
                             painter = painterResource(R.drawable.ic_trash),
                             contentDescription = null,
@@ -318,8 +437,61 @@ fun ShippingAddressPreview() {
 //    AddressCard(
 //        response
 //    )
+    EmptyAddressCard(
+        onAddNewAddress = {}
+    )
+
 }
 
-fun EmptyAddressCard() {
+@Composable
+fun EmptyAddressCard(
+    onAddNewAddress: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .padding(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Surface
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Image(
+                modifier = Modifier.size(200.dp),
+                painter = painterResource(R.drawable.img_empty_address_ship),
+                contentDescription = null
+            )
 
+            Text(
+                "No address added yet !",
+                fontFamily = SourceSansPro,
+                fontSize = 20.sp,
+                letterSpacing = 0.15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TextDark400
+            )
+
+            Text(
+                "You have not added any shipping address yet.",
+                fontFamily = SourceSansPro,
+                fontSize = 16.sp,
+                letterSpacing = 0.5.sp,
+                color = TextDark200,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center
+            )
+
+            AppButton(
+                variant = ButtonVariant.PRIMARY,
+                onClick = onAddNewAddress,
+                text = "ADD ADDRESS NOW"
+            )
+        }
+    }
 }
