@@ -64,7 +64,8 @@ fun CustomComposeSnackBar(
             .padding(horizontal = 16.dp, vertical = 16.dp),
         containerColor = Black,
         contentColor = Surface,
-        actionContentColor = PrimaryGreen
+        actionContentColor = PrimaryGreen,
+        actionOnNewLine = true
     ) {
         Row(
             modifier = Modifier
