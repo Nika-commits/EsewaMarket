@@ -11,6 +11,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.MainActivity
@@ -19,16 +23,19 @@ import com.example.xml_app.activities.ShippingAddressActivity
 import com.example.xml_app.databinding.FragmentMoreBinding
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.firebase.AuthRepository
+import com.example.xml_app.viewModel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class More : Fragment() {
+    private val viewModel: MainViewModel by viewModels()
     private var _binding: FragmentMoreBinding? = null
     private val binding get() = _binding!!
     private lateinit var app: CustomApplicationContext
     private lateinit var auth: FirebaseAuth
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,16 +85,22 @@ class More : Fragment() {
     }
 
     fun setupSettingsOption() {
-        val currentUser = AuthRepository.getUser(auth)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.user.collectLatest { currentUser ->
+                    binding.authLayout.root.visibility = if (currentUser != null) View.VISIBLE else View.GONE
+                    binding.authButtonsLayout.root.visibility =
+                        if (currentUser == null) View.VISIBLE else View.GONE
+                    if (currentUser != null) {
+                        setupAuthSettingsRow()
+                    } else {
+                        setupAuthButtons()
+                    }
 
-        binding.authLayout.root.visibility = if (currentUser != null) View.VISIBLE else View.GONE
-        binding.authButtonsLayout.root.visibility =
-            if (currentUser == null) View.VISIBLE else View.GONE
-
-        if (currentUser != null) {
-            setupAuthSettingsRow()
-        } else {
-            setupAuthButtons()
+                    binding.authLayout.tvUsername.text = currentUser?.fullName
+                    binding.authLayout.tvPhone.text = currentUser?.phone
+                }
+            }
         }
     }
 

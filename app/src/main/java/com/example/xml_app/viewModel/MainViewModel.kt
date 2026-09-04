@@ -3,21 +3,22 @@ package com.example.xml_app.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.xml_app.entities.User
 import com.example.xml_app.repository.CartRepository
 import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.utils.CustomApplicationContext
+import com.example.xml_app.utils.dto.UserResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class MainViewModel(
     application: Application
 ) : AndroidViewModel(application) {
     private val app = getApplication<CustomApplicationContext>()
     private val database = app.database
-    private val _user = MutableStateFlow<User?>(null)
+    private val _user = MutableStateFlow<UserResponse?>(null)
     val user = _user.asStateFlow()
     private val _cartId = MutableStateFlow<Int?>(null)
     private var _cartCount = MutableStateFlow<Int>(0)
@@ -37,8 +38,9 @@ class MainViewModel(
         viewModelScope.launch {
             val firebaseUser = app.auth.currentUser ?: return@launch
             val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
-
-            _user.value = localUser
+            val token = firebaseUser.getIdToken(false).await().token ?: return@launch
+            val userInfo = userRepository.getCurrentUser(token)
+            _user.value = userInfo
 
             initializeCart(localUser.uid)
             observeFavouriteCount(localUser.uid)
