@@ -1,13 +1,37 @@
 package com.example.xml_app.repository
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.xml_app.api.RetrofitInstance
+import com.example.xml_app.models.Product
 import com.example.xml_app.utils.paging.RecommendedProductsPagingSource
 
 class ProductRepository {
-    suspend fun getFeaturedProducts() = RetrofitInstance.productApi.getProducts("featured", 0, 4)
-    suspend fun getHotDealsProduct() = RetrofitInstance.productApi.getProducts(null, 10, 4)
+    suspend fun getFeaturedProducts() = RetrofitInstance.productApi.getProducts("featured", null, 0, 4)
+    suspend fun getHotDealsProduct() = RetrofitInstance.productApi.getProducts(null, null, 10, 4)
+    suspend fun getSearchProducts(
+        category: String? = null,
+        search: String,
+        page: Int = 0
+    ): List<Product>? {
+        return try {
+            val response = RetrofitInstance.productApi.getProducts(
+                category,
+                search,
+                page,
+                10
+            )
+            if (!response.isSuccessful) {
+                Log.e("Search", "Unsuccessful response: ${response.code()}")
+            }
+            response.body()
+        } catch (e: Exception) {
+            Log.e("Search", "Exception in getSearchProducts: ${e.message}")
+            emptyList()
+        }
+    }
+
     fun getRecommendedProduct() = Pager(
         config = PagingConfig(
             pageSize = 4,

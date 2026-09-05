@@ -12,6 +12,7 @@ interface ProductApi {
     @GET("api/product")
     suspend fun getProducts(
         @Query("category") category: String?,
+        @Query("search") search: String?,
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int
     ): Response<List<Product>>

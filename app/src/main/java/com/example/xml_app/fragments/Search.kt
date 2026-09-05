@@ -2,12 +2,17 @@ package com.example.xml_app.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
@@ -17,6 +22,8 @@ import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentSearchBinding
 import com.example.xml_app.navigation.SearchRoute
 import com.example.xml_app.viewModel.SearchViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class Search : Fragment() {
     private var _binding: FragmentSearchBinding? = null
@@ -28,7 +35,6 @@ class Search : Fragment() {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,14 +56,19 @@ class Search : Fragment() {
         }
 
         setupSearchBox()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.suggestions.collectLatest { Log.d("Search", "Suggestions from Search: ${it.size}") }
+            }
+        }
     }
 
     fun setupSearchBox() {
-        val searchBox = binding.etSearch
-        viewModel.onChange(searchBox.text.toString())
-        binding.tvSearch.setOnClickListener {
-
+        binding.etSearch.doAfterTextChanged { text ->
+            viewModel.onChange(text?.toString().orEmpty())
         }
+
         binding.layoutSearchBox.setStartIconOnClickListener {
             findNavController().popBackStack()
         }
