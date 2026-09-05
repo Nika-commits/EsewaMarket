@@ -22,13 +22,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="@color/surface"
-            android:hint="What are you searching for?"
+            android:focusedByDefault="true"
             android:textColorHint="@color/textDark100"
             app:boxBackgroundColor="@color/surface"
             app:boxStrokeColor="@null"
             app:boxStrokeWidth="0dp"
             app:endIconDrawable="@drawable/ic_cancel"
             app:endIconMode="clear_text"
+            app:hintEnabled="false"
             app:hintTextColor="@color/textDark100"
             app:startIconDrawable="@drawable/quantum_ic_arrow_back_grey600_24">
 
@@ -36,6 +37,8 @@
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusedByDefault="true"
+                android:hint="What are you searching for?"
                 android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>

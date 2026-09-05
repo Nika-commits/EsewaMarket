@@ -69,6 +69,7 @@ class HomeHeadAdapter(
 
             binding.searchBox.setEndIconOnClickListener { onFilterClick() }
             binding.searchBox.setOnClickListener { onSearchClick() }
+            binding.etSearch.setOnClickListener { onSearchClick() }
             onToolbarReady(binding.toolbar)
         }
 

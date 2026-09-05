@@ -158,7 +158,13 @@ class Home : Fragment() {
             onFilterClick = {},
             onToolbarReady = { setUpToolbarAndMenu(it) },
             onSearchClick = {
-                findNavController().navigate(ApiRoute.Search)
+                findNavController().navigate(ApiRoute.Search) {
+                    popUpTo<ApiRoute.Home> {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
             }
         )
 
