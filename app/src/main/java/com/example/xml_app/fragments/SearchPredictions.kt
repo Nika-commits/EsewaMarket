@@ -6,24 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.xml_app.databinding.FragmentSearchBinding
+import com.example.xml_app.databinding.FragmentSearchSuggestionsBinding
 import com.example.xml_app.viewModel.SearchViewModel
 
-class Search : Fragment() {
-    private var _binding: FragmentSearchBinding? = null
+class SearchPredictions : Fragment() {
+    private var _binding: FragmentSearchSuggestionsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModels()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchSuggestionsBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    fun setupSearchBox() {
-        val searchBox = binding.etSearch
-        viewModel.onChange(searchBox.text.toString())
-        binding.tvSearch.setOnClickListener {
-
-        }
     }
 }
