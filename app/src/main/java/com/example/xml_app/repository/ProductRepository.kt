@@ -25,4 +25,11 @@ class ProductRepository {
     suspend fun getProduct(id: Int) = RetrofitInstance.productApi.getProduct(id)
     suspend fun getPopularChips() = RetrofitInstance.productApi.getPopularChips()
     suspend fun checkPromoCode(promoCode: String) = RetrofitInstance.productApi.checkPromoCode(promoCode)
+    suspend fun getSearchSuggestions(query: String): List<String> {
+        val response = RetrofitInstance.productApi.getSearchSuggestions(query)
+        if (!response.isSuccessful) {
+            throw Exception("Could not get Search Suggestions")
+        }
+        return response.body() ?: emptyList()
+    }
 }

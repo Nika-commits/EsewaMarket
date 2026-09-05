@@ -29,4 +29,9 @@ interface ProductApi {
     suspend fun checkPromoCode(
         @Body promoCode: String
     ): Response<Unit>
+
+    @GET("/api/product/search-suggestions")
+    suspend fun getSearchSuggestions(
+        @Query("query") query: String
+    ): Response<List<String>>
 }
