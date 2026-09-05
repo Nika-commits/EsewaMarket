@@ -18,3 +18,11 @@ sealed interface ApiRoute {
     @Serializable
     data object Search : ApiRoute
 }
+
+sealed interface SearchRoute {
+    @Serializable
+    data object Suggestions : SearchRoute
+
+    @Serializable
+    data object Results : SearchRoute
+}

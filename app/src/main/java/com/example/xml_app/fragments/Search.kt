@@ -8,14 +8,21 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.createGraph
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.fragment
+import com.example.xml_app.R
 import com.example.xml_app.databinding.FragmentSearchBinding
+import com.example.xml_app.navigation.SearchRoute
 import com.example.xml_app.viewModel.SearchViewModel
 
 class Search : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by viewModels()
+    private lateinit var nestedNavController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
@@ -25,6 +32,16 @@ class Search : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val nestedNavHostFragment = childFragmentManager.findFragmentById(R.id.searchContainer) as NavHostFragment
+        nestedNavController = nestedNavHostFragment.navController
+        nestedNavController.graph = nestedNavController.createGraph(
+            startDestination = SearchRoute.Suggestions,
+        ) {
+            fragment<SearchResults, SearchRoute.Results> { label = "Results" }
+            fragment<SearchPredictions, SearchRoute.Suggestions> { label = "Suggestions" }
+        }
+
         binding.etSearch.requestFocus()
         binding.etSearch.post {
             val imm = requireContext()
@@ -42,11 +59,18 @@ class Search : Fragment() {
 
         }
         binding.layoutSearchBox.setStartIconOnClickListener {
-//            findNavController().navigate(ApiRoute.Home) {
-//                launchSingleTop = true
-//                restoreState = true
-//            }
             findNavController().popBackStack()
         }
+
+        binding.tvSearch.setOnClickListener {
+            nestedNavController.navigate(SearchRoute.Results) {
+                launchSingleTop = true
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
