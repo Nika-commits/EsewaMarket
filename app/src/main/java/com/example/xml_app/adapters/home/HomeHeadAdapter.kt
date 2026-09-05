@@ -14,6 +14,7 @@ class HomeHeadAdapter(
     private var userName: String = "Pranish ,",
     private val heroes: List<Hero>,
     private val onFilterClick: () -> Unit,
+    private val onSearchClick: () -> Unit,
     private val onToolbarReady: (Toolbar) -> Unit,
 
     ) : RecyclerView.Adapter<HomeHeadAdapter.ViewHolder>() {
@@ -28,6 +29,7 @@ class HomeHeadAdapter(
             binding,
             heroes,
             onFilterClick,
+            onSearchClick,
             onToolbarReady,
             userName
         )
@@ -51,6 +53,7 @@ class HomeHeadAdapter(
         val binding: ItemHomeHeaderBinding,
         heroes: List<Hero>,
         onFilterClick: () -> Unit,
+        onSearchClick: () -> Unit,
         onToolbarReady: (Toolbar) -> Unit,
         username: String
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -65,6 +68,7 @@ class HomeHeadAdapter(
             }.attach()
 
             binding.searchBox.setEndIconOnClickListener { onFilterClick() }
+            binding.searchBox.setOnClickListener { onSearchClick() }
             onToolbarReady(binding.toolbar)
         }
 

@@ -18,7 +18,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutSearchBox"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="@color/surface"
@@ -52,4 +52,17 @@
             android:textColor="@color/primaryGreen"
             android:textSize="14sp" />
     </LinearLayout>
+
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/searchContainer"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/llSearch" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -156,7 +156,9 @@ class Home : Fragment() {
         homeHeadAdapter = HomeHeadAdapter(
             heroes = heroes,
             onFilterClick = {},
-            onToolbarReady = { setUpToolbarAndMenu(it) }
+            onToolbarReady = { setUpToolbarAndMenu(it) },
+            onSearchClick = {
+            }
         )
 
         viewLifecycleOwner.lifecycleScope.launch {

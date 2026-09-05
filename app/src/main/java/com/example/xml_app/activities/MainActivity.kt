@@ -27,6 +27,7 @@ import com.example.xml_app.fragments.Cart
 import com.example.xml_app.fragments.Favourite
 import com.example.xml_app.fragments.Home
 import com.example.xml_app.fragments.More
+import com.example.xml_app.fragments.Search
 import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.viewModel.MainViewModel
 import kotlinx.coroutines.launch
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             fragment<Cart, ApiRoute.Cart> { label = "Cart" }
             fragment<Favourite, ApiRoute.Favourite> { label = "Favourite" }
             fragment<More, ApiRoute.More> { label = "More" }
-            fragment<Search, ApiRoute.Search>()
+            fragment<Search, ApiRoute.Search> { label = "Search" }
         }
 
 
