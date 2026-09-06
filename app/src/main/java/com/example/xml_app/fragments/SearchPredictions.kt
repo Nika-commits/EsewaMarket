@@ -10,9 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.adapters.search.SearchSuggestionsAdapter
 import com.example.xml_app.databinding.FragmentSearchSuggestionsBinding
+import com.example.xml_app.navigation.SearchRoute
 import com.example.xml_app.viewModel.SearchViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -39,8 +41,16 @@ class SearchPredictions : Fragment() {
 
     private fun setupRecyclerView() {
         searchSuggestionsAdapter = SearchSuggestionsAdapter { suggestion ->
-            Log.d("Search", "Clicked: $suggestion")
+            viewModel.onChange(suggestion)
+            findNavController().navigate(SearchRoute.Results) {
+                popUpTo<SearchRoute.Suggestions> {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
         }
+
         binding.rvSearchSuggestions.adapter = searchSuggestionsAdapter
         binding.rvSearchSuggestions.layoutManager = LinearLayoutManager(requireContext())
     }

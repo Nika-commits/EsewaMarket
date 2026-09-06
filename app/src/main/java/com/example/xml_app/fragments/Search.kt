@@ -56,6 +56,7 @@ class Search : Fragment() {
         }
 
         setupSearchBox()
+        observeSearchQuery()
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -75,7 +76,24 @@ class Search : Fragment() {
 
         binding.tvSearch.setOnClickListener {
             nestedNavController.navigate(SearchRoute.Results) {
+                popUpTo<SearchRoute.Suggestions> {
+                    saveState = true
+                }
                 launchSingleTop = true
+                restoreState = true
+            }
+        }
+    }
+
+    private fun observeSearchQuery() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchQuery.collectLatest { query ->
+                    if (binding.etSearch.text?.toString() != query) {
+                        binding.etSearch.setText(query)
+                        binding.etSearch.setSelection(query.length)
+                    }
+                }
             }
         }
     }

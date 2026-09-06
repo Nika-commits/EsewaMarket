@@ -17,6 +17,7 @@ class RecommendedProductsPagingSource(
                 productApiService.getProducts(
                     page = currentPage,
                     category = null,
+                    search = null,
                     pageSize = 4
                 )
             val products = response.body() ?: emptyList()

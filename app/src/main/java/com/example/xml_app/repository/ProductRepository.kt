@@ -10,6 +10,7 @@ import com.example.xml_app.utils.paging.RecommendedProductsPagingSource
 class ProductRepository {
     suspend fun getFeaturedProducts() = RetrofitInstance.productApi.getProducts("featured", null, 0, 4)
     suspend fun getHotDealsProduct() = RetrofitInstance.productApi.getProducts(null, null, 10, 4)
+
     suspend fun getSearchProducts(
         category: String? = null,
         search: String,
