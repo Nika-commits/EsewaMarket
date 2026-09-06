@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bestSellers"
+        android:title="BEST SELLERS"
+        />
+    <item
+        android:id="@+id/priceHighToLow"
+        android:title="PRICE: HIGH TO LOW"
+        />
+    <item
+        android:id="@+id/priceLowToHigh"
+        android:title="PRICE: LOW TO HIGH"
+        />
+</menu>

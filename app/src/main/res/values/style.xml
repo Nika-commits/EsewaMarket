@@ -9,6 +9,19 @@
         <item name="cornerRadius">12dp</item>
     </style>
 
+    <style name="AppPopupMenu" parent="Widget.Material3.PopupMenu">
+        <item name="android:popupBackground">@drawable/bg_popup_menus</item>
+        <item name="android:itemTextAppearance">@style/PopupMenuText</item>
+        <item name="android:textAppearance">@style/PopupMenuText</item>
+    </style>
+
+    <style name="PopupMenuText">
+        <item name="android:textSize">8sp</item>
+        <item name="android:textColor">@color/textDark400</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:fontFamily">@font/source_sans_regular</item>
+    </style>
+
     <style name="ToolbarTitleStyle" parent="TextAppearance.Material3.ActionBar.Title">
         <item name="android:textSize">16sp</item>
         <item name="android:letterSpacing">0.02</item>
@@ -190,6 +203,7 @@
         <item name="colorPrimaryInverse">@color/surface</item>
         <item name="colorOnSurfaceInverse">@color/surface</item>
     </style>
+
 
     <style name="App.Chip" parent="Widget.Material3.Chip.Suggestion">
         <item name="chipBackgroundColor">@color/textLighter</item>

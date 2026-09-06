@@ -3,8 +3,10 @@ package com.example.xml_app.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -36,6 +38,7 @@ class SearchResults : Fragment() {
         viewModel.initializeUserCartAndFavourites()
 
         setupRecyclerView()
+        setupDropDownFilter()
     }
 
     fun setupRecyclerView() {
@@ -68,5 +71,42 @@ class SearchResults : Fragment() {
             }
         }
         viewModel.getSearchedProducts()
+    }
+
+    private fun setupDropDownFilter() {
+        val button = binding.llDropdownFilters
+        button.setOnClickListener { v: View ->
+            val popup = PopupMenu(requireContext(), v)
+            popup.menuInflater.inflate(R.menu.menu_product_filters, popup.menu)
+            popup.setOnMenuItemClickListener { menuItem: MenuItem ->
+                when (menuItem.itemId) {
+                    R.id.bestSellers -> {
+                        binding.tvFilters.text = menuItem.title
+                        true
+                    }
+
+                    R.id.priceHighToLow -> {
+                        binding.tvFilters.text = menuItem.title
+                        true
+                    }
+
+                    R.id.priceLowToHigh -> {
+                        binding.tvFilters.text = menuItem.title
+                        true
+                    }
+
+                    else -> {
+                        binding.tvFilters.text = menuItem.title
+                        false
+                    }
+                }
+            }
+
+            popup.setOnDismissListener {
+
+            }
+
+            popup.show()
+        }
     }
 }

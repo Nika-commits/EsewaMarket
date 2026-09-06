@@ -8,6 +8,7 @@
 
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/textDark</item>
+        <item name="popupMenuStyle">@style/AppPopupMenu</item>
 
         <item name="android:windowBackground">@color/offWhiteBackground</item>
 
