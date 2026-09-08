@@ -68,6 +68,14 @@ class Search : Fragment() {
     fun setupSearchBox() {
         binding.etSearch.doAfterTextChanged { text ->
             viewModel.onChange(text?.toString().orEmpty())
+            if (nestedNavController.currentDestination?.route == SearchRoute.Results::class.qualifiedName) {
+                nestedNavController.navigate(SearchRoute.Suggestions) {
+                    popUpTo<SearchRoute.Results> {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                }
+            }
         }
 
         binding.layoutSearchBox.setStartIconOnClickListener {
