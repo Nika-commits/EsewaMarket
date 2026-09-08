@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -312,7 +313,8 @@ fun CheckoutScreen(
                             }
                             ConfirmationActivity.startActivity(context, orderId)
                         }
-                    }
+                    },
+                    onPayWithKhalti = {}
                 )
             }
         }
@@ -515,8 +517,12 @@ fun OrderingDialog() {
 @Preview(showBackground = false, showSystemUi = true)
 @Composable
 fun OrderDialog() {
-    OrderingDialog()
+    PaymentOptionsList(
+        onPayWithKhalti = {},
+        onPayWithEsewa = {},
+        onCashOnDelivery = {})
 }
+
 
 @Composable
 fun PhoneNumberBottomSheet(
@@ -888,7 +894,8 @@ fun PriceBreakdownRow(
 @Composable
 fun PaymentOptionsList(
     onCashOnDelivery: () -> Unit,
-    onPayWithEsewa: () -> Unit
+    onPayWithEsewa: () -> Unit,
+    onPayWithKhalti: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -912,12 +919,12 @@ fun PaymentOptionsList(
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically
-
             ) {
-                AppButton(
-                    variant = ButtonVariant.GHOST,
-                    icon = R.drawable.ic_dailybuybonus,
-                    onClick = {}
+
+                Image(
+                    painter = painterResource(R.drawable.ic_dailybuybonus),
+                    contentDescription = "Cash On Delivery",
+                    modifier = Modifier.size(30.dp)
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -952,11 +959,10 @@ fun PaymentOptionsList(
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
-                AppButton(
-                    variant = ButtonVariant.GHOST,
-                    icon = R.drawable.ic_esewa_grey,
-                    tint = Color.Unspecified,
-                    onClick = {}
+                Image(
+                    painter = painterResource(R.drawable.ic_esewa_grey),
+                    contentDescription = "Esewa",
+                    modifier = Modifier.size(30.dp)
                 )
                 Text(
                     "Pay with eSewa",
@@ -974,7 +980,41 @@ fun PaymentOptionsList(
                 tint = TextDark300,
                 onClick = {}
             )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = true,
+                    onClick = onPayWithKhalti
+                )
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.khalti_logo),
+                    contentDescription = "Khalti",
+                    modifier = Modifier.size(30.dp)
+                )
 
+                Text(
+                    "Pay with Khalti",
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    fontFamily = SourceSansPro,
+                    color = TextDark300,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.1.sp
+                )
+            }
+            AppButton(
+                variant = ButtonVariant.GHOST,
+                icon = R.drawable.ic_right_arrow,
+                tint = TextDark300,
+                onClick = {}
+            )
         }
     }
 }
