@@ -1,7 +1,6 @@
 package com.example.xml_app.repository
 
 import android.util.Log
-import com.example.xml_app.BuildConfig
 import com.example.xml_app.api.RetrofitInstance
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
 import com.example.xml_app.utils.dto.request.OrderDateFilter
@@ -79,10 +78,8 @@ class OrderRepository {
         id: Int
     ): KhaltiPaymentResponse? {
         try {
-            val khaltiLiveKey = BuildConfig.KhaltiLivePublic
             val response = RetrofitInstance.orderApi.initiateKhaltiPayment(
                 id,
-                authorization = "Bearer $khaltiLiveKey"
             )
             if (!response.isSuccessful) {
                 Log.e("Khalti", "Error in Khalti Repository: ${response.code()}")
@@ -97,13 +94,14 @@ class OrderRepository {
     }
 
     suspend fun verifyKhaltiPayment(
+        id: Int,
         pxid: String
     ): KhaltiPaymentVerificationResponse? {
         try {
             val response = RetrofitInstance.orderApi.verifyKhaltiPayment(
+                id,
                 pxid,
-
-                )
+            )
             if (!response.isSuccessful) {
                 Log.e("Khalti", "Khalti Verification Failed : ${response.code()}")
                 return null

@@ -16,6 +16,7 @@ import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
 import com.example.xml_app.utils.dto.response.KhaltiPaymentVerificationResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
+import com.khalti.checkout.Khalti
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class ConfirmationViewModel(
     private val _confirmationOrderUiState = MutableStateFlow<ConfirmationOrderUiState>(ConfirmationOrderUiState.Idle)
     val confirmationOrderUiState = _confirmationOrderUiState.asStateFlow()
     private val _khaltiUiState = MutableStateFlow<KhaltiPaymentState>(KhaltiPaymentState.Idle)
-    val KhaltiUiState = _khaltiUiState.asStateFlow()
+    val khaltiUiState = _khaltiUiState.asStateFlow()
     fun getOrder(orderId: Int) {
         viewModelScope.launch {
             _uiState.value = ConfirmationUiState.Loading
@@ -129,6 +130,12 @@ class ConfirmationViewModel(
         }
     }
 
+    fun updateOrderPaymentStatusToPaid() {
+        viewModelScope.launch {
+
+        }
+    }
+
     fun removeFromCart(
         order: OrderResponse
     ) {
@@ -153,11 +160,28 @@ class ConfirmationViewModel(
 
     suspend fun initiateKhaltiPayment(id: Int): KhaltiPaymentResponse? {
         val response = orderRepository.initiateKhaltiPayment(id)
+        if (response == null) {
+            _khaltiUiState.value = KhaltiPaymentState.Error
+            return null
+        }
         return response
     }
 
-    suspend fun verifyKhaltiPayment(pxid: String): KhaltiPaymentVerificationResponse? {
+    suspend fun verifyKhaltiPayment(pxid: String) {
+        _khaltiUiState.value = KhaltiPaymentState.Verifying
+
+        try {
         val response = orderRepository.verifyKhaltiPayment(pxid)
-        return response
+            if(response == null){
+                _khaltiUiState.value = KhaltiPaymentState.Error
+                return
+            }
+
+            if(response.status != "Completed"){
+                _khaltiUiState.value = KhaltiPaymentState.Error
+                return
+            }
+            val order = response.
+        }
     }
 }

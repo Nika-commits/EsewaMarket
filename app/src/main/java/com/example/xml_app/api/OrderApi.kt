@@ -39,11 +39,11 @@ interface OrderApi {
     @POST("/api/order/khalti/initiate/{id}")
     suspend fun initiateKhaltiPayment(
         @Path("id") id: Int,
-        @Header("Authorization") authorization: String
     ): Response<KhaltiPaymentResponse>
 
-    @POST("/api/order/khalti/verify")
+    @POST("/api/order/khalti/verify/{id}")
     suspend fun verifyKhaltiPayment(
+        @Path("id") id: Int,
         @Query("pidx") pidx: String
     ): Response<KhaltiPaymentVerificationResponse>
 

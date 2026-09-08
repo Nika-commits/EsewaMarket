@@ -200,15 +200,17 @@ class ConfirmationActivity : AppCompatActivity() {
                                                     this@ConfirmationActivity,
                                                     config = config,
                                                     onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
-                                                        Log.d("Khalti", "OnPaymentResult: result: ${paymentResult}")
-                                                        if (paymentResult.payload == null) {
+                                                        Log.d("Khalti", "OnPaymentResult: result: $paymentResult")
+                                                        khalti.close()
+
+                                                        val pidx = paymentResult.payload?.pidx
+                                                        if (pidx == null) {
                                                             viewModel.setKhaltiUiState(KhaltiPaymentState.Error)
                                                             return@init
                                                         }
-                                                        if (paymentResult.payload.status == "Completed") {
-                                                            viewModel.updateOrderStatusToPending()
+                                                        scope.launch {
+
                                                         }
-                                                        khalti.close()
                                                     },
                                                     onMessage = { payload: OnMessagePayload, khalti: Khalti ->
                                                         Log.d("Khalti", "onMessage: Payload: ${payload.message}")
@@ -262,7 +264,7 @@ class ConfirmationActivity : AppCompatActivity() {
                         )
                     }
                 }
-                val khaltiUiState by viewModel.KhaltiUiState.collectAsStateWithLifecycle()
+                val khaltiUiState by viewModel.khaltiUiState.collectAsStateWithLifecycle()
                 when (val state = khaltiUiState) {
                     KhaltiPaymentState.Idle -> Unit
                     KhaltiPaymentState.Loading,
