@@ -19,6 +19,10 @@ interface OrderApi {
         @Body request: CreateOrderRequest
     ): Response<OrderResponse>
 
+    suspend fun initiateKhaltiPayment(
+
+    )
+
     @GET("/api/order/{id}")
     suspend fun getOrderById(
         @Path("id") id: Int,

@@ -68,6 +68,12 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.hasRoute<ApiRoute.Search>()) {
+                binding.bottomNavigation.visibility = View.GONE
+            } else {
+                binding.bottomNavigation.visibility = View.VISIBLE
+            }
+
             when {
                 destination.hasRoute<ApiRoute.Home>() -> setSelectedTab(binding.tabHome)
                 destination.hasRoute<ApiRoute.Cart>() -> setSelectedTab(binding.tabCart)

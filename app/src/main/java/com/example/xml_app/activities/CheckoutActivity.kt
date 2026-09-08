@@ -280,14 +280,14 @@ fun CheckoutScreen(
                             return@PaymentOptionsList
                         }
                         scope.launch {
-                            val orderId = viewModel.placeOrder(
+                            val orderResponse = viewModel.placeOrder(
                                 PaymentOptions.Cash_On_Delivery
                             )
-                            if (orderId == null) {
+                            if (orderResponse == null) {
                                 Log.e("Checkout", "OrderId is null")
                                 return@launch
                             }
-                            ConfirmationActivity.startActivity(context, orderId)
+                            ConfirmationActivity.startActivity(context, orderResponse.id)
                         }
 
 
@@ -304,17 +304,37 @@ fun CheckoutScreen(
                         }
 
                         scope.launch {
-                            val orderId = viewModel.placeOrder(
+                            val orderResponse = viewModel.placeOrder(
                                 PaymentOptions.Esewa
                             )
-                            if (orderId == null) {
+                            if (orderResponse == null) {
                                 Log.e("Checkout", "OrderId is null")
                                 return@launch
                             }
-                            ConfirmationActivity.startActivity(context, orderId)
+                            ConfirmationActivity.startActivity(context, orderResponse.id)
                         }
                     },
-                    onPayWithKhalti = {}
+                    onPayWithKhalti = {
+                        if (user.address == null) {
+                            showNoAddressBottomSheet = true
+                            return@PaymentOptionsList
+                        }
+                        if (user.phone == null) {
+                            showPhoneNumberSheet = true
+                            return@PaymentOptionsList
+                        }
+                        scope.launch {
+                            val orderResponse = viewModel.placeOrder(
+                                PaymentOptions.Khalti
+                            )
+
+                            if (orderResponse == null) {
+                                Log.e("Checkout", "Order Response is null")
+                                return@launch
+                            }
+                            ConfirmationActivity.startActivity(context, orderResponse.id)
+                        }
+                    }
                 )
             }
         }

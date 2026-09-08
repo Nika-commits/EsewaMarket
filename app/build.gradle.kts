@@ -72,6 +72,19 @@ android {
                 "EsewaIntentClientSecret",
                 providers.gradleProperty("ESEWA_INTENT_CLIENT_SECRET").get()
             )
+
+
+            buildConfigField(
+                "String",
+                "KhaltiLiveSecret",
+                providers.gradleProperty("KHALTI_LIVE_SECRET").get()
+            )
+
+            buildConfigField(
+                "String",
+                "KhaltiLivePublic",
+                providers.gradleProperty("KHALTI_LIVE_PUBLIC").get()
+            )
         }
         debug {
             buildConfigField(
@@ -102,12 +115,25 @@ android {
                 "EsewaIntentSecret",
                 providers.gradleProperty("ESEWA_INTENT_CLIENT_SECRET").get()
             )
+
+            buildConfigField(
+                "String",
+                "KhaltiLiveSecret",
+                providers.gradleProperty("KHALTI_LIVE_SECRET").get()
+            )
+
+            buildConfigField(
+                "String",
+                "KhaltiLivePublic",
+                providers.gradleProperty("KHALTI_LIVE_PUBLIC").get()
+            )
         }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
     }
 
 }

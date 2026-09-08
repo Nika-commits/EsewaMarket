@@ -14,6 +14,7 @@ import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.request.CreateOrderItemRequest
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
 import com.example.xml_app.utils.dto.request.PaymentOptions
+import com.example.xml_app.utils.dto.response.OrderResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -140,7 +141,7 @@ class CheckoutViewModel(
 
     suspend fun placeOrder(
         paymentOptions: PaymentOptions
-    ): Int? {
+    ): OrderResponse? {
         _isOrdering.value = true
         return try {
             val firebaseUser = app.auth.currentUser
@@ -187,15 +188,17 @@ class CheckoutViewModel(
                 Log.e("Checkout", "${response.code()}")
                 return null
             }
-            if (response.body() == null) return null
 
-            val id = response.body()?.id
-            return id
+            response.body()
         } catch (e: Exception) {
             Log.e("Checkout", "${e.message}")
+            null
         } finally {
             _isOrdering.value = false
         }
     }
 
+    fun initiateKhaltiPayment() {
+
+    }
 }

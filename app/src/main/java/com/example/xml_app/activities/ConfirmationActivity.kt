@@ -88,16 +88,16 @@ class ConfirmationActivity : AppCompatActivity() {
         when (result.resultCode) {
             RESULT_OK -> {
                 val message = result.data?.getStringExtra(EsewaPayment.EXTRA_RESULT_MESSAGE)
-                Log.i("Esewa", "$message")
+                Log.d("Esewa", "$message")
             }
 
             RESULT_CANCELED -> {
-                Log.i("Esewa", "Payment Cancelled")
+                Log.d("Esewa", "Payment Cancelled")
             }
 
             EsewaPayment.RESULT_EXTRAS_INVALID -> {
                 val message = result.data?.getStringExtra(EsewaPayment.EXTRA_RESULT_MESSAGE)
-                Log.e("Esewa", "$message")
+                Log.d("Esewa", "$message")
             }
         }
     }
@@ -169,6 +169,10 @@ class ConfirmationActivity : AppCompatActivity() {
 
                                         PaymentOptions.Cash_On_Delivery.toString() -> {
                                             viewModel.updateOrderStatusToPending()
+                                        }
+
+                                        PaymentOptions.Khalti.toString() -> {
+                                            Log.d("Confirmation", "Ordered via Khalti")
                                         }
                                     }
 

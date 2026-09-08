@@ -14,7 +14,7 @@ data class CreateOrderItemRequest(
 )
 
 enum class PaymentOptions {
-    Cash_On_Delivery, Esewa
+    Cash_On_Delivery, Esewa, Khalti
 }
 
 
