@@ -55,12 +55,13 @@ class OrderRepository {
             val khaltiLiveKey = BuildConfig.KhaltiLivePublic
             val response = RetrofitInstance.orderApi.initiateKhaltiPayment(
                 id,
-                authorization = khaltiLiveKey
+                authorization = "Bearer $khaltiLiveKey"
             )
             if (!response.isSuccessful) {
                 Log.e("Khalti", "Error in Khalti Repository: ${response.code()}")
                 return null
             }
+            Log.d("Khalti", "${response.body()}")
             return response.body()
         } catch (e: Exception) {
             Log.e("Khalti", "Exception Occurred in Repo: ${e.message}")
@@ -73,12 +74,14 @@ class OrderRepository {
     ): KhaltiPaymentVerificationResponse? {
         try {
             val response = RetrofitInstance.orderApi.verifyKhaltiPayment(
-                pxid
-            )
+                pxid,
+
+                )
             if (!response.isSuccessful) {
                 Log.e("Khalti", "Khalti Verification Failed : ${response.code()}")
                 return null
             }
+            Log.d("Khalti", "${response.body()}")
             return response.body()
         } catch (e: Exception) {
             Log.e("Khalti", "Exception in Khalti Payment Verification: ${e.message}")

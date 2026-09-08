@@ -9,9 +9,12 @@ import com.example.xml_app.repository.OrderRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.ui.state.ConfirmationOrderUiState
 import com.example.xml_app.ui.state.ConfirmationUiState
+import com.example.xml_app.ui.state.KhaltiPaymentState
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.request.OrderStatus
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
+import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
+import com.example.xml_app.utils.dto.response.KhaltiPaymentVerificationResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +32,8 @@ class ConfirmationViewModel(
     val uiState = _uiState.asStateFlow()
     private val _confirmationOrderUiState = MutableStateFlow<ConfirmationOrderUiState>(ConfirmationOrderUiState.Idle)
     val confirmationOrderUiState = _confirmationOrderUiState.asStateFlow()
+    private val _khaltiUiState = MutableStateFlow<KhaltiPaymentState>(KhaltiPaymentState.Idle)
+    val KhaltiUiState = _khaltiUiState.asStateFlow()
     fun getOrder(orderId: Int) {
         viewModelScope.launch {
             _uiState.value = ConfirmationUiState.Loading
@@ -67,6 +72,10 @@ class ConfirmationViewModel(
                 _uiState.value = ConfirmationUiState.Error
             }
         }
+    }
+
+    fun setKhaltiUiState(state: KhaltiPaymentState) {
+        _khaltiUiState.value = state
     }
 
     fun updateOrderStatusToPending() {
@@ -140,5 +149,15 @@ class ConfirmationViewModel(
                 Log.e("Confirmation", "${e.message}")
             }
         }
+    }
+
+    suspend fun initiateKhaltiPayment(id: Int): KhaltiPaymentResponse? {
+        val response = orderRepository.initiateKhaltiPayment(id)
+        return response
+    }
+
+    suspend fun verifyKhaltiPayment(pxid: String): KhaltiPaymentVerificationResponse? {
+        val response = orderRepository.verifyKhaltiPayment(pxid)
+        return response
     }
 }

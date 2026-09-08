@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -44,6 +45,7 @@ import com.example.xml_app.BuildConfig
 import com.example.xml_app.R
 import com.example.xml_app.ui.state.ConfirmationOrderUiState
 import com.example.xml_app.ui.state.ConfirmationUiState
+import com.example.xml_app.ui.state.KhaltiPaymentState
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.PaymentOptions
 import com.example.xml_app.utils.dto.response.OrderItemResponse
@@ -64,6 +66,12 @@ import com.example.xml_app.viewModel.ConfirmationViewModel
 import com.f1soft.esewapaymentsdk.EsewaConfiguration
 import com.f1soft.esewapaymentsdk.EsewaPayment
 import com.f1soft.esewapaymentsdk.ui.screens.EsewaPaymentActivity
+import com.khalti.checkout.Khalti
+import com.khalti.checkout.data.Environment
+import com.khalti.checkout.data.KhaltiPayConfig
+import com.khalti.checkout.data.PaymentResult
+import com.khalti.checkout.resource.OnMessagePayload
+import kotlinx.coroutines.launch
 
 class ConfirmationActivity : AppCompatActivity() {
     companion object {
@@ -124,6 +132,7 @@ class ConfirmationActivity : AppCompatActivity() {
                 containerColor = OffWhiteBackground
             ) { innerPadding ->
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                val scope = rememberCoroutineScope()
                 when (val state = uiState) {
                     ConfirmationUiState.Loading ->
                         Column(
@@ -172,7 +181,34 @@ class ConfirmationActivity : AppCompatActivity() {
                                         }
 
                                         PaymentOptions.Khalti.toString() -> {
-                                            Log.d("Confirmation", "Ordered via Khalti")
+                                            scope.launch {
+                                                viewModel.setKhaltiUiState(KhaltiPaymentState.Loading)
+                                                val response = viewModel.initiateKhaltiPayment(state.order.id)
+                                                if (response == null) {
+                                                    viewModel.setKhaltiUiState(KhaltiPaymentState.Error)
+                                                    return@launch
+                                                }
+
+                                                val config = KhaltiPayConfig(
+                                                    publicKey = BuildConfig.KhaltiLivePublic,
+                                                    paymentUrl = response.paymentUrl,
+                                                    pidx = response.pidx,
+                                                    environment = Environment.TEST
+                                                )
+
+                                                Khalti.init(
+                                                    this@ConfirmationActivity,
+                                                    config = config,
+                                                    onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
+
+                                                    },
+                                                    onMessage = { payload: OnMessagePayload, khalti: Khalti ->
+
+                                                    },
+                                                    onReturn = { khalti: Khalti ->
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
 
@@ -214,7 +250,27 @@ class ConfirmationActivity : AppCompatActivity() {
                             },
                         )
                     }
+                }
+                val khaltiUiState by viewModel.KhaltiUiState.collectAsStateWithLifecycle()
+                when (val state = khaltiUiState) {
+                    KhaltiPaymentState.Idle -> Unit
+                    KhaltiPaymentState.Loading,
+                    KhaltiPaymentState.Error,
+                    KhaltiPaymentState.Verifying -> {
+                        KhaltiOrderingDialog(
+                            onDismissRequest = {},
+                            onRetry = {},
+                            state = state
+                        )
+                    }
 
+                    is KhaltiPaymentState.Success -> {
+                        OrderSuccessScreen(
+                            order = state.order,
+                            onGoToHome = ::goToMain,
+                            onGoToOrders = ::goToOrders
+                        )
+                    }
                 }
             }
         }
@@ -504,6 +560,102 @@ fun PlacingOrderDialog(
                     }
 
                     else -> {}
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun KhaltiOrderingDialog(
+    onDismissRequest: () -> Unit,
+    onRetry: () -> Unit,
+    state: KhaltiPaymentState
+) {
+    Dialog(
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Surface
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                when (state) {
+                    KhaltiPaymentState.Loading -> {
+                        AppLoadingIndicator(
+                            size = 60.dp,
+                            strokeWidth = 4.dp
+                        )
+
+                        Text(
+                            text = "Preparing your Payment...",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Medium,
+                            color = TextDark300,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+
+                    KhaltiPaymentState.Verifying -> {
+                        AppLoadingIndicator(
+                            size = 60.dp,
+                            strokeWidth = 4.dp
+                        )
+
+                        Text(
+                            text = "Verifying your Payment...",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Medium,
+                            color = TextDark300,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+
+                    KhaltiPaymentState.Error -> {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_error),
+                            contentDescription = "Payment failed",
+                            tint = EsewaRed,
+                            modifier = Modifier.size(52.dp)
+                        )
+
+                        Text(
+                            text = "Something went wrong while processing your payment. Please try again.",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = TextDark200,
+                            textAlign = TextAlign.Center
+                        )
+
+                        AppButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "TRY AGAIN",
+                            variant = ButtonVariant.SECONDARY,
+                            onClick = onRetry
+                        )
+                    }
+
+                    else -> Unit
                 }
             }
         }
