@@ -900,9 +900,9 @@ fun PaymentOptionsList(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Surface),
+            .background(Surface)
+            .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -914,7 +914,8 @@ fun PaymentOptionsList(
                     onClick = {
                         onCashOnDelivery()
                     }
-                )
+                ),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 modifier = Modifier.weight(1f),
@@ -924,10 +925,11 @@ fun PaymentOptionsList(
                 Image(
                     painter = painterResource(R.drawable.ic_dailybuybonus),
                     contentDescription = "Cash On Delivery",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .size(30.dp)
                 )
                 Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
                     text = "Cash on Delivery",
                     fontFamily = SourceSansPro,
                     color = TextDark300,
@@ -951,7 +953,8 @@ fun PaymentOptionsList(
                     onClick = {
                         onPayWithEsewa()
                     }
-                )
+                ),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 modifier = Modifier
@@ -962,11 +965,12 @@ fun PaymentOptionsList(
                 Image(
                     painter = painterResource(R.drawable.ic_esewa_grey),
                     contentDescription = "Esewa",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .size(30.dp)
                 )
                 Text(
                     "Pay with eSewa",
-                    modifier = Modifier.padding(horizontal = 16.dp),
                     fontFamily = SourceSansPro,
                     color = TextDark300,
                     fontWeight = FontWeight.Medium,
@@ -987,7 +991,8 @@ fun PaymentOptionsList(
                 .clickable(
                     enabled = true,
                     onClick = onPayWithKhalti
-                )
+                ),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 modifier = Modifier.weight(1f),
@@ -996,12 +1001,13 @@ fun PaymentOptionsList(
                 Image(
                     painter = painterResource(R.drawable.khalti_logo),
                     contentDescription = "Khalti",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .size(30.dp)
                 )
 
                 Text(
                     "Pay with Khalti",
-                    modifier = Modifier.padding(horizontal = 16.dp),
                     fontFamily = SourceSansPro,
                     color = TextDark300,
                     fontWeight = FontWeight.Medium,
