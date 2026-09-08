@@ -196,18 +196,21 @@ class ConfirmationActivity : AppCompatActivity() {
                                                     environment = Environment.TEST
                                                 )
 
-                                                Khalti.init(
+                                                val khalti = Khalti.init(
                                                     this@ConfirmationActivity,
                                                     config = config,
                                                     onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
-
+                                                        Log.d("Khalti", "Payment result: ${paymentResult}")
+                                                        khalti.close()
                                                     },
                                                     onMessage = { payload: OnMessagePayload, khalti: Khalti ->
-
+                                                        Log.d("Khalti", "Payload: ${payload.message}")
+                                                        khalti.close()
                                                     },
                                                     onReturn = { khalti: Khalti ->
                                                     }
                                                 )
+                                                khalti.open()
                                             }
                                         }
                                     }
