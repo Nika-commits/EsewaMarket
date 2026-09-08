@@ -2,6 +2,8 @@ package com.example.xml_app.api
 
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
+import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
+import com.example.xml_app.utils.dto.response.KhaltiPaymentVerificationResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -19,10 +21,6 @@ interface OrderApi {
         @Body request: CreateOrderRequest
     ): Response<OrderResponse>
 
-    suspend fun initiateKhaltiPayment(
-
-    )
-
     @GET("/api/order/{id}")
     suspend fun getOrderById(
         @Path("id") id: Int,
@@ -36,6 +34,17 @@ interface OrderApi {
         @Query("from") from: String?,
         @Query("to") to: String?
     ): Response<List<OrderResponse>>
+
+    @POST("/api/order/khalti/initiate/{id}")
+    suspend fun initiateKhaltiPayment(
+        @Path("id") id: Int,
+        @Header("Authorization") authorization: String
+    ): Response<KhaltiPaymentResponse>
+
+    @POST("/api/order/khalti/verify")
+    suspend fun verifyKhaltiPayment(
+        @Query("pidx") pidx: String
+    ): Response<KhaltiPaymentVerificationResponse>
 
     @PATCH("/api/order/{id}/status")
     suspend fun updateOrderStatus(
