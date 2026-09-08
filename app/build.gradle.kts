@@ -243,6 +243,8 @@ dependencies {
     debugImplementation(files("libs/eSewaPaymentSdk-debug.aar"))
     releaseImplementation(files("libs/eSewaPaymentSdk-release.aar"))
 
+    //Khalit
+    implementation("com.khalti:checkout-android:0.08.00")
     // Koin
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)

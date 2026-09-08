@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -67,15 +68,15 @@ class Search : Fragment() {
 
     fun setupSearchBox() {
         binding.etSearch.doAfterTextChanged { text ->
-            viewModel.onChange(text?.toString().orEmpty())
-            if (nestedNavController.currentDestination?.route == SearchRoute.Results::class.qualifiedName) {
+            if (nestedNavController.currentDestination?.hasRoute<SearchRoute.Results>() == true) {
                 nestedNavController.navigate(SearchRoute.Suggestions) {
                     popUpTo<SearchRoute.Results> {
-                        saveState = true
+                        inclusive = true
                     }
                     launchSingleTop = true
                 }
             }
+            viewModel.onChange(text?.toString().orEmpty())
         }
 
         binding.layoutSearchBox.setStartIconOnClickListener {
