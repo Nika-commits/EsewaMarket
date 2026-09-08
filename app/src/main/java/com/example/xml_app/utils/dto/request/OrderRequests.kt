@@ -22,8 +22,17 @@ data class UpdateOrderStatusRequest(
     val status: OrderStatus
 )
 
+data class UpdateOrderPaymentStatusRequest(
+    val status: OrderPaymentStatus,
+    val paymentId: String
+)
+
 enum class OrderStatus {
     Initialized, Pending, Shipped, Delivered, Cancelled
+}
+
+enum class OrderPaymentStatus {
+    Pending, Paid, Refund
 }
 
 enum class PaymentStatus {

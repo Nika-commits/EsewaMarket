@@ -200,14 +200,22 @@ class ConfirmationActivity : AppCompatActivity() {
                                                     this@ConfirmationActivity,
                                                     config = config,
                                                     onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
-                                                        Log.d("Khalti", "Payment result: ${paymentResult}")
+                                                        Log.d("Khalti", "OnPaymentResult: result: ${paymentResult}")
+                                                        if (paymentResult.payload == null) {
+                                                            viewModel.setKhaltiUiState(KhaltiPaymentState.Error)
+                                                            return@init
+                                                        }
+                                                        if (paymentResult.payload.status == "Completed") {
+                                                            viewModel.updateOrderStatusToPending()
+                                                        }
                                                         khalti.close()
                                                     },
                                                     onMessage = { payload: OnMessagePayload, khalti: Khalti ->
-                                                        Log.d("Khalti", "Payload: ${payload.message}")
+                                                        Log.d("Khalti", "onMessage: Payload: ${payload.message}")
                                                         khalti.close()
                                                     },
                                                     onReturn = { khalti: Khalti ->
+                                                        Log.d("Khalti", "Returning $khalti")
                                                     }
                                                 )
                                                 khalti.open()

@@ -1,6 +1,7 @@
 package com.example.xml_app.api
 
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
+import com.example.xml_app.utils.dto.request.UpdateOrderPaymentStatusRequest
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
 import com.example.xml_app.utils.dto.response.KhaltiPaymentVerificationResponse
@@ -51,5 +52,12 @@ interface OrderApi {
         @Header("Authorization") authorization: String,
         @Path("id") id: Int,
         @Body request: UpdateOrderStatusRequest
+    ): Response<OrderResponse>
+
+    @PATCH("/api/order/{id}/paymentStatus")
+    suspend fun updateOrderPaymentStatus(
+        @Header("Authorization") authorization: String,
+        @Path("id") id: Int,
+        @Body request: UpdateOrderPaymentStatusRequest
     ): Response<OrderResponse>
 }

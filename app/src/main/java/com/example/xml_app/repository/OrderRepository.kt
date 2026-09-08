@@ -5,9 +5,11 @@ import com.example.xml_app.BuildConfig
 import com.example.xml_app.api.RetrofitInstance
 import com.example.xml_app.utils.dto.request.CreateOrderRequest
 import com.example.xml_app.utils.dto.request.OrderDateFilter
+import com.example.xml_app.utils.dto.request.UpdateOrderPaymentStatusRequest
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
 import com.example.xml_app.utils.dto.response.KhaltiPaymentVerificationResponse
+import com.example.xml_app.utils.dto.response.OrderResponse
 
 class OrderRepository {
 
@@ -47,6 +49,31 @@ class OrderRepository {
         authorization = "Bearer $token",
         request = request
     )
+
+    suspend fun updateOrderPaymentStatus(
+        id: Int,
+        token: String,
+        request: UpdateOrderPaymentStatusRequest
+    ): OrderResponse? {
+        try {
+
+            val response = RetrofitInstance.orderApi.updateOrderPaymentStatus(
+                id = id,
+                authorization = "Bearer $token",
+                request = request
+            )
+
+            if (!response.isSuccessful) {
+                Log.e("Order", "Failed to update payment status: ${response.code()}")
+                return null
+            }
+
+            return response.body()
+        } catch (e: Exception) {
+            Log.e("Order", "Failed to update payment status: ${e.message}")
+            return null
+        }
+    }
 
     suspend fun initiateKhaltiPayment(
         id: Int
