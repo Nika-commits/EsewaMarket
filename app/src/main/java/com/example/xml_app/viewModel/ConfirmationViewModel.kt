@@ -159,29 +159,51 @@ class ConfirmationViewModel(
     }
 
     suspend fun initiateKhaltiPayment(id: Int): KhaltiPaymentResponse? {
-        val response = orderRepository.initiateKhaltiPayment(id)
-        if (response == null) {
+        try {
+            val firebaseToken = userRepository.getFirebaseToken(app.auth)
+            if (firebaseToken == null) {
+                _khaltiUiState.value = KhaltiPaymentState.Error
+                return null
+            }
+
+            val response = orderRepository.initiateKhaltiPayment(id, firebaseToken)
+            if (response == null) {
+                _khaltiUiState.value = KhaltiPaymentState.Error
+                return null
+            }
+            return response
+        } catch (e: Exception) {
             _khaltiUiState.value = KhaltiPaymentState.Error
+            Log.e("Khalti", "Exception in View Model: ${e.message}")
             return null
         }
-        return response
     }
 
-    suspend fun verifyKhaltiPayment(pxid: String) {
+    suspend fun verifyKhaltiPayment(
+        orderId: Int,
+        pxid: String
+    ) {
         _khaltiUiState.value = KhaltiPaymentState.Verifying
-
         try {
-        val response = orderRepository.verifyKhaltiPayment(pxid)
-            if(response == null){
+            val firebaseToken = userRepository.getFirebaseToken(app.auth)
+            if (firebaseToken == null) {
                 _khaltiUiState.value = KhaltiPaymentState.Error
                 return
             }
-
-            if(response.status != "Completed"){
+            val response = orderRepository.verifyKhaltiPayment(
+                orderId,
+                pxid,
+                firebaseToken
+            )
+            if (response == null) {
                 _khaltiUiState.value = KhaltiPaymentState.Error
                 return
             }
-            val order = response.
+            removeFromCart(response)
+            _khaltiUiState.value = KhaltiPaymentState.Success(response)
+        } catch (e: Exception) {
+            Log.e("Khalti", "Failed to verify in View Model : ${e.message}")
+            _khaltiUiState.value = KhaltiPaymentState.Error
         }
     }
 }

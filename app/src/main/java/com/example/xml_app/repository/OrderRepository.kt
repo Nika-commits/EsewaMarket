@@ -7,7 +7,6 @@ import com.example.xml_app.utils.dto.request.OrderDateFilter
 import com.example.xml_app.utils.dto.request.UpdateOrderPaymentStatusRequest
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
-import com.example.xml_app.utils.dto.response.KhaltiPaymentVerificationResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 
 class OrderRepository {
@@ -75,11 +74,13 @@ class OrderRepository {
     }
 
     suspend fun initiateKhaltiPayment(
-        id: Int
+        id: Int,
+        token: String
     ): KhaltiPaymentResponse? {
         try {
             val response = RetrofitInstance.orderApi.initiateKhaltiPayment(
                 id,
+                "Bearer $token"
             )
             if (!response.isSuccessful) {
                 Log.e("Khalti", "Error in Khalti Repository: ${response.code()}")
@@ -95,12 +96,14 @@ class OrderRepository {
 
     suspend fun verifyKhaltiPayment(
         id: Int,
-        pxid: String
-    ): KhaltiPaymentVerificationResponse? {
+        pxid: String,
+        token: String
+    ): OrderResponse? {
         try {
             val response = RetrofitInstance.orderApi.verifyKhaltiPayment(
                 id,
                 pxid,
+                "Bearer $token"
             )
             if (!response.isSuccessful) {
                 Log.e("Khalti", "Khalti Verification Failed : ${response.code()}")

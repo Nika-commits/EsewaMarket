@@ -183,9 +183,10 @@ class ConfirmationActivity : AppCompatActivity() {
                                         PaymentOptions.Khalti.toString() -> {
                                             scope.launch {
                                                 viewModel.setKhaltiUiState(KhaltiPaymentState.Loading)
-                                                val response = viewModel.initiateKhaltiPayment(state.order.id)
+                                                val response = viewModel.initiateKhaltiPayment(
+                                                    state.order.id
+                                                )
                                                 if (response == null) {
-                                                    viewModel.setKhaltiUiState(KhaltiPaymentState.Error)
                                                     return@launch
                                                 }
 
@@ -202,23 +203,26 @@ class ConfirmationActivity : AppCompatActivity() {
                                                     onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
                                                         Log.d("Khalti", "OnPaymentResult: result: $paymentResult")
                                                         khalti.close()
-
-                                                        val pidx = paymentResult.payload?.pidx
-                                                        if (pidx == null) {
-                                                            viewModel.setKhaltiUiState(KhaltiPaymentState.Error)
-                                                            return@init
-                                                        }
                                                         scope.launch {
-
+                                                            viewModel.verifyKhaltiPayment(
+                                                                orderId = state.order.id,
+                                                                pxid = response.pidx
+                                                            )
                                                         }
                                                     },
                                                     onMessage = { payload: OnMessagePayload, khalti: Khalti ->
                                                         Log.d("Khalti", "onMessage: Payload: ${payload.message}")
                                                         khalti.close()
+                                                        viewModel.setKhaltiUiState(
+                                                            KhaltiPaymentState.Error
+                                                        )
                                                     },
                                                     onReturn = { khalti: Khalti ->
                                                         Log.d("Khalti", "Returning $khalti")
                                                     }
+                                                )
+                                                viewModel.setKhaltiUiState(
+                                                    KhaltiPaymentState.Idle
                                                 )
                                                 khalti.open()
                                             }
