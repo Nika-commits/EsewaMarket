@@ -59,10 +59,14 @@ import com.example.xml_app.utils.dto.request.OrderDateFilter
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import com.example.xml_app.utils.formatOrderDate
+import com.example.xml_app.utils.styles.EsewaLightYellow
 import com.example.xml_app.utils.styles.EsewaRed
+import com.example.xml_app.utils.styles.EsewaYellow
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
+import com.example.xml_app.utils.styles.PrimaryGreenTransparent
 import com.example.xml_app.utils.styles.Surface
+import com.example.xml_app.utils.styles.TextDark100
 import com.example.xml_app.utils.styles.TextDark200
 import com.example.xml_app.utils.styles.TextDark300
 import com.example.xml_app.utils.styles.TextDark400
@@ -329,13 +333,8 @@ fun OrderCard(
                                 color = TextDark200
                             )
 
-                            Text(
-                                order.status,
-                                fontFamily = SourceSansPro,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 12.sp,
-                                color = TextDark400
-                            )
+                            OrderStatusChips(order.status)
+
                         }
                     }
                 }
@@ -370,6 +369,7 @@ fun OrderCard(
                     letterSpacing = 0.25.sp
                 )
 
+
                 Text(
                     "Rs. ${order.totalPrice}",
                     fontFamily = SourceSansPro,
@@ -382,6 +382,33 @@ fun OrderCard(
             }
         }
     }
+}
+
+@Composable
+fun OrderStatusChips(
+    status: String
+) {
+    Text(
+        status,
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                when (status) {
+                    "Pending" -> EsewaLightYellow
+                    "Delivered" -> PrimaryGreenTransparent
+                    else -> TextDark100
+                }
+            )
+            .padding(vertical = 4.dp, horizontal = 8.dp),
+        fontFamily = SourceSansPro,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        color = when (status) {
+            "Pending" -> EsewaYellow
+            "Delivered" -> PrimaryGreen
+            else -> TextDark400
+        }
+    )
 }
 
 @Composable
@@ -644,42 +671,39 @@ fun convertMillisToDate(millis: Long): String {
 @Preview(showBackground = true)
 @Composable
 fun OrderFilterPreview() {
-//
-//    val orderItem1 = OrderItemResponse(
-//        productId = 1,
-//        productName = "Addidas Sambas - White",
-//        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/mnml-men's-front-pocket-geo-shorts-mnml-/1770621841231",
-//        brand = "Core Studio",
-//        quantity = 2,
-//        price = 4000
-//    )
-//    val orderItem2 = OrderItemResponse(
-//        productId = 1,
-//        productName = "Addidas Sambas - White",
-//        quantity = 1,
-//        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/pranish-nicks/1780819796759",
-//        brand = "Oxford",
-//        price = 4000
-//    )
-//    val response = OrderResponse(
-//        id = 1,
-//        address = "Gothater-8, Kageshori Manohora, Kathmandu, Bagmati",
-//        phone = "9841890609",
-//        paymentOption = "Esewa",
-//        vehicleNumber = "BA 08672",
-//        deliveryCharge = 200,
-//        discount = 100,
-//        status = "Pending",
-//        totalPrice = 8000,
-//
-//        orderDate = "2026-08-29T06:16:03.123456Z",
-//        orderItems = listOf(
-//            orderItem1,
-//            orderItem2
-//        )
-//    )
+    val orderItem1 = OrderItemResponse(
+        productId = 1,
+        productName = "Addidas Sambas - White",
+        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/mnml-men's-front-pocket-geo-shorts-mnml-/1770621841231",
+        brand = "Core Studio",
+        quantity = 2,
+        price = 4000
+    )
+    val orderItem2 = OrderItemResponse(
+        productId = 1,
+        productName = "Addidas Sambas - White",
+        quantity = 1,
+        productImage = "https://gqtuuqsgkyffgcpbfltk.supabase.co/storage/v1/object/public/product-images/pranish-nicks/1780819796759",
+        brand = "Oxford",
+        price = 4000
+    )
+    val response = OrderResponse(
+        id = 1,
+        address = "Gothater-8, Kageshori Manohora, Kathmandu, Bagmati",
+        phone = "9841890609",
+        paymentOption = "Esewa",
+        vehicleNumber = "BA 08672",
+        deliveryCharge = 200,
+        discount = 100,
+        status = "Delivered",
+        totalPrice = 8000,
 
-    OrderDateFilterSheet {
+        orderDate = "2026-08-29T06:16:03.123456Z",
+        orderItems = listOf(
+            orderItem1,
+            orderItem2
+        )
+    )
+    OrderCard(response)
 
-    }
 }

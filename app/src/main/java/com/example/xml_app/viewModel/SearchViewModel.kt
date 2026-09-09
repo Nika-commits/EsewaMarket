@@ -40,6 +40,18 @@ class SearchViewModel(
     val suggestions = _suggestions.asStateFlow()
     private val _products = MutableStateFlow<List<Product>>(emptyList())
 
+    private val _isLoadingProducts = MutableStateFlow(false)
+    val isLoadingProducts = _isLoadingProducts.asStateFlow()
+
+    private val _hasMoreProducts = MutableStateFlow(true)
+    val hasMoreProducts = _hasMoreProducts.asStateFlow()
+
+    private var currentPage = 0
+
+    companion object {
+        private const val PAGE_SIZE = 10
+    }
+
     fun onChange(newQuery: String) {
         _searchQuery.value = newQuery
     }
@@ -84,17 +96,57 @@ class SearchViewModel(
     }
 
     fun getSearchedProducts() {
+        currentPage = 0
+        _hasMoreProducts.value = true
+        _products.value = emptyList()
+        loadMoreProducts(currentPage)
+//        viewModelScope.launch {
+//            val response = productRepository.getSearchProducts(
+//                null,
+//                _searchQuery.value,
+//            )
+//            if (response == null) {
+//                _products.value = emptyList()
+//            } else {
+//                _products.value = response
+//            }
+//        }
+    }
+
+    private fun loadMoreProducts(page: Int) {
+        if (_isLoadingProducts.value) return
+        if (!_hasMoreProducts.value) return
+
         viewModelScope.launch {
-            val response = productRepository.getSearchProducts(
-                null,
-                _searchQuery.value,
-            )
-            if (response == null) {
-                _products.value = emptyList()
-            } else {
-                _products.value = response
+            _isLoadingProducts.value = true
+            try {
+                val response = productRepository.getSearchProducts(
+                    category = null,
+                    search = _searchQuery.value,
+                    page = page
+                )
+
+                if (response.isNullOrEmpty()) {
+                    _hasMoreProducts.value = false
+                } else {
+                    _products.value += response
+                    currentPage = page
+                    if (response.size < PAGE_SIZE) {
+                        _hasMoreProducts.value = false
+                    }
+                }
+            } finally {
+                _isLoadingProducts.value = false
             }
         }
+    }
+
+    fun loadNextPage() {
+        Log.d("Search", "Loading Next Page: $currentPage")
+        if (_isLoadingProducts.value) return
+        if (!_hasMoreProducts.value) return
+
+        loadMoreProducts(currentPage + 1)
     }
 
     val products: StateFlow<List<ProductUiModel>> = combine(

@@ -7,12 +7,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.databinding.FragmentSearchResultsBinding
@@ -51,17 +53,34 @@ class SearchResults : Fragment() {
             }
         )
         val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
+        val layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvProductsGrid.apply {
             adapter = productsAdapter
-            layoutManager = GridLayoutManager(
-                requireContext(),
-                2
-            )
+            this.layoutManager = layoutManager
 
             addItemDecoration(
                 SpacingItemDecoration(2, spacing)
             )
         }
+
+        binding.rvProductsGrid.addOnScrollListener(
+            object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy <= 0) return
+
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                    val isNearBottom = visibleItemCount + firstVisibleItemPosition >= totalItemCount - 2
+
+                    if (isNearBottom) {
+                        viewModel.loadNextPage()
+                    }
+                }
+            }
+        )
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.products.collectLatest { product ->
@@ -70,6 +89,13 @@ class SearchResults : Fragment() {
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isLoadingProducts.collectLatest { binding.loader.isVisible = it }
+            }
+        }
+
         viewModel.getSearchedProducts()
     }
 

@@ -30,7 +30,8 @@ val TextDark400 = Color(0xFF28293D)
 
 val EsewaLight = Color(0xFFF8F8FA)
 val EsewaRed = Color(0xFFFF7F6A)
-
+val EsewaLightYellow = Color(0xFFFFFDE8)
+val EsewaYellow = Color(0xFFE5D538)
 val BackgroundGrey = Color(0x0A2B2B2B)
 
 val Error = Color(0xFFD3494E)
