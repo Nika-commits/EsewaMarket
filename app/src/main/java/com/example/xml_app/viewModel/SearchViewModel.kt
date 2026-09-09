@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.entities.CartItem
+import com.example.xml_app.entities.User
 import com.example.xml_app.models.Product
 import com.example.xml_app.models.ProductUiModel
 import com.example.xml_app.repository.CartRepository
@@ -32,6 +33,8 @@ class SearchViewModel(
     private val cartRepository = CartRepository(app.database.cartDao())
     private val favouriteRepository = FavouriteRepository(app.database.favouriteDao())
     private val productRepository = ProductRepository()
+    private val _user = MutableStateFlow<User?>(null)
+    val user = _user.asStateFlow()
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())
     private val _searchQuery = MutableStateFlow("")
@@ -39,10 +42,8 @@ class SearchViewModel(
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
     private val _products = MutableStateFlow<List<Product>>(emptyList())
-
     private val _isLoadingProducts = MutableStateFlow(false)
     val isLoadingProducts = _isLoadingProducts.asStateFlow()
-
     private val _hasMoreProducts = MutableStateFlow(true)
     val hasMoreProducts = _hasMoreProducts.asStateFlow()
 
@@ -60,15 +61,26 @@ class SearchViewModel(
         observeSearchQuery()
     }
 
-    fun initializeUserCartAndFavourites() {
+    fun isLoggedIn(): Boolean {
+        return _user.value != null
+    }
+
+    fun initialize() {
         viewModelScope.launch {
             val firebaseUser = app.auth.currentUser ?: return@launch
-            val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
-            val cart = cartRepository.getOrCreateCart(localUser.uid)
-            app.database.cartDao().observeCartItems(cart.uid)
-                .collectLatest { _cartItems.value = it }
-            favouriteRepository.observeFavouriteIds(localUser.uid)
-                .collectLatest { _favouriteIds.value = it.toSet() }
+            val user = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
+            _user.value = user
+            val cart = cartRepository.getOrCreateCart(user.uid)
+
+            launch {
+                cartRepository.observeCart(cart.uid)
+                    .collectLatest { _cartItems.value = it }
+            }
+
+            launch {
+                favouriteRepository.observeFavouriteIds(user.uid)
+                    .collectLatest { _favouriteIds.value = it.toSet() }
+            }
         }
     }
 
@@ -118,7 +130,9 @@ class SearchViewModel(
         if (!_hasMoreProducts.value) return
 
         viewModelScope.launch {
-            _isLoadingProducts.value = true
+            if (page != 0) {
+                _isLoadingProducts.value = true
+            }
             try {
                 val response = productRepository.getSearchProducts(
                     category = null,
@@ -167,4 +181,35 @@ class SearchViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+    fun toggleFavourite(productId: Int) {
+        viewModelScope.launch {
+            val user = _user.value ?: return@launch
+            favouriteRepository.toggleFavourite(
+                user.uid,
+                productId
+            )
+        }
+    }
+
+    fun incrementCart(productId: Int) {
+        viewModelScope.launch {
+            val user = _user.value ?: return@launch
+            cartRepository.increment(
+                user.uid,
+                productId
+            )
+        }
+    }
+
+    fun decrementCart(productId: Int) {
+        viewModelScope.launch {
+            val user = _user.value ?: return@launch
+            cartRepository.decrement(
+                user.uid,
+                productId
+            )
+        }
+    }
+
 }

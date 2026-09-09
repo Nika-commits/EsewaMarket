@@ -1,5 +1,6 @@
 package com.example.xml_app.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,11 +14,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
+import com.example.xml_app.activities.AuthActivity
+import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.databinding.FragmentSearchResultsBinding
+import com.example.xml_app.navigation.ApiRoute
+import com.example.xml_app.navigation.SearchRoute
+import com.example.xml_app.ui.modals.DeleteCartBottomSheet
+import com.example.xml_app.utils.CustomSnackBar
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.SearchViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -37,19 +45,84 @@ class SearchResults : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.initializeUserCartAndFavourites()
-
+        viewModel.initialize()
         setupRecyclerView()
         setupDropDownFilter()
     }
 
     fun setupRecyclerView() {
         productsAdapter = ProductsAdapter(
-            onProductClick = {},
-            onFavouriteClick = {},
-            onCartIncrement = { count, pro ->
+            onProductClick = {
+                ProductDetailActivity.startActivity(
+                    requireContext(),
+                    productId = it.id
+                )
             },
-            onCartDecrement = { count, pro ->
+            onFavouriteClick = { p, isFavourite ->
+                if (!viewModel.isLoggedIn()) {
+                    showLoginSnackbar("Log in to add to favourites")
+                    return@ProductsAdapter
+                }
+                viewModel.toggleFavourite(p.id)
+                if (isFavourite) return@ProductsAdapter
+                CustomSnackBar.show(
+                    context = requireContext(),
+                    view = binding.root,
+                    text = "${p.name} added to favourites",
+                    action = {
+                        requireParentFragment()
+                            .findNavController()
+                            .navigate(ApiRoute.Favourite) {
+                                popUpTo<SearchRoute.Results> {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                    },
+
+                    actionText = "GOTO FAVOURITES"
+                )
+            },
+            onCartIncrement = { p, count ->
+                if (!viewModel.isLoggedIn()) {
+                    showLoginSnackbar("Log in to add to cart")
+                    return@ProductsAdapter
+                }
+                if (count != null) {
+                    CustomSnackBar.show(
+                        context = requireContext(),
+                        view = binding.root,
+                        text = "(1) item added to cart",
+                        actionText = "GOTO CART",
+                        action = {
+                            requireParentFragment()
+                                .findNavController()
+                                .navigate(ApiRoute.Cart) {
+                                    popUpTo<SearchRoute.Results> {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                        }
+                    )
+                }
+                viewModel.incrementCart(p.id)
+            },
+            onCartDecrement = { p, count ->
+                if (count == 1) {
+                    DeleteCartBottomSheet(
+                        onDelete = {
+                            viewModel.decrementCart(p.id)
+                        }
+                    ).show(
+                        childFragmentManager,
+                        "DeleteCartBottomSheet"
+                    )
+                } else {
+                    viewModel.decrementCart(p.id)
+                }
             }
         )
         val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
@@ -61,6 +134,7 @@ class SearchResults : Fragment() {
             addItemDecoration(
                 SpacingItemDecoration(2, spacing)
             )
+            itemAnimator = null
         }
 
         binding.rvProductsGrid.addOnScrollListener(
@@ -69,12 +143,10 @@ class SearchResults : Fragment() {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy <= 0) return
 
-                    val visibleItemCount = layoutManager.childCount
+                    val lastCompletelyVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition()
                     val totalItemCount = layoutManager.itemCount
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                    val isNearBottom = visibleItemCount + firstVisibleItemPosition >= totalItemCount - 2
-
-                    if (isNearBottom) {
+                    val isAtBottom = lastCompletelyVisibleItem == totalItemCount - 1
+                    if (isAtBottom) {
                         viewModel.loadNextPage()
                     }
                 }
@@ -92,11 +164,25 @@ class SearchResults : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isLoadingProducts.collectLatest { binding.loader.isVisible = it }
+                viewModel.isLoadingProducts.collectLatest { binding.loader.root.isVisible = it }
             }
         }
 
         viewModel.getSearchedProducts()
+    }
+
+    private fun showLoginSnackbar(text: String) {
+        CustomSnackBar.show(
+            context = requireContext(),
+            view = binding.root,
+            text = text,
+            actionText = "LOGIN",
+            action = {
+                Intent(requireContext(), AuthActivity::class.java).apply {
+                    putExtra(AuthActivity.DESTINATION, AuthActivity.LOGIN)
+                }.also { startActivity(it) }
+            }
+        )
     }
 
     private fun setupDropDownFilter() {

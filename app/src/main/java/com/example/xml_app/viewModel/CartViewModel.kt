@@ -42,9 +42,9 @@ class CartViewModel(
     private val cartRepository = CartRepository(database.cartDao())
     private val userRepository = UserRepository(app.database.userDao())
     private val favouriteRepository = FavouriteRepository(database.favouriteDao())
-
     private val _isCartLoading = MutableStateFlow(false)
     val isCartLoading = _isCartLoading.asStateFlow()
+
     val productsInCart: StateFlow<List<ProductUiModel>> = combine(
         _productsInCart,
         _cartItems,
@@ -130,6 +130,16 @@ class CartViewModel(
         val user = _user.value ?: return
         viewModelScope.launch {
             cartRepository.decrement(user.uid, productId)
+        }
+    }
+
+    fun toggleFavourite(productId: Int) {
+        viewModelScope.launch {
+            val user = _user.value ?: return@launch
+            favouriteRepository.toggleFavourite(
+                user.uid,
+                productId
+            )
         }
     }
 

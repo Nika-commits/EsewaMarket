@@ -86,7 +86,7 @@ class Home : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.initializeUser()
+        viewModel.initialize()
 
 //        applyEdgeToEdgeInsets()
         setupCategoriesRecyclerView()
@@ -264,7 +264,9 @@ class Home : Fragment() {
             onCartDecrement = { p, count ->
                 decrementCart(p.id, count)
             },
-            onFavouriteClick = { toggleFavourite(it.id) }
+            onFavouriteClick = { p, isFavourite ->
+                toggleFavourite(p.id, isFavourite)
+            }
         )
 
         homeFeaturedAdapter = HomeFeaturedAdapter(
@@ -289,7 +291,9 @@ class Home : Fragment() {
             onCartDecrement = { p, count ->
                 decrementCart(p.id, count)
             },
-            onFavouriteClick = { toggleFavourite(it.id) }
+            onFavouriteClick = { p, isFavourite ->
+                toggleFavourite(p.id, isFavourite)
+            }
         )
 
         homeHotDealsAdapter = HomeHotDealsAdapter(
@@ -333,7 +337,9 @@ class Home : Fragment() {
     private fun setupRecommendedProducts() {
         recommendedAdapter = RecommendedProductsAdapter(
             onProductClick = { goToDetails(it.id) },
-            onFavouriteClick = { toggleFavourite(it.id) },
+            onFavouriteClick = { p, isFavourite ->
+                toggleFavourite(p.id, isFavourite)
+            },
             onCartIncrement = { p, count ->
                 incrementCart(p.id, count)
             },
@@ -420,27 +426,29 @@ class Home : Fragment() {
         }
     }
 
-    private fun toggleFavourite(id: Int) {
+    private fun toggleFavourite(id: Int, isFavourite: Boolean) {
         if (viewModel.isLoggedIn()) {
             viewModel.toggleFavourite(id)
             val bottomNavigation =
                 requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
-            CustomSnackBar.show(
-                binding.root,
-                context = requireContext(),
-                anchorView = bottomNavigation,
-                text = "Added to favourites",
-                actionText = "GOTO FAVOURITES",
-                action = {
-                    findNavController().navigate(ApiRoute.Favourite) {
-                        popUpTo<ApiRoute.Home> {
-                            saveState = true
+            if (!isFavourite) {
+                CustomSnackBar.show(
+                    binding.root,
+                    context = requireContext(),
+                    anchorView = bottomNavigation,
+                    text = "Added to favourites",
+                    actionText = "GOTO FAVOURITES",
+                    action = {
+                        findNavController().navigate(ApiRoute.Favourite) {
+                            popUpTo<ApiRoute.Home> {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         } else {
             showLoginSnackBar("Log in to add to favourites.")
         }

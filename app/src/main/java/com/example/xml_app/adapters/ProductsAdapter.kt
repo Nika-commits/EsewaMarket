@@ -16,7 +16,7 @@ import com.example.xml_app.models.ProductUiModel
 
 class ProductsAdapter(
     val onProductClick: (Product) -> Unit,
-    val onFavouriteClick: (Product) -> Unit,
+    val onFavouriteClick: (Product, Boolean) -> Unit,
     val onCartIncrement: (Product, Int?) -> Unit,
     val onCartDecrement: (Product, Int) -> Unit
 ) : RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
@@ -92,7 +92,7 @@ class ProductsAdapter(
             }
 
             ibFavourites.setOnClickListener {
-                onFavouriteClick(product)
+                onFavouriteClick(product, item.isFavourite)
             }
 
             ibAddToCart.setOnClickListener {

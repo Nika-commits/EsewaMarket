@@ -17,7 +17,7 @@ import com.example.xml_app.models.ProductUiModel
 
 class RecommendedProductsAdapter(
     private val onProductClick: (Product) -> Unit,
-    private val onFavouriteClick: (Product) -> Unit,
+    private val onFavouriteClick: (Product, Boolean) -> Unit,
     private val onCartIncrement: (Product, Int?) -> Unit,
     private val onCartDecrement: (Product, Int) -> Unit
 ) : PagingDataAdapter<ProductUiModel, RecommendedProductsAdapter.ViewHolder>(ProductDiffCallback) {
@@ -95,7 +95,7 @@ class RecommendedProductsAdapter(
             }
 
             ibFavourites.setOnClickListener {
-                onFavouriteClick(product)
+                onFavouriteClick(product, item.isFavourite)
             }
 
             ibAddToCart.setOnClickListener {

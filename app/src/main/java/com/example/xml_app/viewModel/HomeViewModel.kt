@@ -105,7 +105,7 @@ class HomeViewModel(
         }
     }
 
-    fun initializeUser() {
+    fun initialize() {
         viewModelScope.launch {
             val firebaseUser = app.auth.currentUser ?: return@launch
             val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch

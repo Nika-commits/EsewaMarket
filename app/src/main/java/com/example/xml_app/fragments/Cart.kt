@@ -66,10 +66,10 @@ class Cart : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initializeUserAndObserveCart()
-//        applyEdgeToEdgeInsets()
         setupToolbar()
         setupRecyclerView()
         observerCartData()
+        setupRecommendations()
     }
 
     fun applyEdgeToEdgeInsets() {
@@ -101,6 +101,7 @@ class Cart : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        val bottomNavigation = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
         cartAdapter = CartAdapter(
             onProductClick = { ProductDetailActivity.startActivity(requireContext(), it) },
             onCartIncrement = { id ->
@@ -140,9 +141,41 @@ class Cart : Fragment() {
         )
 
         recommendedAdapter = RecommendedProductsAdapter(
-            onProductClick = {},
-            onFavouriteClick = {},
-            onCartIncrement = { product, _ ->
+            onProductClick = {
+                ProductDetailActivity.startActivity(
+                    requireContext(),
+                    productId = it.id
+                )
+            },
+            onFavouriteClick = { p, isFavourite ->
+                if (!isFavourite) {
+                    CustomSnackBar.show(
+                        context = requireContext(),
+                        view = binding.root,
+                        text = "${p.name} added to favourites",
+                        action = {
+                            findNavController().navigate(ApiRoute.Favourite) {
+                                popUpTo<ApiRoute.Cart> {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        actionText = "GOTO FAVOURITES",
+                        anchorView = bottomNavigation
+                    )
+                }
+            },
+            onCartIncrement = { product, count ->
+                if (count != null) {
+                    CustomSnackBar.show(
+                        context = requireContext(),
+                        view = binding.root,
+                        anchorView = bottomNavigation,
+                        text = "${product.name} added to cart"
+                    )
+                }
                 viewModel.cartIncrement(product.id)
             },
             onCartDecrement = { product, count ->
@@ -163,10 +196,25 @@ class Cart : Fragment() {
 
         concatAdapter = ConcatAdapter(
             cartCartItemsAdapter,
-            recommendationHeaderAdapter,
-            recommendedAdapter,
-            recommendedLoadingAdapter
         )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.user.collect { user ->
+                    if (user != null) {
+                        concatAdapter.addAdapter(recommendationHeaderAdapter)
+                        concatAdapter.addAdapter(recommendedAdapter)
+                        concatAdapter.addAdapter(recommendedLoadingAdapter)
+
+                        setupRecommendations()
+                    } else {
+                        concatAdapter.removeAdapter(recommendationHeaderAdapter)
+                        concatAdapter.removeAdapter(recommendedAdapter)
+                        concatAdapter.removeAdapter(recommendedLoadingAdapter)
+                    }
+                }
+            }
+        }
 
         val gridLayoutManager = GridLayoutManager(
             requireContext(), 2
@@ -218,6 +266,7 @@ class Cart : Fragment() {
         }
     }
 
+
     private fun observerCartData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -251,24 +300,6 @@ class Cart : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.recommendedProducts.collectLatest { pagingData ->
-                    recommendedAdapter.submitData(pagingData)
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                recommendedAdapter.loadStateFlow.collectLatest { loadStates ->
-                    val isInitialLoading = loadStates.refresh is LoadState.Loading
-                    val isLoadingMore = loadStates.append is LoadState.Loading
-
-                    recommendedLoadingAdapter.setLoading(isInitialLoading || isLoadingMore)
-                }
-            }
-        }
 
         binding.btnCheckout.setOnClickListener {
             val bottomNavigation =
@@ -311,6 +342,27 @@ class Cart : Fragment() {
             }
             Intent(requireContext(), CheckoutActivity::class.java).also {
                 startActivity(it)
+            }
+        }
+    }
+
+    private fun setupRecommendations() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recommendedProducts.collectLatest { pagingData ->
+                    recommendedAdapter.submitData(pagingData)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                recommendedAdapter.loadStateFlow.collectLatest { loadStates ->
+                    val isInitialLoading = loadStates.refresh is LoadState.Loading
+                    val isLoadingMore = loadStates.append is LoadState.Loading
+
+                    recommendedLoadingAdapter.setLoading(isInitialLoading || isLoadingMore)
+                }
             }
         }
     }

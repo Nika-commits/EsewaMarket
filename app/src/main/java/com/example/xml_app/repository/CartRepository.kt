@@ -26,6 +26,10 @@ class CartRepository(
         return cartDao.getCartProductWithQuantity(cartId)
     }
 
+    fun observeCart(cartId: Int): Flow<List<CartItem>> {
+        return cartDao.observeCartItems(cartId)
+    }
+
     suspend fun increment(userId: Int, productId: Int) {
         val cart = getOrCreateCart(userId)
         val existing = cartDao.getCartItem(cartId = cart.uid, productId = productId)

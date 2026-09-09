@@ -56,20 +56,22 @@
         android:id="@+id/rvProductsGrid"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintBottom_toTopOf="@id/loader"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/llSearchFilters" />
 
-    <ProgressBar
+
+    <include
         android:id="@+id/loader"
+        layout="@layout/item_loading"
         android:layout_width="wrap_content"
-        style="@style/App.Loader"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/rvProductsGrid"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rvProductsGrid" />
 </androidx.constraintlayout.widget.ConstraintLayout>
