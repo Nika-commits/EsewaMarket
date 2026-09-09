@@ -31,7 +31,6 @@ class LoginViewModel(
     fun login(email: String, password: String) {
         val emailResult = validate.validateEmail(email)
         val passwordResult = validate.validatePassword(password)
-
         _formState.value = LoginFormState(
             email = email,
             password = password,
@@ -51,7 +50,6 @@ class LoginViewModel(
                     _result.value = false
                     return@launch
                 }
-
                 val user = repository.getCurrentUser(token)
                 if (user == null) {
                     _result.value = false

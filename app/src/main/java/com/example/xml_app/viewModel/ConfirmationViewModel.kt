@@ -14,9 +14,7 @@ import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.request.OrderStatus
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
-import com.example.xml_app.utils.dto.response.KhaltiPaymentVerificationResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
-import com.khalti.checkout.Khalti
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -181,10 +179,11 @@ class ConfirmationViewModel(
 
     suspend fun verifyKhaltiPayment(
         orderId: Int,
-        pxid: String
+        pidx: String
     ) {
         _khaltiUiState.value = KhaltiPaymentState.Verifying
         try {
+            Log.d("Khalti", "pidx in verify: $pidx")
             val firebaseToken = userRepository.getFirebaseToken(app.auth)
             if (firebaseToken == null) {
                 _khaltiUiState.value = KhaltiPaymentState.Error
@@ -192,7 +191,7 @@ class ConfirmationViewModel(
             }
             val response = orderRepository.verifyKhaltiPayment(
                 orderId,
-                pxid,
+                pidx,
                 firebaseToken
             )
             if (response == null) {

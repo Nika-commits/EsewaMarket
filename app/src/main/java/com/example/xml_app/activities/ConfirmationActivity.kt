@@ -206,7 +206,7 @@ class ConfirmationActivity : AppCompatActivity() {
                                                         scope.launch {
                                                             viewModel.verifyKhaltiPayment(
                                                                 orderId = state.order.id,
-                                                                pxid = response.pidx
+                                                                pidx = response.pidx
                                                             )
                                                         }
                                                     },
