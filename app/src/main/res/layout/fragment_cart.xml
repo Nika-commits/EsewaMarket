@@ -11,6 +11,8 @@
     <include
         android:id="@+id/cartToolbar"
         layout="@layout/item_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,6 +26,7 @@
         android:paddingHorizontal="16dp"
         android:textColor="@color/lightGrey"
         android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/rvCartContent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cartToolbar" />
 

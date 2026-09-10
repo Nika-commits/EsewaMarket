@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -50,11 +51,12 @@ class ProductDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         binding = ActivityProductDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupWindowInsets()
+//        setupWindowInsets()
         setupCarousel()
         setupColorSelector()
         setupListeners()
@@ -74,10 +76,11 @@ class ProductDetailActivity : AppCompatActivity() {
             val systemBars =
                 insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            view.setPadding(
-                systemBars.left,
-                systemBars.top,
-                systemBars.right,
+            binding.btnBack.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            binding.addToCartContainer.root.setPadding(
+                0,
+                0,
+                0,
                 systemBars.bottom
             )
 

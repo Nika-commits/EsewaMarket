@@ -96,7 +96,7 @@ class ConfirmationActivity : AppCompatActivity() {
         when (result.resultCode) {
             RESULT_OK -> {
                 val message = result.data?.getStringExtra(EsewaPayment.EXTRA_RESULT_MESSAGE)
-                Log.d("Esewa", "$message")
+                Log.d("Esewa", "Result Ok Message: $message")
             }
 
             RESULT_CANCELED -> {
@@ -105,7 +105,7 @@ class ConfirmationActivity : AppCompatActivity() {
 
             EsewaPayment.RESULT_EXTRAS_INVALID -> {
                 val message = result.data?.getStringExtra(EsewaPayment.EXTRA_RESULT_MESSAGE)
-                Log.d("Esewa", "$message")
+                Log.d("Esewa", "Result Extra Message: $message")
             }
         }
     }
@@ -170,8 +170,8 @@ class ConfirmationActivity : AppCompatActivity() {
                                         PaymentOptions.Esewa.toString() -> {
                                             val eSewaPayment = EsewaPayment(
                                                 amount = state.order.totalPrice.toString(),
-                                                productName = "Product1",
-                                                productUniqueId = "1",
+                                                productName = state.order.id.toString(),
+                                                productUniqueId = state.order.id.toString(),
                                             )
                                             initiateEsewaPayment(eSewaPayment = eSewaPayment)
                                         }
