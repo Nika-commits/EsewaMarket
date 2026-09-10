@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.example.xml_app.BuildConfig
 import com.example.xml_app.R
 import com.example.xml_app.ui.state.ConfirmationUiState
@@ -543,7 +545,7 @@ fun PaymentProcessingDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(240.dp)
+                .height(260.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
@@ -553,9 +555,9 @@ fun PaymentProcessingDialog(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceAround
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 when (state) {
                     is PaymentState.Loading -> {
@@ -564,15 +566,30 @@ fun PaymentProcessingDialog(
                             strokeWidth = 4.dp
                         )
 
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
                         Text(
-                            text = "Preparing your Payment via ${state.method.name}",
+                            text = "Preparing your Payment via",
                             fontFamily = SourceSansPro,
                             fontWeight = FontWeight.Medium,
                             color = TextDark300,
                             letterSpacing = 0.5.sp,
                             textAlign = TextAlign.Center
                         )
+
+                        Image(
+                            modifier = Modifier.size(46.dp),
+                            contentDescription = null,
+                            painter = painterResource(when(state.method){
+                                PaymentOptions.Esewa -> R.drawable.ic_esewa
+                                PaymentOptions.Khalti -> R.drawable.khalti_logo
+                                PaymentOptions.Cash_On_Delivery -> R.drawable.ic_dailybuybonus
+                            }),
+                        )
+                        }
                     }
 
                     is PaymentState.Verifying -> {
@@ -581,14 +598,32 @@ fun PaymentProcessingDialog(
                             strokeWidth = 4.dp
                         )
 
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+
+
                         Text(
-                            text = "Verifying your Payment via ${state.method.name}",
+                            text = "Verifying your Payment via",
                             fontFamily = SourceSansPro,
                             fontWeight = FontWeight.Medium,
                             color = TextDark300,
                             textAlign = TextAlign.Center,
                             letterSpacing = 0.5.sp
                         )
+
+                        Image(
+                            modifier = Modifier.size(42.dp),
+                            contentDescription = null,
+                            painter = painterResource(when(state.method){
+                                PaymentOptions.Esewa -> R.drawable.ic_esewa
+                                PaymentOptions.Khalti -> R.drawable.khalti_logo
+                                PaymentOptions.Cash_On_Delivery -> R.drawable.ic_dailybuybonus
+                            }),
+                        )
+                        }
                     }
 
                     is PaymentState.Error -> {
@@ -787,21 +822,10 @@ fun OrderResponseCardPreview() {
             orderItem2
         )
     )
-//    OrderSuccessScreen(
-//        onGoToOrders = {},
-//        onGoToHome = {},
-//        order = response
-//    )
-
-//    PlacingOrderDialog(
-//        onRetry = {},
-//        onDismissRequest = {},
-//        state = PaymentState.Loading(PaymentOptions.Cash_On_Delivery)
-//    )
 
     PaymentProcessingDialog(
         onRetry = {},
         onDismissRequest = {},
-        state = PaymentState.Success(response)
+        state = PaymentState.Verifying(PaymentOptions.Khalti)
     )
 }

@@ -506,12 +506,14 @@ fun OrderingDialog() {
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .padding(20.dp),
+                .height(240.dp)
+                .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround
             ) {
@@ -537,10 +539,7 @@ fun OrderingDialog() {
 @Preview(showBackground = false, showSystemUi = true)
 @Composable
 fun OrderDialog() {
-    PaymentOptionsList(
-        onPayWithKhalti = {},
-        onPayWithEsewa = {},
-        onCashOnDelivery = {})
+    OrderingDialog()
 }
 
 
