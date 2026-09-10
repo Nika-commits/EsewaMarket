@@ -18,8 +18,6 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -88,7 +86,6 @@ class Home : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.initialize()
 
-//        applyEdgeToEdgeInsets()
         setupCategoriesRecyclerView()
         setupFeaturedProductsRecyclerview()
         setupHotDealsProductsRecyclerview()
@@ -103,13 +100,6 @@ class Home : Fragment() {
             }
     }
 
-    private fun applyEdgeToEdgeInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-            insets
-        }
-    }
 
     private fun setUpToolbarAndMenu(toolbar: androidx.appcompat.widget.Toolbar) {
         val activity = requireActivity() as AppCompatActivity

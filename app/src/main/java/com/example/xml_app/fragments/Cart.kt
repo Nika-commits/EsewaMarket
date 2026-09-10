@@ -72,13 +72,6 @@ class Cart : Fragment() {
         setupRecommendations()
     }
 
-    fun applyEdgeToEdgeInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-            insets
-        }
-    }
 
     fun setupToolbar() {
         val toolbar = binding.cartToolbar.toolbar

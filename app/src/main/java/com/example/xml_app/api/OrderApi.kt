@@ -48,6 +48,13 @@ interface OrderApi {
         @Header("Authorization") authorization: String
     ): Response<OrderResponse>
 
+    @GET("/api/order/esewa/verify/{id}")
+    suspend fun verifyEsewaPayment(
+        @Path("id") id: Int,
+        @Query("refId") refId: String,
+        @Header("Authorization") authorization: String
+    ): Response<OrderResponse>
+
     @PATCH("/api/order/{id}/status")
     suspend fun updateOrderStatus(
         @Path("id") id: Int,

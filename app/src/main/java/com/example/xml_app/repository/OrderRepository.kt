@@ -116,4 +116,28 @@ class OrderRepository {
             return null
         }
     }
+
+    suspend fun verifyEsewaPayment(
+        id: Int,
+        refId: String,
+        token: String
+    ): OrderResponse? {
+        try {
+            val response = RetrofitInstance.orderApi.verifyEsewaPayment(
+                id,
+                refId,
+                "Bearer $token"
+            )
+
+            if (!response.isSuccessful) {
+                Log.d("Esewa", "Esewa Verification failed in repo: ${response.code()}")
+                return null
+            }
+            Log.d("Esewa", "${response.body()}")
+            return response.body()
+        } catch (e: Exception) {
+            Log.e("Esewa", "Exception in Esewa Payment Verification: ${e.message}")
+            return null
+        }
+    }
 }

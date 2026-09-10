@@ -52,16 +52,7 @@ class More : Fragment() {
         auth = app.auth
 
         setupToolbar()
-//        applyEdgeToEdgeInsets()
         setupSettingsOption()
-    }
-
-    private fun applyEdgeToEdgeInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
     }
 
     fun setupToolbar() {
