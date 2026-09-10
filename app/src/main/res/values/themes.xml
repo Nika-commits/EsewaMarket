@@ -18,6 +18,7 @@
         <!-- true means dark icons for a light background -->
         <item name="android:windowLightStatusBar">true</item>
 
+
         <!-- Navigation bar -->
         <item name="android:navigationBarColor">@color/offWhiteBackground</item>
 

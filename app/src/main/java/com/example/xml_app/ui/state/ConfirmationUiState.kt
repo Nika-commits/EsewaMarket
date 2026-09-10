@@ -21,12 +21,12 @@ sealed interface ConfirmationOrderUiState {
     data object Error : ConfirmationOrderUiState
 }
 
-sealed interface KhaltiPaymentState {
-    data object Idle : KhaltiPaymentState
-    data object Loading : KhaltiPaymentState
-    data object Verifying : KhaltiPaymentState
-    data object Error : KhaltiPaymentState
+sealed interface PaymentState {
+    data object Idle : PaymentState
+    data object Loading : PaymentState
+    data object Verifying : PaymentState
+    data object Error : PaymentState
     data class Success(
         val order: OrderResponse
-    ) : KhaltiPaymentState
+    ) : PaymentState
 }

@@ -45,9 +45,10 @@ import com.example.xml_app.BuildConfig
 import com.example.xml_app.R
 import com.example.xml_app.ui.state.ConfirmationOrderUiState
 import com.example.xml_app.ui.state.ConfirmationUiState
-import com.example.xml_app.ui.state.KhaltiPaymentState
+import com.example.xml_app.ui.state.PaymentState
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.PaymentOptions
+import com.example.xml_app.utils.dto.response.EsewaPaymentResponse
 import com.example.xml_app.utils.dto.response.OrderItemResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
 import com.example.xml_app.utils.styles.EsewaRed
@@ -66,6 +67,7 @@ import com.example.xml_app.viewModel.ConfirmationViewModel
 import com.f1soft.esewapaymentsdk.EsewaConfiguration
 import com.f1soft.esewapaymentsdk.EsewaPayment
 import com.f1soft.esewapaymentsdk.ui.screens.EsewaPaymentActivity
+import com.google.gson.Gson
 import com.khalti.checkout.Khalti
 import com.khalti.checkout.data.Environment
 import com.khalti.checkout.data.KhaltiPayConfig
@@ -97,6 +99,23 @@ class ConfirmationActivity : AppCompatActivity() {
             RESULT_OK -> {
                 val message = result.data?.getStringExtra(EsewaPayment.EXTRA_RESULT_MESSAGE)
                 Log.d("Esewa", "Result Ok Message: $message")
+
+                if (message.isNullOrEmpty()) {
+                    viewModel.setPaymentState(PaymentState.Error)
+                    return@registerForActivityResult
+                }
+
+                try {
+                    val esewaResponse = Gson().fromJson(message, EsewaPaymentResponse::class.java)
+                    val refId = esewaResponse.transactionDetails.referenceId
+                    viewModel.verifyEsewaPayment(
+                        orderId = esewaResponse.productId.toInt(),
+                        txnRefId = refId,
+                    )
+                } catch (e: Exception) {
+                    Log.e("Esewa", "Exception in Activity: ${e.message}")
+                    viewModel.setPaymentState(PaymentState.Error)
+                }
             }
 
             RESULT_CANCELED -> {
@@ -182,7 +201,7 @@ class ConfirmationActivity : AppCompatActivity() {
 
                                         PaymentOptions.Khalti.toString() -> {
                                             scope.launch {
-                                                viewModel.setKhaltiUiState(KhaltiPaymentState.Loading)
+                                                viewModel.setPaymentState(PaymentState.Loading)
                                                 val response = viewModel.initiateKhaltiPayment(
                                                     state.order.id
                                                 )
@@ -213,16 +232,16 @@ class ConfirmationActivity : AppCompatActivity() {
                                                     onMessage = { payload: OnMessagePayload, khalti: Khalti ->
                                                         Log.d("Khalti", "onMessage: Payload: ${payload.message}")
                                                         khalti.close()
-                                                        viewModel.setKhaltiUiState(
-                                                            KhaltiPaymentState.Error
+                                                        viewModel.setPaymentState(
+                                                            PaymentState.Error
                                                         )
                                                     },
                                                     onReturn = { khalti: Khalti ->
                                                         Log.d("Khalti", "Returning $khalti")
                                                     }
                                                 )
-                                                viewModel.setKhaltiUiState(
-                                                    KhaltiPaymentState.Idle
+                                                viewModel.setPaymentState(
+                                                    PaymentState.Idle
                                                 )
                                                 khalti.open()
                                             }
@@ -268,12 +287,12 @@ class ConfirmationActivity : AppCompatActivity() {
                         )
                     }
                 }
-                val khaltiUiState by viewModel.khaltiUiState.collectAsStateWithLifecycle()
+                val khaltiUiState by viewModel.paymentState.collectAsStateWithLifecycle()
                 when (val state = khaltiUiState) {
-                    KhaltiPaymentState.Idle -> Unit
-                    KhaltiPaymentState.Loading,
-                    KhaltiPaymentState.Error,
-                    KhaltiPaymentState.Verifying -> {
+                    PaymentState.Idle -> Unit
+                    PaymentState.Loading,
+                    PaymentState.Error,
+                    PaymentState.Verifying -> {
                         KhaltiOrderingDialog(
                             onDismissRequest = {},
                             onRetry = {},
@@ -281,7 +300,7 @@ class ConfirmationActivity : AppCompatActivity() {
                         )
                     }
 
-                    is KhaltiPaymentState.Success -> {
+                    is PaymentState.Success -> {
                         OrderSuccessScreen(
                             order = state.order,
                             onGoToHome = ::goToMain,
@@ -588,7 +607,7 @@ fun PlacingOrderDialog(
 fun KhaltiOrderingDialog(
     onDismissRequest: () -> Unit,
     onRetry: () -> Unit,
-    state: KhaltiPaymentState
+    state: PaymentState
 ) {
     Dialog(
         onDismissRequest = {
@@ -617,7 +636,7 @@ fun KhaltiOrderingDialog(
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 when (state) {
-                    KhaltiPaymentState.Loading -> {
+                    PaymentState.Loading -> {
                         AppLoadingIndicator(
                             size = 60.dp,
                             strokeWidth = 4.dp
@@ -632,7 +651,7 @@ fun KhaltiOrderingDialog(
                         )
                     }
 
-                    KhaltiPaymentState.Verifying -> {
+                    PaymentState.Verifying -> {
                         AppLoadingIndicator(
                             size = 60.dp,
                             strokeWidth = 4.dp
@@ -647,7 +666,7 @@ fun KhaltiOrderingDialog(
                         )
                     }
 
-                    KhaltiPaymentState.Error -> {
+                    PaymentState.Error -> {
                         Icon(
                             painter = painterResource(R.drawable.ic_error),
                             contentDescription = "Payment failed",
