@@ -23,7 +23,6 @@ import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.databinding.FragmentSearchResultsBinding
 import com.example.xml_app.navigation.ApiRoute
-import com.example.xml_app.navigation.SearchRoute
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.utils.CustomSnackBar
 import com.example.xml_app.utils.SpacingItemDecoration
@@ -34,7 +33,9 @@ import kotlinx.coroutines.launch
 class SearchResults : Fragment() {
     private var _binding: FragmentSearchResultsBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel: SearchViewModel by viewModels(
+        ownerProducer = { requireParentFragment().requireParentFragment() }
+    )
     private lateinit var productsAdapter: ProductsAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -68,16 +69,16 @@ class SearchResults : Fragment() {
                 CustomSnackBar.show(
                     context = requireContext(),
                     view = binding.root,
-                    text = "${p.name} added to favourites",
+                    text = "$(1) item added to favourites",
                     action = {
                         requireParentFragment()
+                            .requireParentFragment()
                             .findNavController()
                             .navigate(ApiRoute.Favourite) {
-                                popUpTo<SearchRoute.Results> {
-                                    saveState = true
+                                popUpTo<ApiRoute.Search> {
+                                    inclusive = true
                                 }
                                 launchSingleTop = true
-                                restoreState = true
                             }
                     },
 
@@ -97,13 +98,13 @@ class SearchResults : Fragment() {
                         actionText = "GOTO CART",
                         action = {
                             requireParentFragment()
+                                .requireParentFragment()
                                 .findNavController()
                                 .navigate(ApiRoute.Cart) {
-                                    popUpTo<SearchRoute.Results> {
-                                        saveState = true
+                                    popUpTo<ApiRoute.Search> {
+                                        inclusive = true
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
                                 }
                         }
                     )

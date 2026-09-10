@@ -108,21 +108,11 @@ class SearchViewModel(
     }
 
     fun getSearchedProducts() {
+        Log.d("Search", "Query: ${_searchQuery.value}")
         currentPage = 0
         _hasMoreProducts.value = true
         _products.value = emptyList()
         loadMoreProducts(currentPage)
-//        viewModelScope.launch {
-//            val response = productRepository.getSearchProducts(
-//                null,
-//                _searchQuery.value,
-//            )
-//            if (response == null) {
-//                _products.value = emptyList()
-//            } else {
-//                _products.value = response
-//            }
-//        }
     }
 
     private fun loadMoreProducts(page: Int) {

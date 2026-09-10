@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -49,12 +52,25 @@ class Search : Fragment() {
             fragment<SearchPredictions, SearchRoute.Suggestions> { label = "Suggestions" }
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+
+            val insets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                topMargin = insets.top
+                rightMargin = insets.right
+            }
+
+            WindowInsetsCompat.CONSUMED
+        }
+
         binding.etSearch.requestFocus()
         binding.etSearch.post {
             val imm = requireContext()
                 .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT)
         }
+
 
         setupSearchBox()
         observeSearchQuery()
