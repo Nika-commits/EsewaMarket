@@ -43,7 +43,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.BuildConfig
 import com.example.xml_app.R
-import com.example.xml_app.ui.state.ConfirmationOrderUiState
 import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.ui.state.PaymentState
 import com.example.xml_app.utils.SourceSansPro
@@ -101,7 +100,7 @@ class ConfirmationActivity : AppCompatActivity() {
                 Log.d("Esewa", "Result Ok Message: $message")
 
                 if (message.isNullOrEmpty()) {
-                    viewModel.setPaymentState(PaymentState.Error)
+                    viewModel.setPaymentState(PaymentState.Error(PaymentOptions.Esewa))
                     return@registerForActivityResult
                 }
 
@@ -114,7 +113,7 @@ class ConfirmationActivity : AppCompatActivity() {
                     )
                 } catch (e: Exception) {
                     Log.e("Esewa", "Exception in Activity: ${e.message}")
-                    viewModel.setPaymentState(PaymentState.Error)
+                    viewModel.setPaymentState(PaymentState.Error(PaymentOptions.Esewa))
                 }
             }
 
@@ -201,7 +200,7 @@ class ConfirmationActivity : AppCompatActivity() {
 
                                         PaymentOptions.Khalti.toString() -> {
                                             scope.launch {
-                                                viewModel.setPaymentState(PaymentState.Loading)
+                                                viewModel.setPaymentState(PaymentState.Loading(PaymentOptions.Khalti))
                                                 val response = viewModel.initiateKhaltiPayment(
                                                     state.order.id
                                                 )
@@ -233,7 +232,7 @@ class ConfirmationActivity : AppCompatActivity() {
                                                         Log.d("Khalti", "onMessage: Payload: ${payload.message}")
                                                         khalti.close()
                                                         viewModel.setPaymentState(
-                                                            PaymentState.Error
+                                                            PaymentState.Error(PaymentOptions.Khalti)
                                                         )
                                                     },
                                                     onReturn = { khalti: Khalti ->
@@ -259,21 +258,25 @@ class ConfirmationActivity : AppCompatActivity() {
                     }
                 }
 
-                val orderState by viewModel.confirmationOrderUiState.collectAsStateWithLifecycle()
+                val orderState by viewModel.paymentState.collectAsStateWithLifecycle()
 
                 when (val orderState = orderState) {
-                    ConfirmationOrderUiState.Idle -> Unit
+                    PaymentState.Idle -> Unit
 
-                    ConfirmationOrderUiState.Loading,
-                    ConfirmationOrderUiState.Error -> {
-                        PlacingOrderDialog(
+                    is PaymentState.Verifying -> {
+
+                    }
+
+                    is PaymentState.Loading,
+                    is PaymentState.Error -> {
+                        PaymentProcessingDialog(
                             onDismissRequest = {},
                             onRetry = {},
                             state = orderState
                         )
                     }
 
-                    is ConfirmationOrderUiState.Success -> {
+                    is PaymentState.Success -> {
                         OrderSuccessScreen(
                             modifier = Modifier.padding(innerPadding),
                             order = orderState.order,
@@ -290,10 +293,10 @@ class ConfirmationActivity : AppCompatActivity() {
                 val khaltiUiState by viewModel.paymentState.collectAsStateWithLifecycle()
                 when (val state = khaltiUiState) {
                     PaymentState.Idle -> Unit
-                    PaymentState.Loading,
-                    PaymentState.Error,
-                    PaymentState.Verifying -> {
-                        KhaltiOrderingDialog(
+                    is PaymentState.Loading,
+                    is PaymentState.Error,
+                    is PaymentState.Verifying -> {
+                        PaymentProcessingDialog(
                             onDismissRequest = {},
                             onRetry = {},
                             state = state
@@ -521,94 +524,13 @@ fun OrderSuccessItems(
 }
 
 @Composable
-fun PlacingOrderDialog(
-    onDismissRequest: () -> Unit,
-    onRetry: () -> Unit,
-    state: ConfirmationOrderUiState
-) {
-    Dialog(
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false
-        )
-
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Surface
-            )
-
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceAround
-            ) {
-                when (state) {
-                    ConfirmationOrderUiState.Loading -> {
-                        AppLoadingIndicator(
-                            size = 60.dp,
-                            strokeWidth = 4.dp
-                        )
-
-                        Text(
-                            "Placing your Order...",
-                            fontFamily = SourceSansPro,
-                            fontWeight = FontWeight.Medium,
-                            color = TextDark300,
-                            letterSpacing = 0.5.sp
-                        )
-                    }
-
-                    ConfirmationOrderUiState.Error -> {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_error),
-                            contentDescription = "Order failed",
-                            tint = EsewaRed,
-                            modifier = Modifier.size(52.dp)
-                        )
-
-                        Text(
-                            text = "Something went wrong while placing your order. Please try again.",
-                            fontFamily = SourceSansPro,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 14.sp,
-                            color = TextDark200,
-                            textAlign = TextAlign.Center
-                        )
-
-                        AppButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "TRY AGAIN",
-                            variant = ButtonVariant.SECONDARY,
-                            onClick = onRetry
-                        )
-                    }
-
-                    else -> {}
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-fun KhaltiOrderingDialog(
+fun PaymentProcessingDialog(
     onDismissRequest: () -> Unit,
     onRetry: () -> Unit,
     state: PaymentState
 ) {
+    if (state is PaymentState.Idle || state is PaymentState.Success) return
+
     Dialog(
         onDismissRequest = {
             onDismissRequest()
@@ -636,37 +558,40 @@ fun KhaltiOrderingDialog(
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 when (state) {
-                    PaymentState.Loading -> {
+                    is PaymentState.Loading -> {
+                        AppLoadingIndicator(
+                            size = 60.dp,
+                            strokeWidth = 4.dp
+                        )
+
+
+                        Text(
+                            text = "Preparing your Payment via ${state.method.name}",
+                            fontFamily = SourceSansPro,
+                            fontWeight = FontWeight.Medium,
+                            color = TextDark300,
+                            letterSpacing = 0.5.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    is PaymentState.Verifying -> {
                         AppLoadingIndicator(
                             size = 60.dp,
                             strokeWidth = 4.dp
                         )
 
                         Text(
-                            text = "Preparing your Payment...",
+                            text = "Verifying your Payment via ${state.method.name}",
                             fontFamily = SourceSansPro,
                             fontWeight = FontWeight.Medium,
                             color = TextDark300,
+                            textAlign = TextAlign.Center,
                             letterSpacing = 0.5.sp
                         )
                     }
 
-                    PaymentState.Verifying -> {
-                        AppLoadingIndicator(
-                            size = 60.dp,
-                            strokeWidth = 4.dp
-                        )
-
-                        Text(
-                            text = "Verifying your Payment...",
-                            fontFamily = SourceSansPro,
-                            fontWeight = FontWeight.Medium,
-                            color = TextDark300,
-                            letterSpacing = 0.5.sp
-                        )
-                    }
-
-                    PaymentState.Error -> {
+                    is PaymentState.Error -> {
                         Icon(
                             painter = painterResource(R.drawable.ic_error),
                             contentDescription = "Payment failed",
@@ -675,7 +600,7 @@ fun KhaltiOrderingDialog(
                         )
 
                         Text(
-                            text = "Something went wrong while processing your payment. Please try again.",
+                            text = "Something went wrong while processing your payment with ${state.method.name}. Please try again.",
                             fontFamily = SourceSansPro,
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp,
@@ -690,8 +615,6 @@ fun KhaltiOrderingDialog(
                             onClick = onRetry
                         )
                     }
-
-                    else -> Unit
                 }
             }
         }
@@ -864,9 +787,21 @@ fun OrderResponseCardPreview() {
             orderItem2
         )
     )
-    OrderSuccessScreen(
-        onGoToOrders = {},
-        onGoToHome = {},
-        order = response
+//    OrderSuccessScreen(
+//        onGoToOrders = {},
+//        onGoToHome = {},
+//        order = response
+//    )
+
+//    PlacingOrderDialog(
+//        onRetry = {},
+//        onDismissRequest = {},
+//        state = PaymentState.Loading(PaymentOptions.Cash_On_Delivery)
+//    )
+
+    PaymentProcessingDialog(
+        onRetry = {},
+        onDismissRequest = {},
+        state = PaymentState.Success(response)
     )
 }

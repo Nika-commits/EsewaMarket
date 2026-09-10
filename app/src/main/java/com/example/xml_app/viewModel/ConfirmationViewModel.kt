@@ -7,11 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.xml_app.repository.CartRepository
 import com.example.xml_app.repository.OrderRepository
 import com.example.xml_app.repository.UserRepository
-import com.example.xml_app.ui.state.ConfirmationOrderUiState
 import com.example.xml_app.ui.state.ConfirmationUiState
 import com.example.xml_app.ui.state.PaymentState
 import com.example.xml_app.utils.CustomApplicationContext
 import com.example.xml_app.utils.dto.request.OrderStatus
+import com.example.xml_app.utils.dto.request.PaymentOptions
 import com.example.xml_app.utils.dto.request.UpdateOrderStatusRequest
 import com.example.xml_app.utils.dto.response.KhaltiPaymentResponse
 import com.example.xml_app.utils.dto.response.OrderResponse
@@ -29,8 +29,6 @@ class ConfirmationViewModel(
     private val cartRepository = CartRepository(app.database.cartDao())
     private val _uiState = MutableStateFlow<ConfirmationUiState>(ConfirmationUiState.Loading)
     val uiState = _uiState.asStateFlow()
-    private val _confirmationOrderUiState = MutableStateFlow<ConfirmationOrderUiState>(ConfirmationOrderUiState.Idle)
-    val confirmationOrderUiState = _confirmationOrderUiState.asStateFlow()
     private val _paymentUiState = MutableStateFlow<PaymentState>(PaymentState.Idle)
     val paymentState = _paymentUiState.asStateFlow()
     fun getOrder(orderId: Int) {
@@ -81,22 +79,15 @@ class ConfirmationViewModel(
         viewModelScope.launch {
             val currentState = _uiState.value
             if (currentState !is ConfirmationUiState.Success) return@launch
-            _confirmationOrderUiState.value = ConfirmationOrderUiState.Loading
+            _paymentUiState.value = PaymentState.Loading(PaymentOptions.Cash_On_Delivery)
 
             val orderId = currentState.order.id
             try {
-                val firebaseUser = app.auth.currentUser
-                if (firebaseUser == null) {
-                    _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
-                    return@launch
-                }
-
-                val token = firebaseUser.getIdToken(false).await().token
+                val token = userRepository.getFirebaseToken(app.auth)
                 if (token == null) {
-                    _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
+                    _paymentUiState.value = PaymentState.Error(PaymentOptions.Cash_On_Delivery)
                     return@launch
                 }
-
                 val response = orderRepository.updateOrderStatus(
                     id = orderId,
                     token = token,
@@ -107,12 +98,12 @@ class ConfirmationViewModel(
 
                 if (!response.isSuccessful) {
                     Log.e("Confirmation", "Failed to update: ${response.code()}")
-                    _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
+                    _paymentUiState.value = PaymentState.Error(PaymentOptions.Cash_On_Delivery)
                     return@launch
                 }
                 val responseOrder = response.body()
                 if (responseOrder == null) {
-                    _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
+                    _paymentUiState.value = PaymentState.Error(PaymentOptions.Cash_On_Delivery)
                     return@launch
                 }
                 try {
@@ -120,10 +111,10 @@ class ConfirmationViewModel(
                 } catch (e: Exception) {
                     Log.e("Confirmation", "Failed to delete from cart. ${e.message}")
                 }
-                _confirmationOrderUiState.value = ConfirmationOrderUiState.Success(responseOrder)
+                _paymentUiState.value = PaymentState.Success(responseOrder)
             } catch (e: Exception) {
                 Log.e("Confirmation", "${e.message}")
-                _confirmationOrderUiState.value = ConfirmationOrderUiState.Error
+                _paymentUiState.value = PaymentState.Error(PaymentOptions.Cash_On_Delivery)
             }
         }
     }
@@ -154,18 +145,18 @@ class ConfirmationViewModel(
         try {
             val firebaseToken = userRepository.getFirebaseToken(app.auth)
             if (firebaseToken == null) {
-                _paymentUiState.value = PaymentState.Error
+                _paymentUiState.value = PaymentState.Error(PaymentOptions.Khalti)
                 return null
             }
 
             val response = orderRepository.initiateKhaltiPayment(id, firebaseToken)
             if (response == null) {
-                _paymentUiState.value = PaymentState.Error
+                _paymentUiState.value = PaymentState.Error(PaymentOptions.Khalti)
                 return null
             }
             return response
         } catch (e: Exception) {
-            _paymentUiState.value = PaymentState.Error
+            _paymentUiState.value = PaymentState.Error(PaymentOptions.Khalti)
             Log.e("Khalti", "Exception in View Model: ${e.message}")
             return null
         }
@@ -175,12 +166,12 @@ class ConfirmationViewModel(
         orderId: Int,
         pidx: String
     ) {
-        _paymentUiState.value = PaymentState.Verifying
+        _paymentUiState.value = PaymentState.Verifying(PaymentOptions.Khalti)
         try {
             Log.d("Khalti", "pidx in verify: $pidx")
             val firebaseToken = userRepository.getFirebaseToken(app.auth)
             if (firebaseToken == null) {
-                _paymentUiState.value = PaymentState.Error
+                _paymentUiState.value = PaymentState.Error(PaymentOptions.Khalti)
                 return
             }
             val response = orderRepository.verifyKhaltiPayment(
@@ -189,14 +180,14 @@ class ConfirmationViewModel(
                 firebaseToken
             )
             if (response == null) {
-                _paymentUiState.value = PaymentState.Error
+                _paymentUiState.value = PaymentState.Error(PaymentOptions.Khalti)
                 return
             }
             removeFromCart(response)
             _paymentUiState.value = PaymentState.Success(response)
         } catch (e: Exception) {
             Log.e("Khalti", "Failed to verify in View Model : ${e.message}")
-            _paymentUiState.value = PaymentState.Error
+            _paymentUiState.value = PaymentState.Error(PaymentOptions.Khalti)
         }
     }
 
@@ -205,13 +196,13 @@ class ConfirmationViewModel(
         txnRefId: String
     ) {
         viewModelScope.launch {
-            _paymentUiState.value = PaymentState.Verifying
+            _paymentUiState.value = PaymentState.Verifying(PaymentOptions.Esewa)
 
             try {
                 Log.d("Esewa", "txnRefId in viewModel: $txnRefId")
                 val firebaseToken = userRepository.getFirebaseToken(app.auth)
                 if (firebaseToken == null) {
-                    _paymentUiState.value = PaymentState.Error
+                    _paymentUiState.value = PaymentState.Error(PaymentOptions.Esewa)
                     return@launch
                 }
 
@@ -221,14 +212,14 @@ class ConfirmationViewModel(
                     firebaseToken
                 )
                 if (response == null) {
-                    _paymentUiState.value = PaymentState.Error
+                    _paymentUiState.value = PaymentState.Error(PaymentOptions.Esewa)
                     return@launch
                 }
                 removeFromCart(response)
                 _paymentUiState.value = PaymentState.Success(response)
             } catch (e: Exception) {
                 Log.e("Esewa", "Exception occured while verifiying in view model : ${e.message}")
-                _paymentUiState.value = PaymentState.Error
+                _paymentUiState.value = PaymentState.Error(PaymentOptions.Esewa)
             }
         }
     }

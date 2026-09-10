@@ -1,5 +1,6 @@
 package com.example.xml_app.ui.state
 
+import com.example.xml_app.utils.dto.request.PaymentOptions
 import com.example.xml_app.utils.dto.response.OrderResponse
 
 sealed interface ConfirmationUiState {
@@ -11,21 +12,20 @@ sealed interface ConfirmationUiState {
     data object Error : ConfirmationUiState
 }
 
-sealed interface ConfirmationOrderUiState {
-    data object Idle : ConfirmationOrderUiState
-    data object Loading : ConfirmationOrderUiState
-    data class Success(
-        val order: OrderResponse
-    ) : ConfirmationOrderUiState
-
-    data object Error : ConfirmationOrderUiState
-}
-
 sealed interface PaymentState {
     data object Idle : PaymentState
-    data object Loading : PaymentState
-    data object Verifying : PaymentState
-    data object Error : PaymentState
+    data class Loading(
+        val method: PaymentOptions
+    ) : PaymentState
+
+    data class Verifying(
+        val method: PaymentOptions
+    ) : PaymentState
+
+    data class Error(
+        val method: PaymentOptions
+    ) : PaymentState
+
     data class Success(
         val order: OrderResponse
     ) : PaymentState
