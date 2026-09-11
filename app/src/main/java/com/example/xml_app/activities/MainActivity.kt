@@ -50,7 +50,12 @@ class MainActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            binding.bottomNavigation.updatePadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            binding.bottomNavigation.updatePadding(
+                systemBars.left,
+                binding.bottomNavigation.paddingTop,
+                systemBars.right,
+                systemBars.bottom
+            )
 
             insets
         }

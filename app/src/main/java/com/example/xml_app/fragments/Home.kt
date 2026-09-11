@@ -18,9 +18,6 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -137,18 +134,6 @@ class Home : Fragment() {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
-        ViewCompat.setOnApplyWindowInsetsListener(toolbar) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            v.updatePadding(
-                top = toolbar.paddingTop + systemBars.top,
-                bottom = toolbar.paddingBottom + systemBars.bottom,
-                right = toolbar.paddingRight + systemBars.right,
-                left = toolbar.paddingLeft + systemBars.left
-            )
-            Log.d("Home", "${v.paddingTop}")
-            insets
-        }
     }
 
     private fun setupHomeRecyclerview() {
