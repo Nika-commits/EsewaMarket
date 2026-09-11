@@ -24,6 +24,7 @@ import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentSearchResultsBinding
 import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
+import com.example.xml_app.ui.state.SearchUiState
 import com.example.xml_app.utils.CustomSnackBar
 import com.example.xml_app.utils.SpacingItemDecoration
 import com.example.xml_app.viewModel.SearchViewModel
@@ -49,10 +50,60 @@ class SearchResults : Fragment() {
         viewModel.initialize()
         setupRecyclerView()
         setupDropDownFilter()
+        observeProducts()
+        observeUiState()
+        viewModel.getSearchedProducts()
+    }
+
+    private fun observeUiState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collectLatest { state ->
+                    when (state) {
+                        SearchUiState.InitialLoading -> {
+                            binding.llEmptySearchResults.visibility = View.GONE
+                            binding.ProgressBar.visibility = View.VISIBLE
+                        }
+
+                        SearchUiState.LoadingMoreProducts -> {
+                            binding.llEmptySearchResults.visibility = View.GONE
+                            binding.ProgressBar.visibility = View.GONE
+                            loadingAdapter.setLoading(true)
+                        }
+
+                        SearchUiState.Success -> {
+                            binding.llEmptySearchResults.visibility = View.GONE
+                            binding.ProgressBar.visibility = View.GONE
+                            loadingAdapter.setLoading(false)
+                        }
+
+                        SearchUiState.Error -> {
+                            binding.llEmptySearchResults.visibility = View.VISIBLE
+                            binding.ProgressBar.visibility = View.GONE
+                            loadingAdapter.setLoading(false)
+                        }
+
+                        SearchUiState.NoResults -> {
+                            binding.llEmptySearchResults.visibility = View.VISIBLE
+                            binding.ProgressBar.visibility = View.GONE
+                            loadingAdapter.setLoading(false)
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeProducts() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.products.collectLatest { productsAdapter.products = it }
+            }
+        }
     }
 
     fun setupRecyclerView() {
-
         productsAdapter = ProductsAdapter(
             onProductClick = {
                 ProductDetailActivity.startActivity(
@@ -163,32 +214,15 @@ class SearchResults : Fragment() {
                         dy < 0 -> showFilters()
                     }
 
-                    if (dy > 0 && !viewModel.isLoadingProducts.value) {
+                    if (dy > 0) {
 
                         val lastCompletelyVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition()
                         val totalItemCount = layoutManager.itemCount
-                        if (lastCompletelyVisibleItem >= totalItemCount - 2) viewModel.loadNextPage()
+                        if (lastCompletelyVisibleItem >= totalItemCount - 4) viewModel.loadNextPage()
                     }
                 }
             }
         )
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.products.collectLatest { product ->
-                    productsAdapter.products = product
-                }
-            }
-        }
-
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isLoadingProducts.collectLatest { loadingAdapter.setLoading(it) }
-            }
-        }
-
-        viewModel.getSearchedProducts()
     }
 
     private var filtersHidden = false

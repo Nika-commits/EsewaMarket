@@ -12,6 +12,7 @@ import com.example.xml_app.repository.CartRepository
 import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.UserRepository
+import com.example.xml_app.ui.state.SearchUiState
 import com.example.xml_app.utils.CustomApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,6 +36,9 @@ class SearchViewModel(
     private val productRepository = ProductRepository()
     private val _user = MutableStateFlow<User?>(null)
     val user = _user.asStateFlow()
+
+    private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.InitialLoading)
+    val uiState = _uiState.asStateFlow()
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())
     private val _searchQuery = MutableStateFlow("")
@@ -42,10 +46,8 @@ class SearchViewModel(
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
     private val _products = MutableStateFlow<List<Product>>(emptyList())
-    private val _isLoadingProducts = MutableStateFlow(false)
-    val isLoadingProducts = _isLoadingProducts.asStateFlow()
+
     private val _hasMoreProducts = MutableStateFlow(true)
-    val hasMoreProducts = _hasMoreProducts.asStateFlow()
 
     private var currentPage = 0
 
@@ -116,13 +118,11 @@ class SearchViewModel(
     }
 
     private fun loadMoreProducts(page: Int) {
-        if (_isLoadingProducts.value) return
+        if (_uiState.value == SearchUiState.LoadingMoreProducts) return
         if (!_hasMoreProducts.value) return
 
         viewModelScope.launch {
-            if (page != 0) {
-                _isLoadingProducts.value = true
-            }
+            _uiState.value = if (page == 0) SearchUiState.InitialLoading else SearchUiState.LoadingMoreProducts
             try {
                 val response = productRepository.getSearchProducts(
                     category = null,
@@ -132,6 +132,14 @@ class SearchViewModel(
 
                 if (response.isNullOrEmpty()) {
                     _hasMoreProducts.value = false
+
+                    if (page == 0) {
+                        Log.d("Search", "Search Returned Empty")
+                        _uiState.value = SearchUiState.NoResults
+                    } else {
+                        _uiState.value = SearchUiState.Success
+                    }
+                    return@launch
                 } else {
                     _products.value += response
                     currentPage = page
@@ -139,15 +147,18 @@ class SearchViewModel(
                         _hasMoreProducts.value = false
                     }
                 }
-            } finally {
-                _isLoadingProducts.value = false
+                _uiState.value = SearchUiState.Success
+            } catch (e: Exception) {
+                Log.e("Search", "Exception in Load More Products: ${e.message}")
+                _uiState.value = SearchUiState.Error
             }
         }
     }
 
     fun loadNextPage() {
         Log.d("Search", "Loading Next Page: $currentPage")
-        if (_isLoadingProducts.value) return
+        if (_uiState.value == SearchUiState.InitialLoading) return
+        if (_uiState.value == SearchUiState.LoadingMoreProducts) return
         if (!_hasMoreProducts.value) return
 
         loadMoreProducts(currentPage + 1)
