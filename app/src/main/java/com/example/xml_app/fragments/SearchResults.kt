@@ -158,26 +158,16 @@ class SearchResults : Fragment() {
             object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-
-                    if (dy > 0) {
-                        binding.llSearchFilters.animate()
-                            .translationY(-binding.llSearchFilters.height.toFloat())
-                            .setDuration(200)
-                            .start()
-                    } else if (dy < 0) {
-                        binding.llSearchFilters.animate()
-                            .translationY(0f)
-                            .setDuration(200)
-                            .start()
+                    when {
+                        dy > 0 -> hideFilters()
+                        dy < 0 -> showFilters()
                     }
 
-                    if (dy <= 0) return
+                    if (dy > 0 && !viewModel.isLoadingProducts.value) {
 
-                    val lastCompletelyVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition()
-                    val totalItemCount = layoutManager.itemCount
-                    val isAtBottom = lastCompletelyVisibleItem == totalItemCount - 1
-                    if (isAtBottom) {
-                        viewModel.loadNextPage()
+                        val lastCompletelyVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition()
+                        val totalItemCount = layoutManager.itemCount
+                        if (lastCompletelyVisibleItem >= totalItemCount - 2) viewModel.loadNextPage()
                     }
                 }
             }
@@ -199,6 +189,29 @@ class SearchResults : Fragment() {
         }
 
         viewModel.getSearchedProducts()
+    }
+
+    private var filtersHidden = false
+
+    private fun hideFilters() {
+        if (filtersHidden) return
+        filtersHidden = true
+
+        binding.llSearchFilters.animate()
+            .translationY(-binding.llSearchFilters.height.toFloat())
+            .setDuration(200)
+            .start()
+
+    }
+
+    private fun showFilters() {
+        if (!filtersHidden) return
+        filtersHidden = false
+
+        binding.llSearchFilters.animate()
+            .translationY(0f)
+            .setDuration(200)
+            .start()
     }
 
     private fun showLoginSnackbar(text: String) {
