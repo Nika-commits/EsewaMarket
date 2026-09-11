@@ -53,7 +53,7 @@ import com.example.xml_app.ui.state.AddShippingAddressUiState
 import com.example.xml_app.utils.CustomComposeSnackBar
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.AddressLabel
-import com.example.xml_app.utils.dto.request.CreateAddressRequest
+import com.example.xml_app.utils.formstates.AddressFormState
 import com.example.xml_app.utils.styles.Black
 import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.OffWhiteBackground
@@ -326,7 +326,7 @@ fun DeleteBottomSheetContent(
 @Composable
 fun DetailsFormScreen(
     mode: AddNewAddressActivity.Companion.MODE,
-    address: CreateAddressRequest,
+    address: AddressFormState,
     modifier: Modifier = Modifier,
     onEvent: (AddNewAddressActivity.AddressFormEvent) -> Unit,
     isSaving: Boolean,
@@ -373,7 +373,9 @@ fun DetailsFormScreen(
                     onValueChange = {
                         onEvent(AddNewAddressActivity.AddressFormEvent.FullNameChanged(it))
                     },
-                    placeholder = "Enter Full Name"
+                    placeholder = "Enter Full Name",
+                    isError = address.fullNameError != null,
+                    errorMessage = address.fullNameError
                 )
 
             }
@@ -389,11 +391,14 @@ fun DetailsFormScreen(
                     letterSpacing = 0.4.sp
                 )
                 AppTextField(
-                    value = address.phoneNumber,
+                    value = address.mobileNumber,
                     onValueChange = {
+
                         onEvent(AddNewAddressActivity.AddressFormEvent.PhoneNumberChanged(it))
                     },
-                    placeholder = "Enter mobile no."
+                    placeholder = "Enter mobile no.",
+                    isError = address.mobileNumberError != null,
+                    errorMessage = address.mobileNumberError
                 )
             }
 
@@ -408,7 +413,7 @@ fun DetailsFormScreen(
                     letterSpacing = 0.4.sp
                 )
                 AppTextField(
-                    value = address.fullAddress,
+                    value = address.address,
                     onValueChange = {
                         onEvent(AddNewAddressActivity.AddressFormEvent.FullAddressChanged(it))
                     },
@@ -422,7 +427,9 @@ fun DetailsFormScreen(
                             painter = painterResource(R.drawable.ic_address_pin),
                             contentDescription = null,
                         )
-                    }
+                    },
+                    isError = address.addressError != null,
+                    errorMessage = address.addressError
                 )
             }
 
