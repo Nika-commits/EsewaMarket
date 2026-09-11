@@ -7,7 +7,6 @@
     android:layout_width="?attr/actionBarSize"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/offWhiteBackground"
-    android:fitsSystemWindows="true"
     app:titleCentered="true"
     app:titleTextAppearance="@style/ToolbarTitleStyle"
     app:titleTextColor="@color/lightGrey">

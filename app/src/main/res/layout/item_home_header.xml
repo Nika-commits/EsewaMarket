@@ -9,8 +9,9 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="34dp"
+        android:paddingTop="28dp"
         app:contentInsetEnd="0dp"
+        app:contentInsetEndWithActions="0dp"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp"
 

@@ -56,7 +56,6 @@ class ProductDetailActivity : AppCompatActivity() {
         binding = ActivityProductDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        setupWindowInsets()
         setupCarousel()
         setupColorSelector()
         setupListeners()
@@ -71,22 +70,6 @@ class ProductDetailActivity : AppCompatActivity() {
         viewModel.getProduct(productId)
     }
 
-    private fun setupWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
-            val systemBars =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            binding.btnBack.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            binding.addToCartContainer.root.setPadding(
-                0,
-                0,
-                0,
-                systemBars.bottom
-            )
-
-            insets
-        }
-    }
 
     private fun setupCarousel() {
         carouselAdapter = ProductCarouselAdapter(

@@ -2,6 +2,7 @@ package com.example.xml_app.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -72,6 +74,18 @@ class More : Fragment() {
 
         toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.moreToolbar.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(
+                top = toolbar.paddingTop + systemBars.top,
+                bottom = toolbar.paddingBottom + systemBars.bottom,
+                right = toolbar.paddingRight + systemBars.right,
+                left = toolbar.paddingLeft + systemBars.left
+            )
+            Log.d("Favourite", "${v.paddingTop}")
+            insets
         }
     }
 

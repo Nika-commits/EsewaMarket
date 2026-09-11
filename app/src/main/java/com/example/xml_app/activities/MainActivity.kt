@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             binding.bottomNavigation.updatePadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
 
-            WindowInsetsCompat.CONSUMED
+            insets
         }
         val navHostFragment =
             supportFragmentManager.findFragmentById(binding.fragmentContainer.id) as NavHostFragment

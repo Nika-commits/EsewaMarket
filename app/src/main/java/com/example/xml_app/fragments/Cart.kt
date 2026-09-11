@@ -3,6 +3,7 @@ package com.example.xml_app.fragments
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.core.util.component2
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -65,6 +67,19 @@ class Cart : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.cartToolbar.root) { v, windowInsets ->
+//            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
+//            val toolbar = binding.cartToolbar.toolbar
+//
+//            binding.cartToolbar.root.updatePadding(
+//                insets.left,
+//                insets.top,
+//                insets.right,
+//                insets.bottom
+//            )
+//            WindowInsetsCompat.CONSUMED
+//        }
+
         viewModel.initializeUserAndObserveCart()
         setupToolbar()
         setupRecyclerView()
@@ -74,6 +89,7 @@ class Cart : Fragment() {
 
 
     fun setupToolbar() {
+        Log.d("Cart", "Reached SetupTolbar function")
         val toolbar = binding.cartToolbar.toolbar
         toolbar.title = "My Cart"
         (requireContext() as AppCompatActivity).apply {
@@ -88,8 +104,21 @@ class Cart : Fragment() {
             ContextCompat.getColor(requireContext(), R.color.black)
         )
 
+
         toolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.cartToolbar.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(
+                top = toolbar.paddingTop + systemBars.top,
+                bottom = toolbar.paddingBottom + systemBars.bottom,
+                right = toolbar.paddingRight + systemBars.right,
+                left = toolbar.paddingLeft + systemBars.left
+            )
+            Log.d("Cart", "${v.paddingTop}")
+            insets
         }
     }
 
