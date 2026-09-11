@@ -158,6 +158,19 @@ class SearchResults : Fragment() {
             object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
+
+                    if (dy > 0) {
+                        binding.llSearchFilters.animate()
+                            .translationY(-binding.llSearchFilters.height.toFloat())
+                            .setDuration(200)
+                            .start()
+                    } else if (dy < 0) {
+                        binding.llSearchFilters.animate()
+                            .translationY(0f)
+                            .setDuration(200)
+                            .start()
+                    }
+
                     if (dy <= 0) return
 
                     val lastCompletelyVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition()
