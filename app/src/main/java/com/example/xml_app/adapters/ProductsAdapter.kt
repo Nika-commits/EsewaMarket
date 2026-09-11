@@ -22,6 +22,11 @@ class ProductsAdapter(
 ) : RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
     class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
 
+    companion object {
+        private const val VIEW_TYPE_PRODUCT = 0
+        private const val VIEW_TYPE_LOADING = 1
+    }
+
     private val diffCallback = object : DiffUtil.ItemCallback<ProductUiModel>() {
         override fun areItemsTheSame(oldItem: ProductUiModel, newItem: ProductUiModel): Boolean {
             return oldItem.product.id == newItem.product.id
@@ -40,6 +45,17 @@ class ProductsAdapter(
             differ.submitList(value)
         }
 
+    var isLoading = false
+        set(value) {
+            if (field == value) return
+            field = value
+            if (value) {
+                notifyItemInserted(products.size)
+            } else {
+                notifyItemRemoved(products.size)
+            }
+        }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -47,6 +63,7 @@ class ProductsAdapter(
         val binding = ItemProductBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
+
         return ViewHolder(binding)
     }
 

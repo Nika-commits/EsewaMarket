@@ -2,25 +2,25 @@ package com.example.xml_app.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.activities.AuthActivity
 import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.ProductsAdapter
+import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentSearchResultsBinding
 import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
@@ -37,7 +37,7 @@ class SearchResults : Fragment() {
         ownerProducer = { requireParentFragment().requireParentFragment() }
     )
     private lateinit var productsAdapter: ProductsAdapter
-
+    private lateinit var loadingAdapter: HomeRecommendedLoadingAdapter
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSearchResultsBinding.inflate(inflater, container, false)
         return binding.root
@@ -52,6 +52,7 @@ class SearchResults : Fragment() {
     }
 
     fun setupRecyclerView() {
+
         productsAdapter = ProductsAdapter(
             onProductClick = {
                 ProductDetailActivity.startActivity(
@@ -126,10 +127,25 @@ class SearchResults : Fragment() {
                 }
             }
         )
+        loadingAdapter = HomeRecommendedLoadingAdapter()
+
         val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
         val layoutManager = GridLayoutManager(requireContext(), 2)
+
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position < productsAdapter.itemCount) {
+                    1
+                } else {
+                    2
+                }
+            }
+        }
         binding.rvProductsGrid.apply {
-            adapter = productsAdapter
+            adapter = ConcatAdapter(
+                productsAdapter,
+                loadingAdapter
+            )
             this.layoutManager = layoutManager
 
             addItemDecoration(
@@ -157,15 +173,15 @@ class SearchResults : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.products.collectLatest { product ->
-                    Log.d("Search", "Search Results: ${product.size}")
                     productsAdapter.products = product
                 }
             }
         }
 
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isLoadingProducts.collectLatest { binding.loader.root.isVisible = it }
+                viewModel.isLoadingProducts.collectLatest { loadingAdapter.setLoading(it) }
             }
         }
 
