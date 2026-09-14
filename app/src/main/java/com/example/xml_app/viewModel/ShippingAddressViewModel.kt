@@ -25,6 +25,13 @@ class ShippingAddressViewModel(
     val isDeleting = _isDeleting.asStateFlow()
     private val _events = MutableSharedFlow<ShippingAddressUiEvent>()
     val events = _events.asSharedFlow()
+    val _currentlySelectedAddressId = MutableStateFlow<Int?>(null)
+    val currentlySelectedAddress = _currentlySelectedAddressId.asStateFlow()
+
+    fun changeCurrentlySelectedAddressId(id: Int?) {
+        _currentlySelectedAddressId.value = id
+    }
+
     private suspend fun fetchAddresses() {
         val token = userRepository.getFirebaseToken(app.auth)
         if (token == null) {

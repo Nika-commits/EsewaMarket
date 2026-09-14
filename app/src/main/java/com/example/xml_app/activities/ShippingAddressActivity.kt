@@ -4,10 +4,14 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +33,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,6 +58,8 @@ import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.custom.SwipableItemsWithActions
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.dto.response.UserAddressResponse
+import com.example.xml_app.utils.styles.EsewaBlue
+import com.example.xml_app.utils.styles.EsewaLightBlue
 import com.example.xml_app.utils.styles.EsewaRed
 import com.example.xml_app.utils.styles.OffWhiteBackground
 import com.example.xml_app.utils.styles.PrimaryGreen
@@ -172,9 +180,11 @@ class ShippingAddressActivity : AppCompatActivity() {
                     }
 
                     is ShippingAddressUiState.Success -> {
+                        val selectedAddress = viewModel.currentlySelectedAddress.collectAsStateWithLifecycle()
                         ShippingAddressScreen(
                             modifier = Modifier.padding(innerPadding),
                             addresses = addresses.data,
+                            selectedAddressId = selectedAddress.value,
                             onAddAddress = {
                                 AddNewAddressActivity.startActivity(
                                     this,
@@ -191,6 +201,13 @@ class ShippingAddressActivity : AppCompatActivity() {
                             },
                             onDeleteAddress = {
                                 openDeleteDialog.value = it
+                            },
+                            onCardClick = {
+                                if (it == null) {
+                                    viewModel.changeCurrentlySelectedAddressId(null)
+                                } else {
+                                    viewModel.changeCurrentlySelectedAddressId(it)
+                                }
                             }
                         )
                     }
@@ -257,9 +274,11 @@ class ShippingAddressActivity : AppCompatActivity() {
 fun ShippingAddressScreen(
     modifier: Modifier = Modifier,
     addresses: List<UserAddressResponse>,
+    selectedAddressId: Int?,
     onAddAddress: () -> Unit,
     onEditAddress: (id: Int) -> Unit,
-    onDeleteAddress: (id: Int) -> Unit
+    onDeleteAddress: (id: Int) -> Unit,
+    onCardClick: (id: Int?) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -278,7 +297,17 @@ fun ShippingAddressScreen(
             ) { address ->
                 SwipableItemsWithActions(
                     content = {
-                        AddressCard(address)
+                        AddressCard(
+                            isCurrentlySelected = selectedAddressId == address.id,
+                            address,
+                            onCardClick = {
+                                if (selectedAddressId == address.id) {
+                                    onCardClick(null)
+                                } else {
+                                    onCardClick(address.id)
+                                }
+                            }
+                        )
                     },
                     actions = {
                         Icon(
@@ -333,16 +362,53 @@ fun ShippingAddressScreen(
 
 @Composable
 fun AddressCard(
-    address: UserAddressResponse
+    isCurrentlySelected: Boolean,
+    address: UserAddressResponse,
+    onCardClick: () -> Unit
 ) {
+    val containerColor by animateColorAsState(
+        targetValue = if (isCurrentlySelected) EsewaLightBlue else Surface,
+        animationSpec = tween(200),
+        label = "address_card_color"
+    )
+
+    val borderColor by animateColorAsState(
+        targetValue = when {
+            address.isDefaultAddress -> PrimaryGreen
+            isCurrentlySelected -> EsewaBlue
+            else -> Color.Transparent
+        },
+        animationSpec = tween(200),
+        label = "address_card_border"
+    )
+
+    val borderWith by animateDpAsState(
+        targetValue = when {
+            address.isDefaultAddress || isCurrentlySelected -> 1.dp
+            else -> 0.dp
+        },
+        animationSpec = tween(300),
+        label = "address_card_border_width"
+    )
+    val interactionSource = remember { MutableInteractionSource() }
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(
+                enabled = !address.isDefaultAddress,
+                onClick = onCardClick,
+                indication = ripple(),
+                interactionSource = interactionSource,
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Surface
+            containerColor = containerColor
         ),
-        border = if (address.isDefaultAddress) BorderStroke(width = 1.dp, color = PrimaryGreen) else null
+//        border = if (address.isDefaultAddress) BorderStroke(width = 1.dp, color = PrimaryGreen) else null
+        border = BorderStroke(
+            width = borderWith,
+            color = borderColor
+        )
     ) {
         Row(
             modifier = Modifier
@@ -433,14 +499,12 @@ fun ShippingAddressPreview() {
         updatedAt = "2026-09-22",
         isDefaultShippingAddress = false
     )
-//
-//    AddressCard(
-//        response
-//    )
-    EmptyAddressCard(
-        onAddNewAddress = {}
-    )
 
+    AddressCard(
+        isCurrentlySelected = true,
+        response,
+        onCardClick = {}
+    )
 }
 
 @Composable
@@ -457,7 +521,9 @@ fun EmptyAddressCard(
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

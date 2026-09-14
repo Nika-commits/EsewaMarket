@@ -14,6 +14,9 @@ val TextLighter = Color(0xFFEEEEEE)
 val PrimaryGreen = Color(0xFF2ABB00)
 val PrimaryGreenDark = Color(0xFF1FAC00)
 val SecondaryGreen = Color(0xFFC6F09E)
+
+val EsewaBlue = Color(0xFF70BEFE)
+val EsewaLightBlue = Color(0xFFE3F3FF)
 val PrimaryGreenTransparent = Color(0xFFEAF9E6)
 val CategoryBackground = Color(0xFFE1FDD9)
 
