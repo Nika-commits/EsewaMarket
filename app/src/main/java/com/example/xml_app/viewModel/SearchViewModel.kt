@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.entities.CartItem
 import com.example.xml_app.entities.User
+import com.example.xml_app.models.PriceFilter
 import com.example.xml_app.models.Product
 import com.example.xml_app.models.ProductUiModel
 import com.example.xml_app.repository.CartRepository
@@ -35,21 +36,20 @@ class SearchViewModel(
     private val favouriteRepository = FavouriteRepository(app.database.favouriteDao())
     private val productRepository = ProductRepository()
     private val _user = MutableStateFlow<User?>(null)
-    val user = _user.asStateFlow()
-
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.InitialLoading)
     val uiState = _uiState.asStateFlow()
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
+    private val _searchPriceFilter = MutableStateFlow<PriceFilter>(PriceFilter.BestSellers)
+    private val searchPriceFilter = _searchPriceFilter.asStateFlow()
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
     private val _products = MutableStateFlow<List<Product>>(emptyList())
-
     private val _hasMoreProducts = MutableStateFlow(true)
-
     private var currentPage = 0
+
 
     companion object {
         private const val PAGE_SIZE = 10
@@ -57,6 +57,10 @@ class SearchViewModel(
 
     fun onChange(newQuery: String) {
         _searchQuery.value = newQuery
+    }
+
+    fun setSearchPriceFilter(filter: PriceFilter) {
+        _searchPriceFilter.value = filter
     }
 
     init {
@@ -124,9 +128,11 @@ class SearchViewModel(
         viewModelScope.launch {
             _uiState.value = if (page == 0) SearchUiState.InitialLoading else SearchUiState.LoadingMoreProducts
             try {
+                Log.d("Filter: ", _searchPriceFilter.value.name)
                 val response = productRepository.getSearchProducts(
                     category = null,
                     search = _searchQuery.value,
+                    priceFilter = _searchPriceFilter.value,
                     page = page
                 )
 

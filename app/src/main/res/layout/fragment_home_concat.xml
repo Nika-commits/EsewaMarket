@@ -15,37 +15,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/btnSell"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@drawable/bg_button_primary_8"
-        android:clickable="true"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    <!--    <LinearLayout-->
+    <!--        android:id="@+id/btnSell"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:background="@drawable/bg_button_primary_8"-->
+    <!--        android:clickable="true"-->
+    <!--        android:gravity="center"-->
+    <!--        android:orientation="horizontal"-->
+    <!--        android:paddingHorizontal="16dp"-->
+    <!--        android:paddingVertical="12dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent">-->
 
-        <ImageView
-            android:id="@+id/ic_plus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="4dp"
-            android:src="@drawable/ic_plus_circle"
-            app:tint="@color/surface" />
+    <!--        <ImageView-->
+    <!--            android:id="@+id/ic_plus"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:paddingHorizontal="4dp"-->
+    <!--            android:src="@drawable/ic_plus_circle"-->
+    <!--            app:tint="@color/surface" />-->
 
-        <TextView
-            android:id="@+id/tvSell"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/source_sans_semibold"
-            android:letterSpacing="0.05"
-            android:paddingHorizontal="4dp"
-            android:text="SELL"
-            android:textColor="@color/surface"
-            android:textSize="14sp" />
-    </LinearLayout>
+    <!--        <TextView-->
+    <!--            android:id="@+id/tvSell"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:fontFamily="@font/source_sans_semibold"-->
+    <!--            android:letterSpacing="0.05"-->
+    <!--            android:paddingHorizontal="4dp"-->
+    <!--            android:text="SELL"-->
+    <!--            android:textColor="@color/surface"-->
+    <!--            android:textSize="14sp" />-->
+    <!--    </LinearLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

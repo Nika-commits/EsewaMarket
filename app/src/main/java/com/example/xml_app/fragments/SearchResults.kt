@@ -22,6 +22,7 @@ import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.ProductsAdapter
 import com.example.xml_app.adapters.home.HomeRecommendedLoadingAdapter
 import com.example.xml_app.databinding.FragmentSearchResultsBinding
+import com.example.xml_app.models.PriceFilter
 import com.example.xml_app.navigation.ApiRoute
 import com.example.xml_app.ui.modals.DeleteCartBottomSheet
 import com.example.xml_app.ui.state.SearchUiState
@@ -268,33 +269,18 @@ class SearchResults : Fragment() {
             val popup = PopupMenu(requireContext(), v)
             popup.menuInflater.inflate(R.menu.menu_product_filters, popup.menu)
             popup.setOnMenuItemClickListener { menuItem: MenuItem ->
-                when (menuItem.itemId) {
-                    R.id.bestSellers -> {
-                        binding.tvFilters.text = menuItem.title
-                        true
-                    }
-
-                    R.id.priceHighToLow -> {
-                        binding.tvFilters.text = menuItem.title
-                        true
-                    }
-
-                    R.id.priceLowToHigh -> {
-                        binding.tvFilters.text = menuItem.title
-                        true
-                    }
-
-                    else -> {
-                        binding.tvFilters.text = menuItem.title
-                        false
-                    }
+                val filter = when (menuItem.itemId) {
+                    R.id.bestSellers -> PriceFilter.BestSellers
+                    R.id.priceHighToLow -> PriceFilter.PriceHighToLow
+                    R.id.priceLowToHigh -> PriceFilter.PriceLowToHigh
+                    else -> return@setOnMenuItemClickListener false
                 }
+                viewModel.setSearchPriceFilter(filter)
+                binding.tvFilters.text = menuItem.title
+                viewModel.getSearchedProducts()
+                true
             }
-
-            popup.setOnDismissListener {
-
-            }
-
+            popup.setOnDismissListener {}
             popup.show()
         }
     }

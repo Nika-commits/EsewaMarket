@@ -1,5 +1,6 @@
 package com.example.xml_app.api
 
+import com.example.xml_app.models.PriceFilter
 import com.example.xml_app.models.Product
 import retrofit2.Response
 import retrofit2.http.Body
@@ -14,7 +15,8 @@ interface ProductApi {
         @Query("category") category: String?,
         @Query("search") search: String?,
         @Query("page") page: Int,
-        @Query("pageSize") pageSize: Int
+        @Query("pageSize") pageSize: Int,
+        @Query("priceFilter") priceFilter: String = PriceFilter.BestSellers.name
     ): Response<List<Product>>
 
     @POST("api/product")

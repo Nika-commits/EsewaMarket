@@ -1,5 +1,6 @@
 package com.example.xml_app.activities
 
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -44,6 +45,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val test = intent.getBooleanExtra("TEST", false)
+
+        if (test) {
+            Log.d("Home", "success")
+        } else {
+            Log.d("Home", "Also success")
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -227,5 +235,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        val test = intent.getStringExtra("TEST")
+        Log.d("Home", "Data: $test")
     }
 }

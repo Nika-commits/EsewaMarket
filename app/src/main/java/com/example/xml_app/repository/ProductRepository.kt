@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.xml_app.api.RetrofitInstance
+import com.example.xml_app.models.PriceFilter
 import com.example.xml_app.models.Product
 import com.example.xml_app.utils.paging.RecommendedProductsPagingSource
 
@@ -14,6 +15,7 @@ class ProductRepository {
     suspend fun getSearchProducts(
         category: String? = null,
         search: String,
+        priceFilter: PriceFilter,
         page: Int = 0
     ): List<Product>? {
         return try {
@@ -21,7 +23,8 @@ class ProductRepository {
                 category,
                 search,
                 page,
-                10
+                10,
+                priceFilter.name,
             )
             if (!response.isSuccessful) {
                 Log.e("Search", "Unsuccessful response: ${response.code()}")

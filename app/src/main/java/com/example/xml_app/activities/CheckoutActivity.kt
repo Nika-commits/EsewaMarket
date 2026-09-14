@@ -135,7 +135,8 @@ class CheckoutActivity : AppCompatActivity() {
                             Intent(this, ShippingAddressActivity::class.java).also {
                                 startActivity(it)
                             }
-                        }
+                        },
+                        onFinish = ::finish
                     )
                 }
             }
@@ -157,7 +158,8 @@ fun CheckoutScreen(
     user: UserResponse,
     onBackClick: () -> Unit,
     onSetAddress: () -> Unit,
-    onEditAddressClick: () -> Unit
+    onEditAddressClick: () -> Unit,
+    onFinish: () -> Unit
 ) {
     val activityStyle = Style {
         background(OffWhiteBackground)
@@ -288,6 +290,7 @@ fun CheckoutScreen(
                                 return@launch
                             }
                             ConfirmationActivity.startActivity(context, orderResponse.id)
+                            onFinish()
                         }
 
 
@@ -312,6 +315,7 @@ fun CheckoutScreen(
                                 return@launch
                             }
                             ConfirmationActivity.startActivity(context, orderResponse.id)
+                            onFinish()
                         }
                     },
                     onPayWithKhalti = {
@@ -333,6 +337,7 @@ fun CheckoutScreen(
                                 return@launch
                             }
                             ConfirmationActivity.startActivity(context, orderResponse.id)
+                            onFinish()
                         }
                     }
                 )

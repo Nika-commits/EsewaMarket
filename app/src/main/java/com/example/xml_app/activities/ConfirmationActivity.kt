@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -42,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import com.example.xml_app.BuildConfig
 import com.example.xml_app.R
 import com.example.xml_app.ui.state.ConfirmationUiState
@@ -130,13 +130,25 @@ class ConfirmationActivity : AppCompatActivity() {
         }
     }
 
+    fun gotomain() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra("TEST", "OpenCart")
+        }
+
+        startActivity(intent)
+        finish()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val orderId = intent.getIntExtra(ID, -1)
         if (orderId == -1) finish()
 
         viewModel.getOrder(orderId)
-
+        onBackPressedDispatcher.addCallback(this) {
+            gotomain()
+        }
         setContent {
             Scaffold(
                 modifier = Modifier
@@ -571,24 +583,26 @@ fun PaymentProcessingDialog(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                        Text(
-                            text = "Preparing your Payment via",
-                            fontFamily = SourceSansPro,
-                            fontWeight = FontWeight.Medium,
-                            color = TextDark300,
-                            letterSpacing = 0.5.sp,
-                            textAlign = TextAlign.Center
-                        )
+                            Text(
+                                text = "Preparing your Payment via",
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Medium,
+                                color = TextDark300,
+                                letterSpacing = 0.5.sp,
+                                textAlign = TextAlign.Center
+                            )
 
-                        Image(
-                            modifier = Modifier.size(46.dp),
-                            contentDescription = null,
-                            painter = painterResource(when(state.method){
-                                PaymentOptions.Esewa -> R.drawable.ic_esewa
-                                PaymentOptions.Khalti -> R.drawable.khalti_logo
-                                PaymentOptions.Cash_On_Delivery -> R.drawable.ic_dailybuybonus
-                            }),
-                        )
+                            Image(
+                                modifier = Modifier.size(46.dp),
+                                contentDescription = null,
+                                painter = painterResource(
+                                    when (state.method) {
+                                        PaymentOptions.Esewa -> R.drawable.ic_esewa
+                                        PaymentOptions.Khalti -> R.drawable.khalti_logo
+                                        PaymentOptions.Cash_On_Delivery -> R.drawable.ic_dailybuybonus
+                                    }
+                                ),
+                            )
                         }
                     }
 
@@ -605,24 +619,26 @@ fun PaymentProcessingDialog(
                         ) {
 
 
-                        Text(
-                            text = "Verifying your Payment via",
-                            fontFamily = SourceSansPro,
-                            fontWeight = FontWeight.Medium,
-                            color = TextDark300,
-                            textAlign = TextAlign.Center,
-                            letterSpacing = 0.5.sp
-                        )
+                            Text(
+                                text = "Verifying your Payment via",
+                                fontFamily = SourceSansPro,
+                                fontWeight = FontWeight.Medium,
+                                color = TextDark300,
+                                textAlign = TextAlign.Center,
+                                letterSpacing = 0.5.sp
+                            )
 
-                        Image(
-                            modifier = Modifier.size(42.dp),
-                            contentDescription = null,
-                            painter = painterResource(when(state.method){
-                                PaymentOptions.Esewa -> R.drawable.ic_esewa
-                                PaymentOptions.Khalti -> R.drawable.khalti_logo
-                                PaymentOptions.Cash_On_Delivery -> R.drawable.ic_dailybuybonus
-                            }),
-                        )
+                            Image(
+                                modifier = Modifier.size(42.dp),
+                                contentDescription = null,
+                                painter = painterResource(
+                                    when (state.method) {
+                                        PaymentOptions.Esewa -> R.drawable.ic_esewa
+                                        PaymentOptions.Khalti -> R.drawable.khalti_logo
+                                        PaymentOptions.Cash_On_Delivery -> R.drawable.ic_dailybuybonus
+                                    }
+                                ),
+                            )
                         }
                     }
 

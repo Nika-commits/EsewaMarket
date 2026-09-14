@@ -14,6 +14,12 @@ data class Product(
 //    val cartCont: Int?
 )
 
+enum class PriceFilter {
+    BestSellers,
+    PriceLowToHigh,
+    PriceHighToLow
+}
+
 data class Color(val name: String, val hexCode: String)
 
 data class ProductUiModel(
