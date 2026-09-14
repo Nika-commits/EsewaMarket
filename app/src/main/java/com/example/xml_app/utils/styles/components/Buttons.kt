@@ -61,6 +61,12 @@ fun AppButton(
                 ButtonVariant.ICON -> PrimaryGreenTransparent
                 ButtonVariant.OUTLINE -> OffWhiteBackground
                 ButtonVariant.GHOST -> Color.Transparent
+            }.let { color ->
+                if(variant == ButtonVariant.GHOST){
+                    color
+                } else{
+                    color.copy(alpha = if(isLoading) 0.6f else 1f)
+                }
             }
         )
         shape(
@@ -117,6 +123,7 @@ fun AppButton(
             CircularProgressIndicator(
                 modifier = Modifier.size(20.dp),
                 color = Light,
+                strokeWidth = 2.dp,
                 trackColor = Surface
             )
             return@Box
@@ -156,5 +163,6 @@ fun Previews() {
         variant = ButtonVariant.GHOST,
         onClick = {},
         text="CANCEL",
+        isLoading = true
     )
 }

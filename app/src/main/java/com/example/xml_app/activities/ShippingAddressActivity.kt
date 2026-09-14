@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.visible
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -117,10 +118,18 @@ class ShippingAddressActivity : AppCompatActivity() {
                                 )
                             }
 
+                            ShippingAddressUiEvent.DefaultAddressChanged -> {
+                                snackbarHostState.showSnackbar(
+                                    "Default Address Changed Successfully",
+                                    actionLabel = "OK",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+
                             is ShippingAddressUiEvent.Error -> {
                                 openDeleteDialog.value = null
                                 snackbarHostState.showSnackbar(
-                                    "Failed to delete address",
+                                    event.message,
                                     actionLabel = "OK",
                                     duration = SnackbarDuration.Short
                                 )
@@ -157,7 +166,6 @@ class ShippingAddressActivity : AppCompatActivity() {
                         }
                     }
 
-
                     ShippingAddressUiState.Empty -> {
                         Box(
                             modifier = Modifier
@@ -181,10 +189,12 @@ class ShippingAddressActivity : AppCompatActivity() {
 
                     is ShippingAddressUiState.Success -> {
                         val selectedAddress = viewModel.currentlySelectedAddress.collectAsStateWithLifecycle()
+                        val isSettingDefault = viewModel.isSettingDefaultAddress.collectAsStateWithLifecycle()
                         ShippingAddressScreen(
                             modifier = Modifier.padding(innerPadding),
                             addresses = addresses.data,
                             selectedAddressId = selectedAddress.value,
+                            isSettingDefault = isSettingDefault.value,
                             onAddAddress = {
                                 AddNewAddressActivity.startActivity(
                                     this,
@@ -201,6 +211,9 @@ class ShippingAddressActivity : AppCompatActivity() {
                             },
                             onDeleteAddress = {
                                 openDeleteDialog.value = it
+                            },
+                            onSetDefault = {
+                                viewModel.setDefaultAddress(it)
                             },
                             onCardClick = {
                                 if (it == null) {
@@ -275,9 +288,11 @@ fun ShippingAddressScreen(
     modifier: Modifier = Modifier,
     addresses: List<UserAddressResponse>,
     selectedAddressId: Int?,
+    isSettingDefault: Boolean = false,
     onAddAddress: () -> Unit,
     onEditAddress: (id: Int) -> Unit,
     onDeleteAddress: (id: Int) -> Unit,
+    onSetDefault: (id: Int) -> Unit,
     onCardClick: (id: Int?) -> Unit
 ) {
     Box(
@@ -348,14 +363,27 @@ fun ShippingAddressScreen(
                 )
             }
         }
-        AppButton(
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp),
-            variant = ButtonVariant.PRIMARY,
-            text = "ADD ADDRESS",
-            onClick = onAddAddress
-        )
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+
+            AppButton(
+                modifier = Modifier.visible(selectedAddressId != null),
+                variant = ButtonVariant.DESTRUCTIVE,
+                text = "SET DEFAULT",
+                onClick = { if (selectedAddressId != null) onSetDefault(selectedAddressId) },
+                isLoading = isSettingDefault
+            )
+            AppButton(
+                variant = ButtonVariant.PRIMARY,
+                text = "ADD ADDRESS",
+                onClick = onAddAddress
+            )
+        }
     }
 }
 

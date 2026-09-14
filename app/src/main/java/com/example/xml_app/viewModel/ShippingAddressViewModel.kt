@@ -23,6 +23,8 @@ class ShippingAddressViewModel(
     val state = _state.asStateFlow()
     private val _isDeleting = MutableStateFlow(false)
     val isDeleting = _isDeleting.asStateFlow()
+    private val _isSettingDefaultAddress = MutableStateFlow(false)
+    val isSettingDefaultAddress = _isSettingDefaultAddress.asStateFlow()
     private val _events = MutableSharedFlow<ShippingAddressUiEvent>()
     val events = _events.asSharedFlow()
     val _currentlySelectedAddressId = MutableStateFlow<Int?>(null)
@@ -76,6 +78,29 @@ class ShippingAddressViewModel(
                 _events.emit(ShippingAddressUiEvent.Error("Failed to delete address."))
             } finally {
                 _isDeleting.value = false
+            }
+        }
+    }
+
+    fun setDefaultAddress(id: Int) {
+        viewModelScope.launch {
+            _isSettingDefaultAddress.value = true
+            try {
+                val token = userRepository.getFirebaseToken(app.auth) ?: return@launch
+                userRepository.setDefaultAddress(
+                    token,
+                    id
+                )
+                fetchAddresses()
+                _events.emit(
+                    ShippingAddressUiEvent.DefaultAddressChanged
+                )
+                _currentlySelectedAddressId.value = null
+            } catch (e: Exception) {
+                Log.e("Shipping", "Failed to change default address: ${e.message}")
+                _events.emit(ShippingAddressUiEvent.Error("Failed to change default address"))
+            } finally {
+                _isSettingDefaultAddress.value = false
             }
         }
     }

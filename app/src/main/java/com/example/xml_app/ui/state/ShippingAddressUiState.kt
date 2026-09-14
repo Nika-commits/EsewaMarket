@@ -14,6 +14,7 @@ sealed interface ShippingAddressUiState {
 
 sealed interface ShippingAddressUiEvent {
     data object DeleteSuccess : ShippingAddressUiEvent
+    data object DefaultAddressChanged : ShippingAddressUiEvent
     data class Error(
         val message: String
     ) : ShippingAddressUiEvent
