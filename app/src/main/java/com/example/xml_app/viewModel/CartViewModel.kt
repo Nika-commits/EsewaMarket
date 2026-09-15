@@ -1,6 +1,7 @@
 package com.example.xml_app.viewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -87,26 +88,31 @@ class CartViewModel(
             val localUser = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
             _user.value = localUser
 
+            Log.d("CartViewModel", "Calling observeCart")
             initializeAndObserveCart(localUser.uid)
+
+            Log.d("CartViewModel", "Calling observeFavourites")
             observeFavourites(localUser.uid)
         }
     }
 
 
-    private suspend fun initializeAndObserveCart(userId: Int) {
-        val cart = cartRepository.getOrCreateCart(userId)
-        _cartId.value = cart.uid
-        database.cartDao().observeCartItems(cart.uid)
-            .collect { cartItems ->
-                val oldProductIds = _cartItems.value
-                    .map { it.productId }
-                    .toSet()
-                val newProductIds = cartItems.map { it.productId }.toSet()
-                _cartItems.value = cartItems
-                if (oldProductIds != newProductIds) {
-                    getProductsInCart()
+    private fun initializeAndObserveCart(userId: Int) {
+        viewModelScope.launch {
+            val cart = cartRepository.getOrCreateCart(userId)
+            _cartId.value = cart.uid
+            database.cartDao().observeCartItems(cart.uid)
+                .collect { cartItems ->
+                    val oldProductIds = _cartItems.value
+                        .map { it.productId }
+                        .toSet()
+                    val newProductIds = cartItems.map { it.productId }.toSet()
+                    _cartItems.value = cartItems
+                    if (oldProductIds != newProductIds) {
+                        getProductsInCart()
+                    }
                 }
-            }
+        }
     }
 
     private fun observeFavourites(userId: Int) {
@@ -114,6 +120,7 @@ class CartViewModel(
             favouriteRepository
                 .observeFavouriteIds(userId)
                 .collect {
+                    Log.d("Cart", "Favourite IDs: $it")
                     _favouriteIds.value = it.toSet()
                 }
         }
@@ -178,8 +185,8 @@ class CartViewModel(
         _cartItems,
         _favouriteIds
     ) { pagingData, cartItems, favouriteIds ->
+        val cartItemsByProduct = cartItems.associateBy { it.productId }
         pagingData.map { product ->
-            val cartItemsByProduct = cartItems.associateBy { it.productId }
             ProductUiModel(
                 product = product,
                 cartCount = cartItemsByProduct[product.id]?.quantity ?: 0,
@@ -187,6 +194,4 @@ class CartViewModel(
             )
         }
     }
-
-
 }

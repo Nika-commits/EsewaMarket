@@ -131,12 +131,11 @@ class ConfirmationActivity : AppCompatActivity() {
         }
     }
 
-    fun gotomain() {
+    fun goToMainActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("TEST", "OpenCart")
         }
-
         startActivity(intent)
         finish()
     }
@@ -206,7 +205,6 @@ class ConfirmationActivity : AppCompatActivity() {
         }
     }
 
-
     private fun startCashOnDeliveryOrderFlow() {
         viewModel.updateOrderStatusToPending()
     }
@@ -218,7 +216,7 @@ class ConfirmationActivity : AppCompatActivity() {
 
         viewModel.getOrder(orderId)
         onBackPressedDispatcher.addCallback(this) {
-            gotomain()
+            goToMainActivity()
         }
         setContent {
             Scaffold(
@@ -248,7 +246,7 @@ class ConfirmationActivity : AppCompatActivity() {
                         ) {
                             AppLoadingIndicator(
                                 size = 100.dp,
-                                strokeWidth = 8.dp
+                                strokeWidth = 6.dp
                             )
                         }
 
@@ -286,7 +284,6 @@ class ConfirmationActivity : AppCompatActivity() {
                                             )
                                         }
                                     }
-
                                 },
                                 text = "CONFIRM"
                             )
@@ -303,14 +300,7 @@ class ConfirmationActivity : AppCompatActivity() {
                 when (val orderState = orderState) {
                     PaymentState.Idle -> Unit
 
-                    is PaymentState.Verifying -> {
-                        PaymentProcessingDialog(
-                            onDismissRequest = {},
-                            onRetry = {},
-                            state = orderState
-                        )
-                    }
-
+                    is PaymentState.Verifying,
                     is PaymentState.Loading,
                     is PaymentState.Error -> {
                         PaymentProcessingDialog(

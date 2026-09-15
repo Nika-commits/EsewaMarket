@@ -67,24 +67,10 @@ class Cart : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.cartToolbar.root) { v, windowInsets ->
-//            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars())
-//            val toolbar = binding.cartToolbar.toolbar
-//
-//            binding.cartToolbar.root.updatePadding(
-//                insets.left,
-//                insets.top,
-//                insets.right,
-//                insets.bottom
-//            )
-//            WindowInsetsCompat.CONSUMED
-//        }
-
         viewModel.initializeUserAndObserveCart()
         setupToolbar()
         setupRecyclerView()
         observerCartData()
-        setupRecommendations()
     }
 
 
@@ -112,10 +98,10 @@ class Cart : Fragment() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.cartToolbar.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             v.updatePadding(
-                top = toolbar.paddingTop + systemBars.top,
-                bottom = toolbar.paddingBottom + systemBars.bottom,
-                right = toolbar.paddingRight + systemBars.right,
-                left = toolbar.paddingLeft + systemBars.left
+                top = systemBars.top,
+                bottom = systemBars.bottom,
+                right = systemBars.right,
+                left = systemBars.left
             )
             Log.d("Cart", "${v.paddingTop}")
             insets
@@ -170,11 +156,14 @@ class Cart : Fragment() {
                 )
             },
             onFavouriteClick = { p, isFavourite ->
+                viewModel.toggleFavourite(p.id)
                 if (!isFavourite) {
                     CustomSnackBar.show(
                         context = requireContext(),
                         view = binding.root,
                         text = "${p.name} added to favourites",
+                        actionText = "GOTO FAVOURITES",
+                        anchorView = bottomNavigation,
                         action = {
                             findNavController().navigate(ApiRoute.Favourite) {
                                 popUpTo<ApiRoute.Cart> {
@@ -183,9 +172,7 @@ class Cart : Fragment() {
                                 launchSingleTop = true
                                 restoreState = true
                             }
-                        },
-                        actionText = "GOTO FAVOURITES",
-                        anchorView = bottomNavigation
+                        }
                     )
                 }
             },

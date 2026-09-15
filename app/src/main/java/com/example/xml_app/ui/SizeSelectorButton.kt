@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import com.example.xml_app.R
 import com.google.android.material.button.MaterialButton
 
-class SizeSelectorButton @JvmOverloads constructor(
+class SizeSelectorButton(
     val size: String,
     context: Context,
 ) : MaterialButton(context) {
@@ -31,7 +31,7 @@ class SizeSelectorButton @JvmOverloads constructor(
 
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
+            LinearLayout.LayoutParams.WRAP_CONTENT
         )
     }
 

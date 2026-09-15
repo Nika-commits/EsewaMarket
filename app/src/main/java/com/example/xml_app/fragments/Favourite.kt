@@ -123,10 +123,10 @@ class Favourite : Fragment() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.favouriteToolbar.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             v.updatePadding(
-                top = toolbar.paddingTop + systemBars.top,
-                bottom = toolbar.paddingBottom + systemBars.bottom,
-                right = toolbar.paddingRight + systemBars.right,
-                left = toolbar.paddingLeft + systemBars.left
+                top = systemBars.top,
+                bottom = systemBars.bottom,
+                right = systemBars.right,
+                left = systemBars.left
             )
             Log.d("Favourite", "${v.paddingTop}")
             insets
