@@ -27,7 +27,7 @@ class ShippingAddressViewModel(
     val isSettingDefaultAddress = _isSettingDefaultAddress.asStateFlow()
     private val _events = MutableSharedFlow<ShippingAddressUiEvent>()
     val events = _events.asSharedFlow()
-    val _currentlySelectedAddressId = MutableStateFlow<Int?>(null)
+    private val _currentlySelectedAddressId = MutableStateFlow<Int?>(null)
     val currentlySelectedAddress = _currentlySelectedAddressId.asStateFlow()
 
     fun changeCurrentlySelectedAddressId(id: Int?) {

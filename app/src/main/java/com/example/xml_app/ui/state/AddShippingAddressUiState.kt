@@ -9,5 +9,11 @@ sealed interface AddShippingAddressUiState {
 sealed interface AddShippingAddressEvent {
     object IsDeleting : AddShippingAddressEvent
 
-    object Success : AddShippingAddressEvent
+    data class Success(
+        val message: String
+    ) : AddShippingAddressEvent
+
+    data class Error(
+        val message: String
+    ) : AddShippingAddressEvent
 }

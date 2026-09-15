@@ -24,7 +24,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -50,7 +49,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xml_app.R
 import com.example.xml_app.ui.state.AddShippingAddressEvent
 import com.example.xml_app.ui.state.AddShippingAddressUiState
-import com.example.xml_app.utils.CustomComposeSnackBar
 import com.example.xml_app.utils.SourceSansPro
 import com.example.xml_app.utils.dto.request.AddressLabel
 import com.example.xml_app.utils.formstates.AddressFormState
@@ -75,21 +73,33 @@ class AddNewAddressActivity : AppCompatActivity() {
     companion object {
         const val TYPE = "type"
         const val ADDRESS_ID = "address_id"
+        const val RESULT_MESSAGE = "result_message"
 
         enum class MODE {
             ADD, EDIT
         }
+//
+//        fun startActivity(
+//            context: Context,
+//            mode: MODE,
+//            addressId: Int?
+//        ) {
+//            val intent = Intent(context, AddNewAddressActivity::class.java).apply {
+//                putExtra(TYPE, mode.name)
+//                putExtra(ADDRESS_ID, addressId)
+//            }
+//            context.startActivity(intent)
+//        }
 
-        fun startActivity(
+        fun createIntent(
             context: Context,
             mode: MODE,
             addressId: Int?
-        ) {
-            val intent = Intent(context, AddNewAddressActivity::class.java).apply {
+        ): Intent {
+            return Intent(context, AddNewAddressActivity::class.java).apply {
                 putExtra(TYPE, mode.name)
                 putExtra(ADDRESS_ID, addressId)
             }
-            context.startActivity(intent)
         }
     }
 
@@ -104,6 +114,15 @@ class AddNewAddressActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    private fun finishActivityWithResultMessage(message: String) {
+        val resultIntent = Intent()
+            .apply {
+                putExtra(RESULT_MESSAGE, message)
+            }
+        setResult(RESULT_OK, resultIntent)
+        finish()
     }
 
     sealed interface AddressFormEvent {
@@ -139,12 +158,6 @@ class AddNewAddressActivity : AppCompatActivity() {
             var isDeleting by remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
-                viewModel.snackbarMessage.collect { message ->
-                    snackbarHostState.showSnackbar(message)
-                }
-            }
-
-            LaunchedEffect(Unit) {
                 viewModel.event.collect { event ->
                     when (event) {
                         is AddShippingAddressEvent.IsDeleting -> {
@@ -154,11 +167,17 @@ class AddNewAddressActivity : AppCompatActivity() {
                         is AddShippingAddressEvent.Success -> {
                             isDeleting = false
                             showBottomSheet = false
-                            finish()
+                            finishActivityWithResultMessage(event.message)
+                        }
+
+                        is AddShippingAddressEvent.Error -> {
+                            isDeleting = false
+                            finishActivityWithResultMessage(event.message)
                         }
                     }
                 }
             }
+
             Scaffold(
                 topBar = {
                     AppTopBar(
@@ -172,16 +191,6 @@ class AddNewAddressActivity : AppCompatActivity() {
                     )
                 },
                 containerColor = OffWhiteBackground,
-                snackbarHost = {
-                    SnackbarHost(
-                        hostState = snackbarHostState
-                    ) { snackbarData ->
-                        CustomComposeSnackBar(
-                            snackBarData = snackbarData
-                        )
-
-                    }
-                }
             ) { innerPadding ->
                 val formData by viewModel.formData.collectAsStateWithLifecycle()
                 val state by viewModel.state.collectAsStateWithLifecycle()

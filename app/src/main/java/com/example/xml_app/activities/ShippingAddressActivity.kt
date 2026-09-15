@@ -1,7 +1,9 @@
 package com.example.xml_app.activities
 
 import android.os.Bundle
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateColorAsState
@@ -40,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,6 +86,29 @@ class ShippingAddressActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val snackbarHostState = remember { SnackbarHostState() }
+            var resultMessage by remember { mutableStateOf<String?>(null) }
+
+            val addAddressLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    resultMessage = result.data?.getStringExtra(
+                        AddNewAddressActivity.RESULT_MESSAGE
+                    )
+                }
+            }
+
+            LaunchedEffect(resultMessage) {
+                resultMessage?.let { message ->
+                    snackbarHostState.showSnackbar(
+                        message,
+                        "OK",
+                        duration = SnackbarDuration.Short
+                    )
+                    resultMessage = null
+                }
+            }
+
             Scaffold(
                 topBar = {
                     AppTopBar(
@@ -176,10 +202,17 @@ class ShippingAddressActivity : AppCompatActivity() {
                         ) {
                             EmptyAddressCard(
                                 onAddNewAddress = {
-                                    AddNewAddressActivity.startActivity(
-                                        this@ShippingAddressActivity,
-                                        AddNewAddressActivity.Companion.MODE.ADD,
-                                        null
+//                                    AddNewAddressActivity.startActivity(
+//                                        this@ShippingAddressActivity,
+//                                        AddNewAddressActivity.Companion.MODE.ADD,
+//                                        null
+//                                    )
+                                    addAddressLauncher.launch(
+                                        AddNewAddressActivity.createIntent(
+                                            this@ShippingAddressActivity,
+                                            AddNewAddressActivity.Companion.MODE.ADD,
+                                            null
+                                        )
                                     )
                                 }
                             )
@@ -196,17 +229,26 @@ class ShippingAddressActivity : AppCompatActivity() {
                             selectedAddressId = selectedAddress.value,
                             isSettingDefault = isSettingDefault.value,
                             onAddAddress = {
-                                AddNewAddressActivity.startActivity(
-                                    this,
-                                    AddNewAddressActivity.Companion.MODE.ADD,
-                                    null
+                                addAddressLauncher.launch(
+                                    AddNewAddressActivity.createIntent(
+                                        this,
+                                        AddNewAddressActivity.Companion.MODE.ADD,
+                                        null
+                                    ),
                                 )
                             },
                             onEditAddress = {
-                                AddNewAddressActivity.startActivity(
-                                    this,
-                                    AddNewAddressActivity.Companion.MODE.EDIT,
-                                    it
+//                                AddNewAddressActivity.startActivity(
+//                                    this,
+//                                    AddNewAddressActivity.Companion.MODE.EDIT,
+//                                    it
+//                                )
+                                addAddressLauncher.launch(
+                                    AddNewAddressActivity.createIntent(
+                                        this,
+                                        AddNewAddressActivity.Companion.MODE.EDIT,
+                                        it
+                                    )
                                 )
                             },
                             onDeleteAddress = {

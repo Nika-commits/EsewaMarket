@@ -35,8 +35,7 @@ class AddNewAddressViewModel(
     private val validator = AddressValidation()
     private val _isSaving = MutableStateFlow(false)
     val isSaving = _isSaving.asStateFlow()
-    private val _snackbarMessage = MutableSharedFlow<String>()
-    val snackbarMessage = _snackbarMessage.asSharedFlow()
+
     fun getCurrentAddress(addressId: Int) {
         viewModelScope.launch {
             _state.value = AddShippingAddressUiState.Loading
@@ -88,9 +87,17 @@ class AddNewAddressViewModel(
                     AddNewAddressActivity.Companion.MODE.ADD -> {
                         val response = userRepository.createUserAddress(token, payload)
                         if (response != null) {
-                            _snackbarMessage.emit("Address Created Successfully")
+                            _event.emit(
+                                AddShippingAddressEvent.Success(
+                                    "Address Created Successfully."
+                                )
+                            )
                         } else {
-                            _snackbarMessage.emit("Failed to create Address")
+                            _event.emit(
+                                AddShippingAddressEvent.Error(
+                                    "Failed to create new address."
+                                )
+                            )
                         }
                     }
 
@@ -102,15 +109,27 @@ class AddNewAddressViewModel(
                             request = payload
                         )
                         if (response != null) {
-                            _snackbarMessage.emit("Address Edited Successfully")
+                            _event.emit(
+                                AddShippingAddressEvent.Success(
+                                    "Address edited Successfully."
+                                )
+                            )
                         } else {
-                            _snackbarMessage.emit("Failed to edit Address")
+                            _event.emit(
+                                AddShippingAddressEvent.Error(
+                                    "Failed to edit address."
+                                )
+                            )
                         }
                     }
                 }
             } catch (e: Exception) {
                 Log.e("Address", "SaveAddress: ${e.message}")
-                _snackbarMessage.emit("Failed to save address")
+                _event.emit(
+                    AddShippingAddressEvent.Error(
+                        "Failed to save address."
+                    )
+                )
             } finally {
                 _isSaving.value = false
             }
@@ -123,18 +142,30 @@ class AddNewAddressViewModel(
             try {
                 val token = userRepository.getFirebaseToken(app.auth)
                 if (token == null) {
-                    _snackbarMessage.emit("Authentication Error")
+                    _event.emit(
+                        AddShippingAddressEvent.Error(
+                            "Authentication Error"
+                        )
+                    )
                     return@launch
                 }
                 userRepository.deleteAddress(
                     token = token,
                     id = id
                 )
-                _snackbarMessage.emit("Address Deleted Successfully")
-                _event.emit(AddShippingAddressEvent.Success)
+                _event.emit(
+                    AddShippingAddressEvent.Success(
+                        "Address deleted successfully."
+                    )
+                )
+                _event.emit(AddShippingAddressEvent.Success("Address Deleted Successfully."))
             } catch (e: Exception) {
                 Log.e("Address", "Failed to delete address: ${e.message}")
-                _snackbarMessage.emit("Failed to delete address.")
+                _event.emit(
+                    AddShippingAddressEvent.Error(
+                        "Failed to delete address."
+                    )
+                )
             }
         }
     }
