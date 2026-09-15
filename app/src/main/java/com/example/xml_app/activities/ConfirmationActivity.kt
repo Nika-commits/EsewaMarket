@@ -74,6 +74,7 @@ import com.khalti.checkout.data.Environment
 import com.khalti.checkout.data.KhaltiPayConfig
 import com.khalti.checkout.data.PaymentResult
 import com.khalti.checkout.resource.OnMessagePayload
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class ConfirmationActivity : AppCompatActivity() {
@@ -140,6 +141,76 @@ class ConfirmationActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun startEsewaPayment(order: OrderResponse) {
+        viewModel.setPaymentState(
+            PaymentState.Loading(PaymentOptions.Esewa)
+        )
+
+        val eSewaPayment = EsewaPayment(
+            amount = order.totalPrice.toString(),
+            productName = order.id.toString(),
+            productUniqueId = order.id.toString()
+        )
+        initiateEsewaPayment(eSewaPayment)
+    }
+
+    private fun startKhaltiPayment(
+        order: OrderResponse,
+        scope: CoroutineScope
+    ) {
+        Log.d("Khalti", "Reached Khalti Payment function")
+        scope.launch {
+            viewModel.setPaymentState(PaymentState.Loading(PaymentOptions.Khalti))
+            val response = viewModel.initiateKhaltiPayment(
+                order.id
+            )
+            if (response == null) {
+                return@launch
+            }
+
+            val config = KhaltiPayConfig(
+                publicKey = BuildConfig.KhaltiLivePublic,
+                paymentUrl = response.paymentUrl,
+                pidx = response.pidx,
+                environment = Environment.TEST
+            )
+
+            val khalti = Khalti.init(
+                this@ConfirmationActivity,
+                config = config,
+                onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
+                    Log.d("Khalti", "OnPaymentResult: result: $paymentResult")
+                    khalti.close()
+                    scope.launch {
+                        viewModel.verifyKhaltiPayment(
+                            orderId = order.id,
+                            pidx = response.pidx
+                        )
+                    }
+                },
+                onMessage = { payload: OnMessagePayload, khalti: Khalti ->
+                    Log.d("Khalti", "onMessage: Payload: ${payload.message}")
+                    khalti.close()
+                    viewModel.setPaymentState(
+                        PaymentState.Error(PaymentOptions.Khalti)
+                    )
+                },
+                onReturn = { khalti: Khalti ->
+                    Log.d("Khalti", "Returning $khalti")
+                }
+            )
+            viewModel.setPaymentState(
+                PaymentState.Idle
+            )
+            khalti.open()
+        }
+    }
+
+
+    private fun startCashOnDeliveryOrderFlow() {
+        viewModel.updateOrderStatusToPending()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val orderId = intent.getIntExtra(ID, -1)
@@ -165,6 +236,7 @@ class ConfirmationActivity : AppCompatActivity() {
             ) { innerPadding ->
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                 val scope = rememberCoroutineScope()
+                val order = (uiState as? ConfirmationUiState.Success)?.order
                 when (val state = uiState) {
                     ConfirmationUiState.Loading ->
                         Column(
@@ -200,64 +272,18 @@ class ConfirmationActivity : AppCompatActivity() {
                                 onClick = {
                                     when (state.order.paymentOption) {
                                         PaymentOptions.Esewa.toString() -> {
-                                            val eSewaPayment = EsewaPayment(
-                                                amount = state.order.totalPrice.toString(),
-                                                productName = state.order.id.toString(),
-                                                productUniqueId = state.order.id.toString(),
-                                            )
-                                            initiateEsewaPayment(eSewaPayment = eSewaPayment)
+                                            startEsewaPayment(state.order)
                                         }
 
                                         PaymentOptions.Cash_On_Delivery.toString() -> {
-                                            viewModel.updateOrderStatusToPending()
+                                            startCashOnDeliveryOrderFlow()
                                         }
 
                                         PaymentOptions.Khalti.toString() -> {
-                                            scope.launch {
-                                                viewModel.setPaymentState(PaymentState.Loading(PaymentOptions.Khalti))
-                                                val response = viewModel.initiateKhaltiPayment(
-                                                    state.order.id
-                                                )
-                                                if (response == null) {
-                                                    return@launch
-                                                }
-
-                                                val config = KhaltiPayConfig(
-                                                    publicKey = BuildConfig.KhaltiLivePublic,
-                                                    paymentUrl = response.paymentUrl,
-                                                    pidx = response.pidx,
-                                                    environment = Environment.TEST
-                                                )
-
-                                                val khalti = Khalti.init(
-                                                    this@ConfirmationActivity,
-                                                    config = config,
-                                                    onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
-                                                        Log.d("Khalti", "OnPaymentResult: result: $paymentResult")
-                                                        khalti.close()
-                                                        scope.launch {
-                                                            viewModel.verifyKhaltiPayment(
-                                                                orderId = state.order.id,
-                                                                pidx = response.pidx
-                                                            )
-                                                        }
-                                                    },
-                                                    onMessage = { payload: OnMessagePayload, khalti: Khalti ->
-                                                        Log.d("Khalti", "onMessage: Payload: ${payload.message}")
-                                                        khalti.close()
-                                                        viewModel.setPaymentState(
-                                                            PaymentState.Error(PaymentOptions.Khalti)
-                                                        )
-                                                    },
-                                                    onReturn = { khalti: Khalti ->
-                                                        Log.d("Khalti", "Returning $khalti")
-                                                    }
-                                                )
-                                                viewModel.setPaymentState(
-                                                    PaymentState.Idle
-                                                )
-                                                khalti.open()
-                                            }
+                                            startKhaltiPayment(
+                                                state.order,
+                                                scope
+                                            )
                                         }
                                     }
 
@@ -278,14 +304,42 @@ class ConfirmationActivity : AppCompatActivity() {
                     PaymentState.Idle -> Unit
 
                     is PaymentState.Verifying -> {
-
+                        PaymentProcessingDialog(
+                            onDismissRequest = {},
+                            onRetry = {},
+                            state = orderState
+                        )
                     }
 
                     is PaymentState.Loading,
                     is PaymentState.Error -> {
                         PaymentProcessingDialog(
                             onDismissRequest = {},
-                            onRetry = {},
+                            onRetry = {
+                                when (orderState) {
+                                    is PaymentState.Error -> {
+                                        when (orderState.method) {
+                                            PaymentOptions.Esewa -> {
+                                                if (order == null) return@PaymentProcessingDialog
+                                                startEsewaPayment(order)
+                                            }
+
+                                            PaymentOptions.Khalti -> {
+                                                Log.d("Khalti", "Retrying Khalti")
+                                                if (order == null) return@PaymentProcessingDialog
+                                                startKhaltiPayment(order, scope)
+                                            }
+
+                                            PaymentOptions.Cash_On_Delivery -> {
+                                                if (order == null) return@PaymentProcessingDialog
+                                                startCashOnDeliveryOrderFlow()
+                                            }
+                                        }
+                                    }
+
+                                    else -> Unit
+                                }
+                            },
                             state = orderState
                         )
                     }
@@ -301,27 +355,6 @@ class ConfirmationActivity : AppCompatActivity() {
                             onGoToOrders = {
                                 goToOrders()
                             },
-                        )
-                    }
-                }
-                val khaltiUiState by viewModel.paymentState.collectAsStateWithLifecycle()
-                when (val state = khaltiUiState) {
-                    PaymentState.Idle -> Unit
-                    is PaymentState.Loading,
-                    is PaymentState.Error,
-                    is PaymentState.Verifying -> {
-                        PaymentProcessingDialog(
-                            onDismissRequest = {},
-                            onRetry = {},
-                            state = state
-                        )
-                    }
-
-                    is PaymentState.Success -> {
-                        OrderSuccessScreen(
-                            order = state.order,
-                            onGoToHome = ::goToMain,
-                            onGoToOrders = ::goToOrders
                         )
                     }
                 }
@@ -842,6 +875,6 @@ fun OrderResponseCardPreview() {
     PaymentProcessingDialog(
         onRetry = {},
         onDismissRequest = {},
-        state = PaymentState.Verifying(PaymentOptions.Khalti)
+        state = PaymentState.Error(PaymentOptions.Khalti)
     )
 }

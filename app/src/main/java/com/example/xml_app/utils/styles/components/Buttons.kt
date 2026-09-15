@@ -92,11 +92,11 @@ fun AppButton(
         pressed {
             animate(
                 spring(
-                    dampingRatio = Spring.DampingRatioHighBouncy,
-                    stiffness = Spring.StiffnessLow
+                    dampingRatio = Spring.DampingRatioLowBouncy,
+                    stiffness = Spring.StiffnessMedium
                 )
             ) {
-                alpha(0.85f)
+                alpha(0.97f)
                 scale(0.96f)
             }
         }
