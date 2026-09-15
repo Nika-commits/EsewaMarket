@@ -1,5 +1,8 @@
 package com.example.xml_app.adapters.search
 
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.databinding.ItemSearchSuggestionRowBinding
 
 class SearchSuggestionsAdapter(
+    private var query: String = "",
     private val onSuggestionsClick: (String) -> Unit
 ) : ListAdapter<String, SearchSuggestionsAdapter.ViewHolder>(DiffCallback) {
     companion object {
@@ -35,8 +39,39 @@ class SearchSuggestionsAdapter(
             root.setOnClickListener {
                 onSuggestionsClick(suggestion)
             }
-            tvSearchSuggestion.text = suggestion
+            tvSearchSuggestion.text = highlightQuery(
+                suggestion,
+                query
+            )
         }
+    }
+
+    fun updateQuery(query: String) {
+        this.query = query
+        notifyItemChanged(0, itemCount)
+    }
+
+    private fun highlightQuery(
+        suggestion: String,
+        query: String
+    ): SpannableString {
+        val spannable = SpannableString(suggestion)
+        if (query.isBlank()) return spannable
+
+        val start = suggestion.indexOf(
+            query,
+            ignoreCase = true
+        )
+
+        if (start >= 0) {
+            spannable.setSpan(
+                StyleSpan(android.graphics.Typeface.BOLD),
+                start,
+                start + query.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        return spannable
     }
 
     class ViewHolder(val binding: ItemSearchSuggestionRowBinding) : RecyclerView.ViewHolder(binding.root)

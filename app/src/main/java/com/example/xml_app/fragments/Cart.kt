@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.util.component1
@@ -109,7 +108,6 @@ class Cart : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        val bottomNavigation = requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
         cartAdapter = CartAdapter(
             onProductClick = { ProductDetailActivity.startActivity(requireContext(), it) },
             onCartIncrement = { id ->
@@ -163,7 +161,7 @@ class Cart : Fragment() {
                         view = binding.root,
                         text = "${p.name} added to favourites",
                         actionText = "GOTO FAVOURITES",
-                        anchorView = bottomNavigation,
+                        anchorView = binding.checkoutLayout,
                         action = {
                             findNavController().navigate(ApiRoute.Favourite) {
                                 popUpTo<ApiRoute.Cart> {
@@ -181,8 +179,9 @@ class Cart : Fragment() {
                     CustomSnackBar.show(
                         context = requireContext(),
                         view = binding.root,
-                        anchorView = bottomNavigation,
-                        text = "${product.name} added to cart"
+                        anchorView = binding.checkoutLayout,
+                        text = "(1) item added to cart",
+                        actionText = "OK"
                     )
                 }
                 viewModel.cartIncrement(product.id)
@@ -303,6 +302,7 @@ class Cart : Fragment() {
                 launch {
                     viewModel.isCartLoading.collect { isLoading ->
                         binding.cartLoading.isVisible = isLoading
+                        binding.tvItemCount.isVisible = !isLoading
                         binding.rvCartContent.isVisible = !isLoading
                     }
                 }
@@ -311,14 +311,14 @@ class Cart : Fragment() {
 
 
         binding.btnCheckout.setOnClickListener {
-            val bottomNavigation =
-                requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
+//            val bottomNavigation =
+//                requireActivity().findViewById<LinearLayout>(R.id.bottomNavigation)
             if (viewModel.user.value == null) {
                 CustomSnackBar.show(
                     view = binding.root,
                     context = requireContext(),
                     text = "Log in to Checkout",
-                    anchorView = bottomNavigation,
+                    anchorView = binding.checkoutLayout,
                     actionText = "LOGIN",
                     action = {
                         Intent(requireContext(), AuthActivity::class.java).apply {
@@ -337,8 +337,8 @@ class Cart : Fragment() {
                     view = binding.root,
                     context = requireContext(),
                     text = "Cannot checkout with an empty Cart.",
-                    anchorView = bottomNavigation,
-//                    actionText = "LOGIN",
+                    anchorView = binding.checkoutLayout.rootView,
+                    actionText = "OK",
 //                    action = {
 //                        Intent(requireContext(), AuthActivity::class.java).apply {
 //                            putExtra(AuthActivity.DESTINATION, AuthActivity.LOGIN)

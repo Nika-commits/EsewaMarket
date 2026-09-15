@@ -22,10 +22,10 @@ import kotlinx.coroutines.launch
 class SearchPredictions : Fragment() {
     private var _binding: FragmentSearchSuggestionsBinding? = null
     private val binding get() = _binding!!
+    private lateinit var searchSuggestionsAdapter: SearchSuggestionsAdapter
     private val viewModel: SearchViewModel by viewModels(
         ownerProducer = { requireParentFragment().requireParentFragment() }
     )
-    private lateinit var searchSuggestionsAdapter: SearchSuggestionsAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSearchSuggestionsBinding.inflate(inflater, container, false)
@@ -40,7 +40,7 @@ class SearchPredictions : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        searchSuggestionsAdapter = SearchSuggestionsAdapter { suggestion ->
+        searchSuggestionsAdapter = SearchSuggestionsAdapter("") { suggestion ->
             viewModel.onChange(suggestion)
             findNavController().navigate(SearchRoute.Results) {
                 popUpTo<SearchRoute.Suggestions> {
@@ -58,9 +58,17 @@ class SearchPredictions : Fragment() {
     private fun observeSuggestions() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.suggestions.collectLatest { suggestions ->
-                    Log.d("Search", "Value is being collected: ${suggestions.size}")
-                    searchSuggestionsAdapter.submitList(suggestions)
+                launch {
+                    viewModel.suggestions.collectLatest { suggestions ->
+                        Log.d("Search", "Value is being collected: ${suggestions.size}")
+                        searchSuggestionsAdapter.submitList(suggestions)
+                    }
+                }
+
+                launch {
+                    viewModel.searchQuery.collectLatest { query ->
+                        searchSuggestionsAdapter.updateQuery(query)
+                    }
                 }
             }
         }
