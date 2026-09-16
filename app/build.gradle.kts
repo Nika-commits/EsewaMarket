@@ -274,4 +274,7 @@ dependencies {
     // Koin
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+
+
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
 }
