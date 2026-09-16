@@ -2,7 +2,6 @@ package com.example.xml_app.adapters.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.R
 import com.example.xml_app.adapters.HeroViewPagerAdapter
@@ -15,9 +14,10 @@ class HomeHeadAdapter(
     private val heroes: List<Hero>,
     private val onFilterClick: () -> Unit,
     private val onSearchClick: () -> Unit,
-    private val onToolbarReady: (Toolbar) -> Unit,
+    private val onNotificationClick: () -> Unit,
+    private val onMoreClick: () -> Unit
 
-    ) : RecyclerView.Adapter<HomeHeadAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<HomeHeadAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -25,15 +25,16 @@ class HomeHeadAdapter(
         val binding =
             ItemHomeHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(
-
             binding,
             heroes,
             onFilterClick,
             onSearchClick,
-            onToolbarReady,
+            onNotificationClick,
+            onMoreClick,
             userName
         )
     }
+
 
     override fun onBindViewHolder(
         holder: ViewHolder,
@@ -54,7 +55,8 @@ class HomeHeadAdapter(
         heroes: List<Hero>,
         onFilterClick: () -> Unit,
         onSearchClick: () -> Unit,
-        onToolbarReady: (Toolbar) -> Unit,
+        onNotificationClick: () -> Unit,
+        onMoreClick: () -> Unit,
         username: String
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
@@ -70,12 +72,15 @@ class HomeHeadAdapter(
             binding.searchBox.setEndIconOnClickListener { onFilterClick() }
             binding.searchBox.setOnClickListener { onSearchClick() }
             binding.etSearch.setOnClickListener { onSearchClick() }
-            onToolbarReady(binding.toolbar)
+
+            binding.btnNotification.setOnClickListener { onNotificationClick() }
+            binding.btnMore.setOnClickListener { onMoreClick() }
+
+
         }
 
         fun bind(username: String) {
             binding.tvUsername.text = username
         }
-
     }
 }

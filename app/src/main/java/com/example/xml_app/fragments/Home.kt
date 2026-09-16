@@ -5,19 +5,12 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.util.component1
 import androidx.core.util.component2
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -100,42 +93,6 @@ class Home : Fragment() {
             }
     }
 
-
-    private fun setUpToolbarAndMenu(toolbar: androidx.appcompat.widget.Toolbar) {
-        val activity = requireActivity() as AppCompatActivity
-        activity.setSupportActionBar(toolbar)
-        activity.supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        toolbar.overflowIcon?.setTint(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.textDark
-            )
-        )
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.top_bar, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.miAbout -> {
-                        throw RuntimeException("Test Exception")
-                    }
-
-                    R.id.miNotification -> {
-                        startActivity(Intent(requireContext(), NotificationActivity::class.java))
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
     private fun setupHomeRecyclerview() {
         val heroes = mutableListOf(
             Hero("Sale", R.drawable.hero1),
@@ -146,7 +103,12 @@ class Home : Fragment() {
         homeHeadAdapter = HomeHeadAdapter(
             heroes = heroes,
             onFilterClick = {},
-            onToolbarReady = { setUpToolbarAndMenu(it) },
+            onNotificationClick = {
+                Intent(requireContext(), NotificationActivity::class.java).also {
+                    startActivity(it)
+                }
+            },
+            onMoreClick = {},
             onSearchClick = {
                 findNavController().navigate(ApiRoute.Search) {
                     popUpTo<ApiRoute.Home> {

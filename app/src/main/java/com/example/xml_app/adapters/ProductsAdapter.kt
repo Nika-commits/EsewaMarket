@@ -136,11 +136,54 @@ class ProductsAdapter(
                 }
             }
         }
+    }
+
+    private fun showCartStepper(binding: ItemProductBinding) {
+        binding.ibAddToCart.animate().cancel()
+        binding.llCartCountStepper.animate().cancel()
+
+        binding.ibAddToCart.animate()
+            .alpha(0f)
+            .scaleX(0.7f)
+            .scaleY(0.7f)
+            .setDuration(150)
+            .withEndAction {
+                binding.ibAddToCart.visibility = View.GONE
+
+                binding.llCartCountStepper.apply {
+                    visibility = View.VISIBLE
+                    alpha = 0f
+                    scaleX = 0.7f
+                    scaleY = 0.7f
+                }
+                binding.llCartCountStepper.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(200)
+                    .start()
+            }
+            .start()
+    }
+
+    private fun showAddToCartButton(binding: ItemProductBinding) {
+        binding.llCartCountStepper.animate().cancel()
+        binding.ibAddToCart.animate().cancel()
+
+        binding.llCartCountStepper.animate()
+            .alpha(0f)
+            .scaleX(0.7f)
+            .scaleY(0.7f)
+            .setDuration(150)
+            .withEndAction {
+                binding.llCartCountStepper.visibility = View.GONE
+
+                binding.ibAddToCart.apply {
+                    visibility = View.VISIBLE
+                }
+            }
 
     }
 
-    override fun getItemCount(): Int {
-        return products.size
-    }
-
+    override fun getItemCount() = products.size
 }
