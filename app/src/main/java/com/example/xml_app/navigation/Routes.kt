@@ -25,4 +25,7 @@ sealed interface SearchRoute {
 
     @Serializable
     data object Results : SearchRoute
+
+    @Serializable
+    data object Home : SearchRoute
 }
