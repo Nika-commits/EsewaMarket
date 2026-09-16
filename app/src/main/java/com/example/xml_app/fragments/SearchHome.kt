@@ -9,11 +9,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
 import com.example.xml_app.adapters.CartAdapter
 import com.example.xml_app.adapters.search.SearchHistoryAdapter
 import com.example.xml_app.databinding.FragmentSearchHomeBinding
+import com.example.xml_app.navigation.SearchRoute
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SearchHistoryItemDecoration
 import com.example.xml_app.viewModel.SearchViewModel
@@ -44,11 +46,23 @@ class SearchHome : Fragment() {
 
     private fun setupSearchHistoryRecyclerView() {
         searchHistoryAdapter = SearchHistoryAdapter(
-            onSearchHistoryClick = {},
-            onDeleteClick = {}
+            onSearchHistoryClick = {
+                viewModel.onChange(it)
+                findNavController().navigate(SearchRoute.Results) {
+                    popUpTo<SearchRoute.Results> {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            onDeleteClick = {
+                viewModel.deleteSearchHistory(
+                    it
+                )
+            }
         )
 
-        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
         binding.rvSearchHistory.apply {
             adapter = searchHistoryAdapter
             layoutManager = FlexboxLayoutManager(
