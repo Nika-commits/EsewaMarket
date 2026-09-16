@@ -54,12 +54,11 @@ class SearchHome : Fragment() {
                             binding.tvLoginMessage.visibility = View.VISIBLE
                         } else {
                             binding.tvLoginMessage.visibility = View.GONE
+                            viewModel.searchHistories.collectLatest { searchHistoryAdapter.searchHistory = it }
                         }
                     }
 
-                    launch {
-                        viewModel.searchHistories.collectLatest { searchHistoryAdapter.searchHistory = it }
-                    }
+
                 }
             }
         }
