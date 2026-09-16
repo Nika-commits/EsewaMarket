@@ -28,7 +28,7 @@ data class User(
             entity = User::class,
             parentColumns = ["uid"],
             childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = CASCADE
         )
     ],
     indices = [
@@ -53,7 +53,7 @@ data class Address(
             entity = User::class,
             parentColumns = ["uid"],
             childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = CASCADE
         )
     ],
     indices = [Index(value = ["user_id"], unique = true)]
