@@ -20,11 +20,8 @@ class ProductsAdapter(
     val onCartIncrement: (Product, Int?) -> Unit,
     val onCartDecrement: (Product, Int) -> Unit
 ) : RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
-    class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
-
-    companion object {
-        private const val VIEW_TYPE_PRODUCT = 0
-        private const val VIEW_TYPE_LOADING = 1
+    class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
+        var hasAnimated = false
     }
 
     private val diffCallback = object : DiffUtil.ItemCallback<ProductUiModel>() {
@@ -126,9 +123,18 @@ class ProductsAdapter(
 
             Glide.with(root)
                 .load(product.imageUrls.firstOrNull())
-                .placeholder(R.drawable.bg_offwhite_rounded)
-                .error(R.drawable.bg_offwhite_rounded)
                 .into(ivProductImage)
+
+            if (!holder.hasAnimated) {
+                holder.hasAnimated = true
+                holder.itemView.apply {
+                    alpha = 0f
+                    animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start()
+                }
+            }
         }
 
     }

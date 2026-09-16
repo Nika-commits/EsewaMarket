@@ -90,6 +90,7 @@ class RecommendedProductsAdapter(
                 .error(R.drawable.resource_default)
                 .into(ivProductImage)
 
+
             root.setOnClickListener {
                 onProductClick(product)
             }
@@ -109,8 +110,21 @@ class RecommendedProductsAdapter(
             ibCartDecrement.setOnClickListener {
                 onCartDecrement(product, item.cartCount)
             }
+
+            if (!holder.hasAnimated) {
+                holder.hasAnimated = true
+                holder.itemView.apply {
+                    alpha = 0f
+                    animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start()
+                }
+            }
         }
     }
 
-    class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
+        var hasAnimated = false
+    }
 }
