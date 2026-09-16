@@ -332,20 +332,16 @@ class Cart : Fragment() {
             }
 
             val cartSize = viewModel.productsInCart.value.size
-            if (cartSize == 0) {
+            Log.d("Cart", "Cart Size: $cartSize")
+            if (cartSize < 1) {
                 CustomSnackBar.show(
                     view = binding.root,
                     context = requireContext(),
                     text = "Cannot checkout with an empty Cart.",
-                    anchorView = binding.checkoutLayout.rootView,
+                    anchorView = binding.checkoutLayout,
                     actionText = "OK",
-//                    action = {
-//                        Intent(requireContext(), AuthActivity::class.java).apply {
-//                            putExtra(AuthActivity.DESTINATION, AuthActivity.LOGIN)
-//                        }.also {
-//                            startActivity(it)
-//                        }
-//                    }
+                    action = {}
+
                 )
                 return@setOnClickListener
             }

@@ -14,25 +14,35 @@ import kotlinx.coroutines.tasks.await
 class UserRepository(
     private val userDao: UserDao
 ) {
-    suspend fun createUser(token: String, request: CreateUserRequest): UserResponse {
-        val response =
-            RetrofitInstance.userApi.createUser(authorization = "Bearer $token", request = request)
+    suspend fun createUser(token: String, request: CreateUserRequest): UserResponse? {
+        try {
+            val response =
+                RetrofitInstance.userApi.createUser(authorization = "Bearer $token", request = request)
 
-        if (!response.isSuccessful) {
-            throw Exception("${response.code()}")
+            if (!response.isSuccessful) {
+                throw Exception("${response.code()}")
+            }
+
+            val remoteUser = response.body() ?: throw Exception("Empty Response")
+            saveUserLocally(remoteUser)
+            return remoteUser
+        } catch (e: Exception) {
+            Log.d("User", "Failed to create User: ${e.message}")
+            return null
         }
-
-        val remoteUser = response.body() ?: throw Exception("Empty Response")
-        saveUserLocally(remoteUser)
-        return remoteUser
     }
 
     suspend fun getCurrentUser(token: String): UserResponse? {
-        val response = RetrofitInstance.userApi.getCurrentUser(authorization = "Bearer $token")
-        return if (!response.isSuccessful) {
-            null
-        } else {
-            response.body()
+        try {
+            val response = RetrofitInstance.userApi.getCurrentUser(authorization = "Bearer $token")
+            return if (!response.isSuccessful) {
+                null
+            } else {
+                response.body()
+            }
+        } catch (e: Exception) {
+            Log.d("User", "${e.message}")
+            return null
         }
     }
 
