@@ -46,6 +46,23 @@ class SearchHome : Fragment() {
     }
 
     private fun setupSearchHistoryRecyclerView() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.user.collectLatest { user ->
+                        if (user == null) {
+                            binding.tvLoginMessage.visibility = View.VISIBLE
+                        } else {
+                            binding.tvLoginMessage.visibility = View.GONE
+                        }
+                    }
+
+                    launch {
+                        viewModel.searchHistories.collectLatest { searchHistoryAdapter.searchHistory = it }
+                    }
+                }
+            }
+        }
         searchHistoryAdapter = SearchHistoryAdapter(
             onSearchHistoryClick = {
                 viewModel.onChange(it)
@@ -74,11 +91,6 @@ class SearchHome : Fragment() {
             addItemDecoration(
                 SearchHistoryItemDecoration()
             )
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchHistories.collectLatest { searchHistoryAdapter.searchHistory = it }
-            }
         }
     }
 

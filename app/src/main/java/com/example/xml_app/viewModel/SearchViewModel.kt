@@ -39,6 +39,7 @@ class SearchViewModel(
     private val productRepository = ProductRepository()
     private val searchHistoryRepository = SearchHistoryRepository(app.database.searchHistoryDao())
     private val _user = MutableStateFlow<User?>(null)
+    val user = _user.asStateFlow()
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.InitialLoading)
     val uiState = _uiState.asStateFlow()
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
