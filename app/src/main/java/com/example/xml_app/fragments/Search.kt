@@ -79,6 +79,19 @@ class Search : Fragment() {
 
     fun setupSearchBox() {
         binding.etSearch.doAfterTextChanged { text ->
+            val query = text?.toString().orEmpty()
+            if (query.isBlank()) {
+                if (nestedNavController.currentDestination?.hasRoute<SearchRoute.Home>() == false) {
+                    nestedNavController.navigate(SearchRoute.Home) {
+                        popUpTo<SearchRoute.Home> {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+                viewModel.onChange(query)
+                return@doAfterTextChanged
+            }
             if (nestedNavController.currentDestination?.hasRoute<SearchRoute.Results>() == true ||
                 nestedNavController.currentDestination?.hasRoute<SearchRoute.Home>() == true
             ) {
