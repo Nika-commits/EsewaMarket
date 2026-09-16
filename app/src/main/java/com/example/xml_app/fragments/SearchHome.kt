@@ -42,6 +42,7 @@ class SearchHome : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupSearchHistoryRecyclerView()
+        setupClearAll()
     }
 
     private fun setupSearchHistoryRecyclerView() {
@@ -78,6 +79,12 @@ class SearchHome : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchHistories.collectLatest { searchHistoryAdapter.searchHistory = it }
             }
+        }
+    }
+
+    private fun setupClearAll() {
+        binding.btnClearAll.setOnClickListener {
+            viewModel.clearSearchHistory()
         }
     }
 
