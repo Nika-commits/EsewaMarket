@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.xml_app.databinding.ItemSearchSuggestionRowBinding
 
 class SearchSuggestionsAdapter(
-    private var query: String = "",
     private val onSuggestionsClick: (String) -> Unit
 ) : ListAdapter<String, SearchSuggestionsAdapter.ViewHolder>(DiffCallback) {
+    private var query: String = ""
+
     companion object {
         private val DiffCallback = object : DiffUtil.ItemCallback<String>() {
             override fun areItemsTheSame(oldItem: String, newItem: String) = oldItem == newItem

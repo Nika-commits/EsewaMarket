@@ -59,9 +59,7 @@ class SearchHistoryAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount() = searchHistory.size
 
     class ViewHolder(val binding: ItemSearchHistoryChipBinding) : RecyclerView.ViewHolder(binding.root)
 }

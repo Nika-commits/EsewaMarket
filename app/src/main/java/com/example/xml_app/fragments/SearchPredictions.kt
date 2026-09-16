@@ -40,8 +40,9 @@ class SearchPredictions : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        searchSuggestionsAdapter = SearchSuggestionsAdapter("") { suggestion ->
+        searchSuggestionsAdapter = SearchSuggestionsAdapter { suggestion ->
             viewModel.onChange(suggestion)
+            viewModel.insertSearchHistory()
             findNavController().navigate(SearchRoute.Results) {
                 popUpTo<SearchRoute.Suggestions> {
                     saveState = true

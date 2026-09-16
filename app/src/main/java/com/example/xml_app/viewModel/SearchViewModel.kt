@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.entities.CartItem
+import com.example.xml_app.entities.SearchHistory
 import com.example.xml_app.entities.User
 import com.example.xml_app.models.PriceFilter
 import com.example.xml_app.models.Product
@@ -12,6 +13,7 @@ import com.example.xml_app.models.ProductUiModel
 import com.example.xml_app.repository.CartRepository
 import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.ProductRepository
+import com.example.xml_app.repository.SearchHistoryRepository
 import com.example.xml_app.repository.UserRepository
 import com.example.xml_app.ui.state.SearchUiState
 import com.example.xml_app.utils.CustomApplicationContext
@@ -35,6 +37,7 @@ class SearchViewModel(
     private val cartRepository = CartRepository(app.database.cartDao())
     private val favouriteRepository = FavouriteRepository(app.database.favouriteDao())
     private val productRepository = ProductRepository()
+    private val searchHistoryRepository = SearchHistoryRepository(app.database.searchHistoryDao())
     private val _user = MutableStateFlow<User?>(null)
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.InitialLoading)
     val uiState = _uiState.asStateFlow()
@@ -43,13 +46,14 @@ class SearchViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
     private val _searchPriceFilter = MutableStateFlow<PriceFilter>(PriceFilter.BestSellers)
-    private val searchPriceFilter = _searchPriceFilter.asStateFlow()
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     private val _hasMoreProducts = MutableStateFlow(true)
     private var currentPage = 0
 
+    private val _histories = MutableStateFlow<List<SearchHistory>>(emptyList())
+    val searchHistories = _histories.asStateFlow()
 
     companion object {
         private const val PAGE_SIZE = 10
@@ -65,6 +69,7 @@ class SearchViewModel(
 
     init {
         observeSearchQuery()
+        initialize()
     }
 
     fun isLoggedIn(): Boolean {
@@ -86,6 +91,15 @@ class SearchViewModel(
             launch {
                 favouriteRepository.observeFavouriteIds(user.uid)
                     .collectLatest { _favouriteIds.value = it.toSet() }
+            }
+
+            Log.d("Search", "Starting search history observation for user: ${user.uid}")
+            launch {
+                searchHistoryRepository.getSearchHistories(user.uid)
+                    .collectLatest {
+                        Log.d("Search", "Search Histories: ${it.map { q -> q.query }}")
+                        _histories.value = it
+                    }
             }
         }
     }
@@ -219,4 +233,26 @@ class SearchViewModel(
         }
     }
 
+
+    fun insertSearchHistory() {
+        viewModelScope.launch {
+            val user = _user.value ?: return@launch
+            Log.d("Search", "Saving Search History: ${_searchQuery.value}")
+            searchHistoryRepository.saveSearch(user.uid, _searchQuery.value)
+        }
+    }
+
+    fun deleteSearchHistory(searchHistoryId: Int) {
+        viewModelScope.launch {
+            val user = _user.value ?: return@launch
+            searchHistoryRepository.deleteSearch(user.uid, searchHistoryId)
+        }
+    }
+
+    fun clearSearchHistory() {
+        viewModelScope.launch {
+            val user = _user.value ?: return@launch
+            searchHistoryRepository.clearSearch(user.uid)
+        }
+    }
 }

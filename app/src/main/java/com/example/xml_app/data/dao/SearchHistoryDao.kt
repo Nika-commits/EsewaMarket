@@ -27,10 +27,10 @@ interface SearchHistoryDao {
 
     @Query(
         """select * 
-        |from search_history 
-        |where user_id = :userId
-        |order by searched_at desc
-        |"""
+        from search_history 
+        where user_id = :userId
+        order by searched_at desc
+        """
     )
     fun getUserSearchHistory(userId: Int): Flow<List<SearchHistory>>
 

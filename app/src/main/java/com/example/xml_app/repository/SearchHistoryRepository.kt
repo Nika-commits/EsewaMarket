@@ -2,10 +2,16 @@ package com.example.xml_app.repository
 
 import com.example.xml_app.data.dao.SearchHistoryDao
 import com.example.xml_app.entities.SearchHistory
+import kotlinx.coroutines.flow.Flow
 
 class SearchHistoryRepository(
     private val searchHistoryDao: SearchHistoryDao
 ) {
+
+    fun getSearchHistories(userId: Int): Flow<List<SearchHistory>> {
+        return searchHistoryDao.getUserSearchHistory(userId)
+    }
+
     suspend fun saveSearch(
         userId: Int,
         query: String

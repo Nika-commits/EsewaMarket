@@ -46,10 +46,11 @@ class Search : Fragment() {
         val nestedNavHostFragment = childFragmentManager.findFragmentById(R.id.searchContainer) as NavHostFragment
         nestedNavController = nestedNavHostFragment.navController
         nestedNavController.graph = nestedNavController.createGraph(
-            startDestination = SearchRoute.Suggestions,
+            startDestination = SearchRoute.Home,
         ) {
-            fragment<SearchResults, SearchRoute.Results> { label = "Results" }
+            fragment<SearchHome, SearchRoute.Home> { label = "Home" }
             fragment<SearchPredictions, SearchRoute.Suggestions> { label = "Suggestions" }
+            fragment<SearchResults, SearchRoute.Results> { label = "Results" }
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
@@ -78,7 +79,9 @@ class Search : Fragment() {
 
     fun setupSearchBox() {
         binding.etSearch.doAfterTextChanged { text ->
-            if (nestedNavController.currentDestination?.hasRoute<SearchRoute.Results>() == true) {
+            if (nestedNavController.currentDestination?.hasRoute<SearchRoute.Results>() == true ||
+                nestedNavController.currentDestination?.hasRoute<SearchRoute.Home>() == true
+            ) {
                 nestedNavController.navigate(SearchRoute.Suggestions) {
                     popUpTo<SearchRoute.Results> {
                         inclusive = true
@@ -94,6 +97,7 @@ class Search : Fragment() {
         }
 
         binding.tvSearch.setOnClickListener {
+            viewModel.insertSearchHistory()
             nestedNavController.navigate(SearchRoute.Results) {
                 popUpTo<SearchRoute.Suggestions> {
                     saveState = true
