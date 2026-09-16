@@ -74,3 +74,31 @@ val MIGRATION2_3 = object : Migration(2, 3) {
         )
     }
 }
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            """
+                create table search_history(
+                    uid Integer Primary Key Autoincrement not null,
+                    user_id integer not null,
+                    query text not null,
+                    searched_at integer not null,
+                    foreign key (user_id) references users(uid) on delete cascade
+                )
+            """.trimIndent()
+        )
+
+        connection.execSQL(
+            """
+                create index index_search_history_id on search_history(user_id)
+            """.trimIndent()
+        )
+
+        connection.execSQL(
+            """
+                create unique index index_search_history_user_id_query on search_history(user_id, query)
+            """.trimIndent()
+        )
+    }
+}

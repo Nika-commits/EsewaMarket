@@ -4,11 +4,13 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.example.xml_app.data.dao.CartDao
 import com.example.xml_app.data.dao.FavouriteDao
+import com.example.xml_app.data.dao.SearchHistoryDao
 import com.example.xml_app.data.dao.UserDao
 import com.example.xml_app.entities.Address
 import com.example.xml_app.entities.Cart
 import com.example.xml_app.entities.CartItem
 import com.example.xml_app.entities.Favourite
+import com.example.xml_app.entities.SearchHistory
 import com.example.xml_app.entities.User
 
 @Database(
@@ -17,12 +19,14 @@ import com.example.xml_app.entities.User
         Address::class,
         Cart::class,
         CartItem::class,
-        Favourite::class
+        Favourite::class,
+        SearchHistory::class
     ],
-    version = 3
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun cartDao(): CartDao
     abstract fun favouriteDao(): FavouriteDao
+    abstract fun searchHistoryDao(): SearchHistoryDao
 }

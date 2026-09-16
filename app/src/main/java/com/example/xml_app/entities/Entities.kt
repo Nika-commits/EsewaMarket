@@ -3,6 +3,7 @@ package com.example.xml_app.entities
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
+import androidx.room3.ForeignKey.Companion.CASCADE
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
 
@@ -70,7 +71,7 @@ data class Cart(
             entity = Cart::class,
             parentColumns = ["uid"],
             childColumns = ["cart_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = CASCADE
         ),
     ],
 
@@ -93,7 +94,7 @@ data class CartItem(
             entity = User::class,
             parentColumns = ["uid"],
             childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = CASCADE
         )
     ],
     indices = [
@@ -105,4 +106,26 @@ data class Favourite(
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
     @ColumnInfo(name = "user_id") val userId: Int,
     @ColumnInfo(name = "product_id") val productId: Int
+)
+
+@Entity(
+    tableName = "search_history",
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["uid"],
+            childColumns = ["user_id"],
+            onDelete = CASCADE
+        )
+    ],
+    indices = [
+        Index("user_id"),
+        Index(value = ["user_id", "query"], unique = true)
+    ]
+)
+data class SearchHistory(
+    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+    @ColumnInfo(name = "user_id") val userId: Int,
+    val query: String,
+    @ColumnInfo(name = "searched_at") val searchedAt: Long = System.currentTimeMillis()
 )
