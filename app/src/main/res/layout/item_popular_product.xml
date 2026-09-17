@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="8dp"
+        android:paddingHorizontal="12dp"
         app:layout_constraintBottom_toBottomOf="@id/flImageContainer"
         app:layout_constraintStart_toEndOf="@id/flImageContainer"
         app:layout_constraintTop_toTopOf="@id/flImageContainer">
