@@ -36,6 +36,20 @@ class ProductRepository {
         }
     }
 
+    suspend fun getPopularSearchProducts(): List<Product>? {
+        return try {
+            val response = RetrofitInstance.productApi.getPopularSearch()
+            if (!response.isSuccessful) {
+                Log.e("Search", "Popular Products failed in repo: ${response.code()}")
+                return null
+            }
+            response.body()
+        } catch (e: Exception) {
+            Log.e("Search", "Exception in Popular Products: ${e.message}")
+            return null
+        }
+    }
+
     fun getRecommendedProduct() = Pager(
         config = PagingConfig(
             pageSize = 4,

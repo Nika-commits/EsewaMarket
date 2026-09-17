@@ -19,6 +19,10 @@ interface ProductApi {
         @Query("priceFilter") priceFilter: String = PriceFilter.BestSellers.name
     ): Response<List<Product>>
 
+
+    @GET("api/product/popular-search")
+    suspend fun getPopularSearch(): Response<List<Product>>
+
     @POST("api/product")
     suspend fun postProduct(@Body product: Product)
 

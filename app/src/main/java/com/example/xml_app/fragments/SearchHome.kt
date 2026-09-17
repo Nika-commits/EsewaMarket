@@ -57,8 +57,6 @@ class SearchHome : Fragment() {
                             viewModel.searchHistories.collectLatest { searchHistoryAdapter.searchHistory = it }
                         }
                     }
-
-
                 }
             }
         }
