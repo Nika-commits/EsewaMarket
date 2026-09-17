@@ -11,7 +11,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -54,6 +57,14 @@ class ProductDetailActivity : AppCompatActivity() {
 
         binding = ActivityProductDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.addToCartContainer.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            v.updatePadding(
+                bottom = systemBars.bottom,
+            )
+            insets
+        }
 
         setupCarousel()
         setupColorSelector()
