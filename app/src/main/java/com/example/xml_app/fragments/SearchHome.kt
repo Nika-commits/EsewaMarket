@@ -1,6 +1,8 @@
 package com.example.xml_app.fragments
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +14,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.xml_app.R
-import com.example.xml_app.adapters.CartAdapter
+import com.example.xml_app.activities.AuthActivity
+import com.example.xml_app.activities.ProductDetailActivity
 import com.example.xml_app.adapters.search.SearchHistoryAdapter
+import com.example.xml_app.adapters.search.SearchMostPopularProductAdapter
 import com.example.xml_app.databinding.FragmentSearchHomeBinding
 import com.example.xml_app.navigation.SearchRoute
+import com.example.xml_app.ui.state.SearchHistoryUiState
+import com.example.xml_app.ui.state.SearchMostPopularProductsUiState
 import com.example.xml_app.utils.HorizontalItemDecoration
 import com.example.xml_app.utils.SearchHistoryItemDecoration
 import com.example.xml_app.viewModel.SearchViewModel
@@ -31,7 +37,7 @@ class SearchHome : Fragment() {
         ownerProducer = { requireParentFragment().requireParentFragment() }
     )
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
-    private lateinit var mostPopularSearchAdapter: CartAdapter
+    private lateinit var mostPopularSearchAdapter: SearchMostPopularProductAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSearchHomeBinding.inflate(inflater, container, false)
@@ -43,23 +49,10 @@ class SearchHome : Fragment() {
 
         setupSearchHistoryRecyclerView()
         setupClearAll()
+        setupMostPopularSearch()
     }
 
     private fun setupSearchHistoryRecyclerView() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.user.collectLatest { user ->
-                        if (user == null) {
-                            binding.tvLoginMessage.visibility = View.VISIBLE
-                        } else {
-                            binding.tvLoginMessage.visibility = View.GONE
-                            viewModel.searchHistories.collectLatest { searchHistoryAdapter.searchHistory = it }
-                        }
-                    }
-                }
-            }
-        }
         searchHistoryAdapter = SearchHistoryAdapter(
             onSearchHistoryClick = {
                 viewModel.onChange(it)
@@ -89,6 +82,42 @@ class SearchHome : Fragment() {
                 SearchHistoryItemDecoration()
             )
         }
+
+        binding.btnLogin.setOnClickListener {
+            Log.d("Search", "Login button Clicked")
+            Intent(requireContext(), AuthActivity::class.java).apply {
+                putExtra(AuthActivity.DESTINATION, AuthActivity.LOGIN)
+            }.also { startActivity(it) }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchHistoryUiState.collectLatest { state ->
+                    when (state) {
+                        is SearchHistoryUiState.Unauth -> {
+                            binding.llLoginMessage.visibility = View.VISIBLE
+                            binding.rvSearchHistory.visibility = View.GONE
+                            binding.btnClearAll.visibility = View.GONE
+                        }
+
+                        is SearchHistoryUiState.Loading,
+                        SearchHistoryUiState.Error
+                            -> {
+                            binding.llLoginMessage.visibility = View.GONE
+                            binding.rvSearchHistory.visibility = View.GONE
+                            binding.btnClearAll.visibility = View.GONE
+                        }
+
+                        is SearchHistoryUiState.Success -> {
+                            binding.llLoginMessage.visibility = View.GONE
+                            binding.rvSearchHistory.visibility = View.VISIBLE
+                            binding.btnClearAll.visibility = View.VISIBLE
+                            searchHistoryAdapter.searchHistory = state.histories
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setupClearAll() {
@@ -98,18 +127,37 @@ class SearchHome : Fragment() {
     }
 
     private fun setupMostPopularSearch() {
-        mostPopularSearchAdapter = CartAdapter(
-            onProductClick = {},
-            onCartIncrement = {},
-            onCartDecrement = { _, _ -> }
-        )
+        viewModel.getMostPopularProducts()
+        mostPopularSearchAdapter = SearchMostPopularProductAdapter {
+            ProductDetailActivity.startActivity(requireContext(), it)
+        }
 
-        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_medium)
+        val spacing = resources.getDimensionPixelSize(R.dimen.spacing_low)
 
         binding.rvPopularSearch.apply {
             adapter = mostPopularSearchAdapter
             layoutManager = LinearLayoutManager(requireContext())
             addItemDecoration(HorizontalItemDecoration(spacing))
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchMostPopularProductUiState.collectLatest { state ->
+                    when (state) {
+                        is SearchMostPopularProductsUiState.Loading -> {
+
+                        }
+
+                        is SearchMostPopularProductsUiState.Error -> {
+
+                        }
+
+                        is SearchMostPopularProductsUiState.Success -> {
+                            mostPopularSearchAdapter.products = state.products
+                        }
+                    }
+                }
+            }
         }
     }
 }

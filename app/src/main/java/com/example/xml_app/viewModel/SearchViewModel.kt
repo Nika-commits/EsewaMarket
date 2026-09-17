@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xml_app.entities.CartItem
-import com.example.xml_app.entities.SearchHistory
 import com.example.xml_app.entities.User
 import com.example.xml_app.models.PriceFilter
 import com.example.xml_app.models.Product
@@ -15,8 +14,11 @@ import com.example.xml_app.repository.FavouriteRepository
 import com.example.xml_app.repository.ProductRepository
 import com.example.xml_app.repository.SearchHistoryRepository
 import com.example.xml_app.repository.UserRepository
+import com.example.xml_app.ui.state.SearchHistoryUiState
+import com.example.xml_app.ui.state.SearchMostPopularProductsUiState
 import com.example.xml_app.ui.state.SearchUiState
 import com.example.xml_app.utils.CustomApplicationContext
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,19 +44,24 @@ class SearchViewModel(
     val user = _user.asStateFlow()
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.InitialLoading)
     val uiState = _uiState.asStateFlow()
+
+    private val _searchHistoryUiState = MutableStateFlow<SearchHistoryUiState>(SearchHistoryUiState.Loading)
+    val searchHistoryUiState = _searchHistoryUiState.asStateFlow()
+
+    private val _searchMostPopularProductsUiState =
+        MutableStateFlow<SearchMostPopularProductsUiState>(SearchMostPopularProductsUiState.Loading)
+    val searchMostPopularProductUiState = _searchMostPopularProductsUiState.asStateFlow()
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     private val _favouriteIds = MutableStateFlow<Set<Int>>(emptySet())
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
-    private val _searchPriceFilter = MutableStateFlow<PriceFilter>(PriceFilter.BestSellers)
+    private val _searchPriceFilter = MutableStateFlow(PriceFilter.BestSellers)
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     private val _hasMoreProducts = MutableStateFlow(true)
     private var currentPage = 0
 
-    private val _histories = MutableStateFlow<List<SearchHistory>>(emptyList())
-    val searchHistories = _histories.asStateFlow()
 
     companion object {
         private const val PAGE_SIZE = 10
@@ -79,7 +86,11 @@ class SearchViewModel(
 
     fun initialize() {
         viewModelScope.launch {
-            val firebaseUser = app.auth.currentUser ?: return@launch
+            val firebaseUser = app.auth.currentUser
+            if (firebaseUser == null) {
+                _searchHistoryUiState.value = SearchHistoryUiState.Unauth
+                return@launch
+            }
             val user = userRepository.getLocalUser(firebaseUser.uid) ?: return@launch
             _user.value = user
             val cart = cartRepository.getOrCreateCart(user.uid)
@@ -94,17 +105,20 @@ class SearchViewModel(
                     .collectLatest { _favouriteIds.value = it.toSet() }
             }
 
-            Log.d("Search", "Starting search history observation for user: ${user.uid}")
             launch {
                 searchHistoryRepository.getSearchHistories(user.uid)
                     .collectLatest {
-                        Log.d("Search", "Search Histories: ${it.map { q -> q.query }}")
-                        _histories.value = it
+                        if (it.isEmpty()) {
+                            _searchHistoryUiState.value = SearchHistoryUiState.Error
+                            return@collectLatest
+                        }
+                        _searchHistoryUiState.value = SearchHistoryUiState.Success(it)
                     }
             }
         }
     }
 
+    @OptIn(FlowPreview::class)
     private fun observeSearchQuery() {
         viewModelScope.launch {
             searchQuery
@@ -203,6 +217,22 @@ class SearchViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+    fun getMostPopularProducts() {
+        viewModelScope.launch {
+            try {
+                val response = productRepository.getPopularSearchProducts()
+                if (response.isNullOrEmpty()) {
+                    _searchMostPopularProductsUiState.value = SearchMostPopularProductsUiState.Error
+                    return@launch
+                }
+                _searchMostPopularProductsUiState.value = SearchMostPopularProductsUiState.Success(response)
+            } catch (e: Exception) {
+                Log.e("Search", "Exception in getMostPopularProduct : ${e.message}")
+                _searchMostPopularProductsUiState.value = SearchMostPopularProductsUiState.Error
+            }
+        }
+    }
 
     fun toggleFavourite(productId: Int) {
         viewModelScope.launch {
