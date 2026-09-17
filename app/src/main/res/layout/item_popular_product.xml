@@ -13,11 +13,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivProductImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedImage" />
     </FrameLayout>
 
     <LinearLayout
@@ -25,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingHorizontal="8dp"
         app:layout_constraintBottom_toBottomOf="@id/flImageContainer"
         app:layout_constraintStart_toEndOf="@id/flImageContainer"
         app:layout_constraintTop_toTopOf="@id/flImageContainer">
