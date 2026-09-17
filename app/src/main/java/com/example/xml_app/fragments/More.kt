@@ -33,7 +33,9 @@ import kotlinx.coroutines.launch
 
 
 class More : Fragment() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels(
+        ownerProducer = { requireActivity() }
+    )
     private var _binding: FragmentMoreBinding? = null
     private val binding get() = _binding!!
     private lateinit var app: CustomApplicationContext
