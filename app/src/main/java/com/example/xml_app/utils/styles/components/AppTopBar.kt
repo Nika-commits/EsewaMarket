@@ -90,5 +90,8 @@ fun OrderSummaryItem(
 @Preview
 @Composable
 fun Prev() {
-    OrderSummaryItem()
+    AppTopBar(
+         "Home",
+        onBackClick = {}
+    )
 }

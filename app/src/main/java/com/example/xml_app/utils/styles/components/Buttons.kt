@@ -160,9 +160,10 @@ fun AppButton(
 @Composable
 fun Previews() {
     AppButton(
-        variant = ButtonVariant.GHOST,
+        variant = ButtonVariant.ROUNDED,
         onClick = {},
-        text="CANCEL",
-        isLoading = true
+
+        icon = R.drawable.ic_cancel,
+        isLoading =false
     )
 }

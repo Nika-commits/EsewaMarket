@@ -36,16 +36,9 @@ fun SwipableItemsWithActions(
     onCollapsed: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
-    var contextMenuWidth by remember {
-        mutableFloatStateOf(0f)
-    }
-
-    val offset = remember {
-        Animatable(0f)
-    }
-
+    var contextMenuWidth by remember {mutableFloatStateOf(0f) }
+    val offset = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
-
     LaunchedEffect(isRevealed, contextMenuWidth) {
         if (isRevealed) {
             offset.animateTo(-contextMenuWidth)

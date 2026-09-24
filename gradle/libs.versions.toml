@@ -2,7 +2,7 @@
 
 flexbox = "3.0.0"
 kotlin = "2.4.10"
-agp = "9.2.1"
+agp = "9.4.1"
 coreKtx = "1.19.0"
 glide = "5.0.9"
 junit = "4.13.2"

@@ -28,5 +28,7 @@ fun AppLoadingIndicator(
 @Preview(showBackground = true)
 @Composable
 fun LoadingPreview() {
-    AppLoadingIndicator()
+    AppLoadingIndicator(
+
+    )
 }

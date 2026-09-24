@@ -78,18 +78,6 @@ class AddNewAddressActivity : AppCompatActivity() {
         enum class MODE {
             ADD, EDIT
         }
-//
-//        fun startActivity(
-//            context: Context,
-//            mode: MODE,
-//            addressId: Int?
-//        ) {
-//            val intent = Intent(context, AddNewAddressActivity::class.java).apply {
-//                putExtra(TYPE, mode.name)
-//                putExtra(ADDRESS_ID, addressId)
-//            }
-//            context.startActivity(intent)
-//        }
 
         fun createIntent(
             context: Context,

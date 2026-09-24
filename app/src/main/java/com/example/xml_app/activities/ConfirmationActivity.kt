@@ -157,15 +157,9 @@ class ConfirmationActivity : AppCompatActivity() {
         order: OrderResponse,
         scope: CoroutineScope
     ) {
-        Log.d("Khalti", "Reached Khalti Payment function")
         scope.launch {
             viewModel.setPaymentState(PaymentState.Loading(PaymentOptions.Khalti))
-            val response = viewModel.initiateKhaltiPayment(
-                order.id
-            )
-            if (response == null) {
-                return@launch
-            }
+            val response = viewModel.initiateKhaltiPayment(order.id) ?: return@launch
 
             val config = KhaltiPayConfig(
                 publicKey = BuildConfig.KhaltiLivePublic,
@@ -178,7 +172,6 @@ class ConfirmationActivity : AppCompatActivity() {
                 this@ConfirmationActivity,
                 config = config,
                 onPaymentResult = { paymentResult: PaymentResult, khalti: Khalti ->
-                    Log.d("Khalti", "OnPaymentResult: result: $paymentResult")
                     khalti.close()
                     scope.launch {
                         viewModel.verifyKhaltiPayment(
@@ -188,7 +181,6 @@ class ConfirmationActivity : AppCompatActivity() {
                     }
                 },
                 onMessage = { payload: OnMessagePayload, khalti: Khalti ->
-                    Log.d("Khalti", "onMessage: Payload: ${payload.message}")
                     khalti.close()
                     viewModel.setPaymentState(
                         PaymentState.Error(PaymentOptions.Khalti)
@@ -304,7 +296,9 @@ class ConfirmationActivity : AppCompatActivity() {
                     is PaymentState.Loading,
                     is PaymentState.Error -> {
                         PaymentProcessingDialog(
-                            onDismissRequest = {},
+                            onDismissRequest = {
+                                viewModel.setPaymentState(PaymentState.Idle)
+                            },
                             onRetry = {
                                 when (orderState) {
                                     is PaymentState.Error -> {
@@ -326,7 +320,6 @@ class ConfirmationActivity : AppCompatActivity() {
                                             }
                                         }
                                     }
-
                                     else -> Unit
                                 }
                             },
@@ -580,7 +573,10 @@ fun PaymentProcessingDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(260.dp)
+                .height(when (state){
+                    is PaymentState.Error -> 300.dp
+                    else -> 260.dp
+                })
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
@@ -635,12 +631,10 @@ fun PaymentProcessingDialog(
                             strokeWidth = 4.dp
                         )
 
-
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-
 
                             Text(
                                 text = "Verifying your Payment via",
@@ -685,10 +679,19 @@ fun PaymentProcessingDialog(
                         AppButton(
                             modifier = Modifier.fillMaxWidth(),
                             text = "TRY AGAIN",
-                            variant = ButtonVariant.SECONDARY,
+                            variant = ButtonVariant.PRIMARY,
                             onClick = onRetry
                         )
+                        AppButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "CANCEL",
+                            variant = ButtonVariant.DESTRUCTIVE,
+                            onClick = {
+                                onDismissRequest()
+                            }
+                        )
                     }
+                    else -> Unit
                 }
             }
         }
@@ -865,6 +868,6 @@ fun OrderResponseCardPreview() {
     PaymentProcessingDialog(
         onRetry = {},
         onDismissRequest = {},
-        state = PaymentState.Error(PaymentOptions.Khalti)
+        state = PaymentState.Error(PaymentOptions.Esewa)
     )
 }

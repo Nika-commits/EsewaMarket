@@ -151,7 +151,7 @@ fun AppTextField(
 @Preview(showBackground = true)
 @Composable
 fun PreviewTextField() {
-    var text by remember { mutableStateOf("sssssssssssssssssssssssssssssssssssssssssssssssssss") }
+    var text by remember { mutableStateOf("Esewa") }
     AppTextField(
         value = text,
         onValueChange = { text = it },

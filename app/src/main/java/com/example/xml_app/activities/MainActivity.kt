@@ -45,13 +45,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val test = intent.getBooleanExtra("TEST", false)
-
-        if (test) {
-            Log.d("Home", "success")
-        } else {
-            Log.d("Home", "Also success")
-        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -108,10 +101,6 @@ class MainActivity : AppCompatActivity() {
                 isEnabled = true
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     private fun setupBottomNavigation() {
@@ -192,7 +181,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun setSelectedTab(selected: ItemNavigationBinding) {
         val tabs = listOf(
             binding.tabHome,
@@ -220,7 +208,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (ev?.action == MotionEvent.ACTION_DOWN) {
             val v = currentFocus
@@ -235,12 +222,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.dispatchTouchEvent(ev)
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-
-        val test = intent.getStringExtra("TEST")
-        Log.d("Home", "Data: $test")
     }
 }
